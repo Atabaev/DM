@@ -46,7 +46,7 @@
               <div class="stat-label">${t('statTopics')}</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">${topics.length}</div>
+              <div class="stat-value">${topics.reduce((s, tp) => s + tp.slides.length + (tp.lab && tp.lab.steps ? tp.lab.steps.length : 1) + 2, 0)}</div>
               <div class="stat-label">${t('statSlides')}</div>
             </div>
             <div class="stat-card">
@@ -79,6 +79,7 @@
           ${filtered.map((tp) => {
             const isDone = completed.includes(tp.id);
             const qScore = scores['topic-' + tp.id];
+            const slideCount = tp.slides.length + (tp.lab && tp.lab.steps ? tp.lab.steps.length : 1) + 2;
             return `
               <article class="topic-card">
                 <div class="topic-card-top">
@@ -92,7 +93,7 @@
                 <div class="topic-meta">
                   ${tp.hours > 0 ? `<span class="tag">⏱ ${tp.hours} ${t('hoursUnit')}</span>` : ''}
                   ${tp.labs > 0 ? `<span class="tag">🧪 ${tp.labs} ${t('labsUnit')}</span>` : ''}
-                  <span class="tag">📊 ${tp.slides.length} slides</span>
+                  <span class="tag">📊 ${slideCount} slides</span>
                   ${qScore ? `<span class="tag" style="color:var(--emerald);">★ ${qScore.score}/${qScore.total}</span>` : ''}
                 </div>
                 <div class="topic-actions">
@@ -157,6 +158,10 @@
     `;
   }
 
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function initTopicPage() {
     const root = document.getElementById('topic-root');
     if (!root) return;
@@ -209,14 +214,22 @@
               </div>
             </div>
 
-            <article class="lecture-card">
+            <article class="lecture-card" id="lecture-article">
               ${topic.sections.map((sec) => `
                 <section class="lecture-section">
                   <h2>${sec.heading[lang]}</h2>
                   <div>${sec.bodyHtml[lang]}</div>
-                  ${sec.formula ? `<div class="formula-box">${sec.formula}</div>` : ''}
+                  ${sec.latex ? `<div class="formula-box">$$${sec.latex}$$</div>` : (sec.formula ? `<div class="formula-box">${sec.formula}</div>` : '')}
                   ${renderTable(sec.table, lang)}
+                  ${sec.widget ? `<div class="widget-wrap" data-widget="${sec.widget}"></div>` : ''}
                   ${sec.callout ? `<div class="callout ${sec.callout.type === 'warn' ? 'warn' : ''}">${sec.callout[lang]}</div>` : ''}
+                  ${sec.discussion ? `
+                    <div class="discussion-box">
+                      <div><strong>💬 ${lang === 'uz' ? 'Tekshirish savoli:' : 'Self-Check Question:'}</strong> ${sec.discussion.q[lang]}</div>
+                      <button type="button" class="btn btn-primary btn-sm reveal-topic-ans" style="margin-top:0.55rem;">${lang === 'uz' ? 'Javobni ko\'rsatish' : 'Reveal Answer'}</button>
+                      <div class="collapsible-body" style="margin-top:0.6rem;">${sec.discussion.a[lang]}</div>
+                    </div>
+                  ` : ''}
                 </section>
               `).join('')}
 
@@ -246,16 +259,33 @@
                 <section class="lecture-section">
                   <h2>${t('labTitle')}</h2>
                   <h3 style="margin-top:0.25rem;">${topic.lab.title[lang]}</h3>
-                  <ul>
-                    ${topic.lab.tasks[lang].map((tsk) => `<li>${tsk}</li>`).join('')}
-                  </ul>
-                  <div class="code-wrap">
-                    <div class="code-header">
-                      <span>python · lab_${topic.id}.py</span>
-                      <button type="button" class="btn btn-secondary btn-sm" id="copy-lab-btn">${t('copyCode')}</button>
+                  ${topic.lab.objective ? `<div class="callout"><strong>🎯 ${lang === 'uz' ? 'Maqsad:' : 'Objective:'}</strong> ${topic.lab.objective[lang]}</div>` : ''}
+                  ${topic.lab.steps ? topic.lab.steps.map((st, idx) => `
+                    <div class="lab-step">
+                      <div class="lab-step-title">${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${st.title[lang]}</div>
+                      <p style="margin:0.25rem 0 0.65rem; font-size:0.9rem; color:var(--text-secondary);">${st.desc[lang]}</p>
+                      <div class="code-wrap" style="margin:0;">
+                        <div class="code-header">
+                          <span>python · lab_${topic.id}_step${idx + 1}.py</span>
+                          <button type="button" class="btn btn-secondary btn-sm copy-step-btn" data-step-idx="${idx}">${t('copyCode')}</button>
+                        </div>
+                        <pre><code>${escapeHtml(st.code)}</code></pre>
+                      </div>
                     </div>
-                    <pre><code id="lab-code-block"></code></pre>
-                  </div>
+                  `).join('') : `
+                    <ul>${topic.lab.tasks[lang].map((tsk) => `<li>${tsk}</li>`).join('')}</ul>
+                    <div class="code-wrap">
+                      <div class="code-header">
+                        <span>python · lab_${topic.id}.py</span>
+                        <button type="button" class="btn btn-secondary btn-sm" id="copy-lab-btn">${t('copyCode')}</button>
+                      </div>
+                      <pre><code id="lab-code-block">${escapeHtml(topic.lab.code)}</code></pre>
+                    </div>
+                  `}
+                  ${topic.lab.variants ? `
+                    <h3>${lang === 'uz' ? '📝 Mustaqil topshiriq variantlari' : '📝 Student Variant Assignments'}</h3>
+                    <ul>${topic.lab.variants[lang].map((v) => `<li>${v}</li>`).join('')}</ul>
+                  ` : ''}
                 </section>
               ` : ''}
             </article>
@@ -270,11 +300,22 @@
         </div>
       `;
 
-      const codeEl = document.getElementById('lab-code-block');
-      if (codeEl && topic.lab) codeEl.textContent = topic.lab.code;
+      // Widgets
+      root.querySelectorAll('[data-widget]').forEach((slot) => {
+        if (window.DM_WIDGETS) window.DM_WIDGETS.renderWidget(slot, slot.getAttribute('data-widget'));
+      });
 
+      // Reveal discussion answers
+      root.querySelectorAll('.reveal-topic-ans').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const box = btn.nextElementSibling;
+          if (box) box.classList.toggle('open');
+        });
+      });
+
+      // Copy buttons
       const copyBtn = document.getElementById('copy-lab-btn');
-      if (copyBtn && topic.lab) {
+      if (copyBtn && topic.lab && topic.lab.code) {
         copyBtn.addEventListener('click', () => {
           navigator.clipboard.writeText(topic.lab.code).then(() => {
             copyBtn.textContent = t('copied');
@@ -282,6 +323,16 @@
           });
         });
       }
+      root.querySelectorAll('.copy-step-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.getAttribute('data-step-idx'));
+          const code = topic.lab.steps[idx].code;
+          navigator.clipboard.writeText(code).then(() => {
+            btn.textContent = t('copied');
+            setTimeout(() => { btn.textContent = t('copyCode'); }, 1500);
+          });
+        });
+      });
 
       const completeBtn = document.getElementById('toggle-complete-btn');
       if (completeBtn) {
@@ -297,6 +348,18 @@
           questions: topic.quiz,
           scoreKey: `topic-${topic.id}`,
           title: `${t('quizTitle')} — ${topic.id}. ${topic.title[lang]}`
+        });
+      }
+
+      // Render KaTeX math
+      const articleEl = document.getElementById('lecture-article');
+      if (articleEl && window.renderMathInElement) {
+        window.renderMathInElement(articleEl, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
         });
       }
     }

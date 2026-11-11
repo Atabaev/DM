@@ -928,3 +928,37 @@ table.data-table th {
   .lecture-card { padding: 1.25rem; }
   .topics-grid { grid-template-columns: 1fr; }
 }
+
+/* Multi-step Lab & Embedded Interactive Widgets */
+.widget-wrap {
+  margin: 1rem 0;
+}
+
+.lab-step {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1rem;
+}
+
+.lab-step-title {
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 0.4rem;
+  font-size: 0.98rem;
+}
+
+.discussion-box {
+  background: var(--accent-soft);
+  border: 1px solid var(--border-accent);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  margin: 1rem 0;
+}
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}

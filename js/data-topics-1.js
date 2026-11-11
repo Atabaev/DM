@@ -1,964 +1,514 @@
 window.DM_TOPICS = window.DM_TOPICS || [];
 
 window.DM_TOPICS.push(
+  // ==================== TOPIC 1 ====================
   {
     id: 1,
     slug: '01-kirish',
     hours: 2,
     labs: 1,
-    keywords: ['Data Mining', 'KDD', 'CRISP-DM', 'Classification', 'Clustering'],
+    keywords: ['Data Mining', 'KDD', 'CRISP-DM', 'Classification', 'Clustering', 'Regression'],
     title: {
       uz: "Ma'lumotlarni intellektual tahlil qilish va KDD jarayoni",
       en: "Introduction to Data Mining & KDD Process"
     },
     description: {
-      uz: "Data Mining tushunchasi, KDD bosqichlari, CRISP-DM standarti va Data Mining masalalarining tasnifi.",
-      en: "Core concepts of Data Mining, 7 stages of KDD, CRISP-DM industry standard, and taxonomy of mining tasks."
+      uz: "Data Mining tushunchasi, 4 ta asosiy mezon, KDD 7 bosqichi, CRISP-DM standarti, SQL/Statistika farqlari va masalalar tasnifi.",
+      en: "Core concepts of Data Mining, 4 validity criteria, 7-stage KDD pipeline, CRISP-DM standard, and task taxonomy."
     },
     sections: [
       {
-        heading: {
-          uz: "1.1. Data Mining tushunchasi va fanning predmeti",
-          en: "1.1. What is Data Mining?"
-        },
+        heading: { uz: "1.1. Ma'lumotlar portlashi va DRIP paradoksi", en: "1.1. Data Explosion & the DRIP Paradox" },
         bodyHtml: {
-          uz: "<p>Hozirgi davrda sensorlar, bank kartalari, mobil ilovalar va ijtimoiy tarmoqlar har soniyada ulkan hajmda ma'lumot hosil qiladi. Omborlarda ma'lumot ko'paygani sari, fanda <strong>\"Data Rich, Information Poor\"</strong> — <em>\"ma'lumotga boy, ammo bilimi kam\"</em> paradoksi yuzaga keldi.</p><p><strong>Data Mining</strong> — katta hajmdagi ma'lumotlardan ilgari noma'lum, trivial bo'lmagan, amalda foydali va inson tushuna oladigan <strong>naqshlarni (patterns)</strong> avtomatik yoki yarim avtomatik ajratib olish jarayonidir.</p><ul><li><strong>Yangi (Novel):</strong> tahlilchi oldindan bilmagan bilimni ochib berishi kerak.</li><li><strong>Trivial bo'lmagan:</strong> oddiy SQL so'rovi bilan topib bo'lmaydigan qonuniyat.</li><li><strong>Amalda foydali (Actionable):</strong> qaror qabul qilishga asos bo'ladi.</li><li><strong>Tushunarli (Understandable):</strong> mutaxassis mantiqiy asosini anglay oladi.</li></ul>",
-          en: "<p>Modern sensors, bank transactions, mobile apps, and social media generate massive volumes of data every second. This created the classic <strong>\"Data Rich, Information Poor\"</strong> paradox.</p><p><strong>Data Mining</strong> is the automatic or semi-automatic process of discovering previously unknown, non-trivial, actionable, and human-understandable <strong>patterns</strong> in large datasets.</p><ul><li><strong>Novel:</strong> reveals knowledge not previously known to the analyst.</li><li><strong>Non-trivial:</strong> cannot be extracted with a simple SQL aggregation.</li><li><strong>Actionable:</strong> directly supports business or scientific decisions.</li><li><strong>Understandable:</strong> domain experts can interpret and verify the pattern.</li></ul>"
+          uz: "<p>Zamonaviy raqamli iqtisodiyotda har bir bank o'tkazmasi, tibbiy tahlil, GPS signal, IoT sensor va veb-klik log bazalariga yoziladi. Biroq katta hajmdagi jadvallarga ega bo'lish ulardan avtomatik foyda olishni anglatmaydi. Fanda bu holat <strong>DRIP — \"Data Rich, Information Poor\"</strong> (ma'lumotga boy, ammo bilimi kam) paradoksi deb ataladi.</p><p><strong>Data Mining</strong> (Ma'lumotlarni intellektual tahlil qilish) — katta hajmdagi ma'lumotlardan inson uchun oldindan noma'lum bo'lgan, amaliy ahamiyatga ega, trivial bo'lmagan va tushunarli <strong>yashirin naqshlarni (patterns)</strong> kashf etish jarayonidir.</p><ul><li><strong>1. Yangi (Novel):</strong> Mutaxassis avvaldan bilgan oddiy faktni emas, kutilmagan qonuniyatni ochishi kerak.</li><li><strong>2. Trivial bo'lmagan (Non-trivial):</strong> Oddiy <code>SELECT COUNT(*) GROUP BY</code> so'rovi Data Mining emas.</li><li><strong>3. Amalda foydali (Actionable):</strong> Biznes yoki ilmiy qaror qabul qilishga xizmat qilishi zarur.</li><li><strong>4. Tushunarli (Understandable):</strong> Mutaxassis naqshning mantiqiy asosini tekshira olishi kerak.</li></ul>",
+          en: "<p>Every banking transaction, medical lab result, IoT sensor ping, and clickstream event feeds massive databases. Yet storing terabytes does not automatically produce insight—known as the <strong>DRIP (\"Data Rich, Information Poor\")</strong> paradox.</p><p><strong>Data Mining</strong> is the non-trivial extraction of implicit, previously unknown, actionable, and human-understandable <strong>patterns</strong> from large datasets.</p><ul><li><strong>1. Novel:</strong> Uncovers patterns unknown beforehand.</li><li><strong>2. Non-trivial:</strong> Goes beyond basic SQL <code>GROUP BY</code> aggregations.</li><li><strong>3. Actionable:</strong> Drives concrete business or clinical decisions.</li><li><strong>4. Understandable:</strong> Domain experts can interpret and validate findings.</li></ul>"
         },
         callout: {
           type: 'warn',
-          uz: "<strong>Real misol (Google Flu Trends):</strong> 2008-yilda Google qidiruv so'rovlari orqali gripp epidemiyasini rasmiy hisobotlardan 1–2 hafta oldin bashorat qildi. Ammo 2015-yilda model tasodifiy korrelyatsiyalarga ortiqcha tayanganligi sababli xato bera boshladi. Xulosa: naqsh topishning o'zi yetarli emas, uni validatsiya qilish shart!",
-          en: "<strong>Real Case (Google Flu Trends):</strong> In 2008, Google predicted flu outbreaks 1–2 weeks ahead of official reports using search queries. By 2015, it overpredicted because search behavior shifted and the model relied on spurious correlations. Takeaway: discovering a pattern is not enough—rigorous validation is essential!"
+          uz: "<strong>Case Study (Google Flu Trends, 2008–2015):</strong> Google \"isitma\", \"yo'tal\" kabi qidiruv so'rovlari chastotasi orqali gripp to'lqinini sog'liqni saqlash markazlaridan 1–2 hafta oldin bashorat qildi. Lekin 2015-yilda model epidemiyani 2 baravar oshirib yubordi — chunki OAV vahimasi odamlarning qidiruv xulqini o'zgartirgan edi. <em>Xulosa:</em> Korrelyatsiya sababiyat emas; modellar doimiy validatsiyani talab qiladi!",
+          en: "<strong>Case Study (Google Flu Trends, 2008–2015):</strong> Google predicted flu spikes 1–2 weeks ahead of CDC reports via search logs. By 2015 it overestimated outbreaks by 2x because media panic altered search behavior. <em>Lesson:</em> Correlation is not causation—models require continuous validation."
         }
       },
       {
-        heading: {
-          uz: "1.2. KDD jarayoni va CRISP-DM standarti",
-          en: "1.2. KDD Process & CRISP-DM Standard"
-        },
+        heading: { uz: "1.2. KDD jarayonining 7 bosqichi (Fayyad, 1996)", en: "1.2. The 7 Stages of KDD (Fayyad et al., 1996)" },
         bodyHtml: {
-          uz: "<p><strong>KDD (Knowledge Discovery in Databases)</strong> — xom ma'lumotdan boshlab foydali bilim taqdim etishgacha bo'lgan butun ko'p bosqichli, iterativ jarayon. <strong>Data Mining</strong> esa KDD konveyerining markaziy (algoritmik) bosqichidir.</p><p>Sanoatda eng keng tarqalgan metodologiya — <strong>CRISP-DM</strong> (1999): <em>Biznesni tushunish → Ma'lumotni tushunish → Ma'lumotni tayyorlash → Modellash → Baholash → Joriy etish</em>.</p>",
-          en: "<p><strong>KDD (Knowledge Discovery in Databases)</strong> is the end-to-end iterative pipeline from raw data to actionable knowledge. <strong>Data Mining</strong> is the central algorithmic step inside KDD.</p><p>The leading industry methodology is <strong>CRISP-DM</strong> (1999): <em>Business Understanding → Data Understanding → Data Preparation → Modeling → Evaluation → Deployment</em>.</p>"
+          uz: "<p>Talabalar ko'pincha <strong>KDD (Knowledge Discovery in Databases)</strong> va <strong>Data Mining</strong> atamalarini aralashtirib yuborishadi. <strong>KDD</strong> — xom ma'lumot yig'ishdan boshlab tayyor bilimgacha bo'lgan butun konveyer; <strong>Data Mining</strong> esa shu konveyerning 5-bosqichidir.</p><p>Muhim jihati: KDD <strong>chiziqli emas</strong>! Baholash bosqichida natija yomon chiqsa, 2- yoki 3-bosqichga qaytib ma'lumotni qayta tozalashga to'g'ri keladi.</p>",
+          en: "<p><strong>KDD</strong> encompasses the entire iterative knowledge pipeline from raw sources to deployed insights, whereas <strong>Data Mining</strong> is strictly stage 5 (applying pattern-discovery algorithms). If evaluation fails in stage 6, analysts loop back to selection or cleaning.</p>"
         },
+        widget: 'kdd-pipeline',
         table: {
-          headers: {
-            uz: ["#", "KDD bosqichi", "Inglizcha nomi", "Vazifasi"],
-            en: ["#", "KDD Stage", "Focus", "Description"]
-          },
+          headers: { uz: ["#", "Bosqich", "Inglizcha", "Asosiy natija (Artefakt)"], en: ["#", "Stage", "Focus", "Key Deliverable"] },
           rows: {
             uz: [
-              ["1", "Ma'lumot to'plash", "Data Collection", "Turli manbalardan xom ma'lumot yig'ish"],
-              ["2", "Tanlash", "Selection", "Tahlil uchun kerakli atribut va satrlarni ajratish"],
-              ["3", "Tozalash", "Preprocessing", "Shovqin va yetishmayotgan qiymatlarni tuzatish"],
-              ["4", "O'zgartirish", "Transformation", "Normallashtirish, kodlash, o'lchamni qisqartirish"],
-              ["5", "Data Mining", "Data Mining", "Naqsh topuvchi algoritmlarni qo'llash"],
-              ["6", "Baholash", "Evaluation", "Topilgan naqshlarning sifatini tekshirish"],
-              ["7", "Taqdim etish", "Presentation", "Vizualizatsiya va hisobot shaklida yetkazish"]
+              ["1", "Ma'lumot to'plash", "Data Collection", "Integratsiyalashgan xom ma'lumotlar ombori"],
+              ["2", "Tanlash", "Selection", "Maqsadli o'quv jadvali (Target Dataset)"],
+              ["3", "Tozalash", "Preprocessing", "NaN va shovqinsiz toza ma'lumot"],
+              ["4", "O'zgartirish", "Transformation", "Normallashgan va PCA/kodlangan xususiyatlar"],
+              ["5", "Data Mining", "Modeling", "Topilgan daraxtlar, klasterlar yoki qoidalar"],
+              ["6", "Baholash", "Evaluation", "CV/ROC/Silhouette bo'yicha tekshirilgan model"],
+              ["7", "Taqdim etish", "Presentation", "Dashboard, API yoki ilmiy hisobot"]
             ],
             en: [
-              ["1", "Data Collection", "Acquisition", "Gather raw data from heterogeneous sources"],
-              ["2", "Selection", "Target Data", "Select relevant attributes and records"],
-              ["3", "Preprocessing", "Cleaning", "Handle missing values, noise, and duplicates"],
-              ["4", "Transformation", "Feature Eng.", "Normalize, encode, and reduce dimensionality"],
-              ["5", "Data Mining", "Modeling", "Apply algorithms to extract hidden patterns"],
-              ["6", "Evaluation", "Interpretation", "Validate patterns against domain metrics"],
-              ["7", "Presentation", "Knowledge", "Visualize and deploy insights to stakeholders"]
+              ["1", "Collection", "Acquisition", "Unified raw data warehouse"],
+              ["2", "Selection", "Target Data", "Relevant feature & time slice"],
+              ["3", "Cleaning", "Preprocessing", "Imputed, de-duplicated dataset"],
+              ["4", "Transformation", "Feature Eng.", "Scaled, encoded & reduced features"],
+              ["5", "Data Mining", "Pattern Search", "Trained trees, clusters, or rules"],
+              ["6", "Evaluation", "Validation", "Verified CV/ROC/Silhouette metrics"],
+              ["7", "Presentation", "Deployment", "Actionable dashboards & reports"]
             ]
           }
         }
       },
       {
-        heading: {
-          uz: "1.3. Data Mining masalalarining tasnifi",
-          en: "1.3. Taxonomy of Data Mining Tasks"
-        },
+        heading: { uz: "1.3. CRISP-DM sanoat standarti", en: "1.3. CRISP-DM Industry Methodology" },
         bodyHtml: {
-          uz: "<ul><li><strong>Bashoratlovchi (Predictive):</strong> <em>Tasniflash (Classification)</em> — diskret sinf (spam/spam emas); <em>Regressiya (Regression)</em> — uzluksiz son (uy narxi, harorat).</li><li><strong>Tasvirlovchi (Descriptive):</strong> <em>Klasterlash (Clustering)</em> — o'xshash obyektlarni guruhlash; <em>Assotsiativ qoidalar</em> — birga uchraydigan tovarlar; <em>Anomaliya aniqlash</em> — g'ayritabiiy nuqtalarni topish.</li></ul>",
-          en: "<ul><li><strong>Predictive Tasks:</strong> <em>Classification</em> — discrete target label (spam vs ham); <em>Regression</em> — continuous numerical target (house price, temperature).</li><li><strong>Descriptive Tasks:</strong> <em>Clustering</em> — grouping similar objects; <em>Association Rules</em> — co-occurring items; <em>Anomaly Detection</em> — identifying rare/suspicious records.</li></ul>"
+          uz: "<p>1999-yilda ishlab chiqilgan <strong>CRISP-DM (Cross-Industry Standard Process for Data Mining)</strong> sanoat loyihalarining ~50% qismida qo'llaniladi. U 6 fazadan iborat:</p><ol><li><strong>Business Understanding:</strong> Biznes muammo, KPI va cheklovlarni aniqlash.</li><li><strong>Data Understanding:</strong> Dastlabki EDA, sifat auditini o'tkazish.</li><li><strong>Data Preparation:</strong> Tozalash, integratsiya, feature engineering (vaqtning 60–80%!).</li><li><strong>Modeling:</strong> Algoritm tanlash va giperparametrlarni sozlash.</li><li><strong>Evaluation:</strong> Biznes maqsadiga mosligini tekshirish.</li><li><strong>Deployment:</strong> Ishlab chiqarishga chiqarish va monitoring.</li></ol>",
+          en: "<p><strong>CRISP-DM</strong> structures real-world analytics projects across 6 iterative phases: (1) Business Understanding, (2) Data Understanding, (3) Data Preparation (60–80% of effort), (4) Modeling, (5) Evaluation, and (6) Deployment & Monitoring.</p>"
+        },
+        discussion: {
+          q: { uz: "Bank kredit berish tizimida model 94% aniqlik ko'rsatdi, lekin regulyatorlar nima uchun kredit rad etilganini izohlashni talab qilmoqda. CRISP-DM ning qaysi bosqichiga qaytish kerak?", en: "A bank loan model hits 94% accuracy, but regulators require transparent explanations for every rejection. Which CRISP-DM phase needs revisiting?" },
+          a: { uz: "<strong>Business Understanding va Modeling:</strong> Biznes talablarida talqin qilinuvchanlik (interpretability) cheklovi e'tibordan chetda qolgan. Qora quti modeli o'rniga Decision Tree yoki SHAP izohli modelga qaytish zarur.", en: "<strong>Business Understanding & Modeling:</strong> Regulatory explainability was missed in requirements; switch from black-box models to Decision Trees or SHAP-explained models." }
+        }
+      },
+      {
+        heading: { uz: "1.4. SQL, Statistika, Machine Learning va Data Mining farqi", en: "1.4. SQL vs Statistics vs ML vs Data Mining" },
+        bodyHtml: {
+          uz: "<p>Bu to'rt yo'nalish bir-birini to'ldiradi, lekin maqsadi va yondashuvi bilan farqlanadi:</p>",
+          en: "<p>These four disciplines complement one another while differing in goals, scale, and assumptions:</p>"
+        },
+        table: {
+          headers: { uz: ["Mezon", "SQL / OLAP", "Klassik Statistika", "Data Mining / ML"], en: ["Dimension", "SQL / OLAP", "Classical Statistics", "Data Mining / ML"] },
+          rows: {
+            uz: [
+              ["Asosiy savol", "\"Kecha nechta sotildi?\"", "\"Gipoteza p < 0.05 mi?\"", "\"Keyingi oy kim ketadi?\""],
+              ["Yondashuv", "Deterministik so'rov", "Nazariya → Gipoteza → Test", "Ma'lumot → Naqsh → Umumlashtirish"],
+              ["O'lcham", "Aniq jadvallar", "Odatda kichik tanlanma", "Millionlab qator, yuqori o'lcham"]
+            ],
+            en: [
+              ["Core Question", "\"What happened yesterday?\"", "\"Is hypothesis H₀ rejected?\"", "\"Who will churn next month?\""],
+              ["Paradigm", "Deterministic retrieval", "Theory-driven inference", "Data-driven discovery"],
+              ["Scale", "Structured tables", "Smaller controlled samples", "Massive, noisy, high-dimensional"]
+            ]
+          }
+        }
+      },
+      {
+        heading: { uz: "1.5. Data Mining masalalari tasnifi (Predictive vs Descriptive)", en: "1.5. Predictive vs Descriptive Data Mining Tasks" },
+        bodyHtml: {
+          uz: "<ul><li><strong>Bashoratlovchi (Predictive / Supervised):</strong> Belgilangan maqsad ustuni ($y$) mavjud. <em>Classification</em> (diskret sinflar: spam/ham), <em>Regression</em> (uzluksiz son: uy narxi, harorat).</li><li><strong>Tasvirlovchi (Descriptive / Unsupervised):</strong> Maqsad ustuni yo'q, ma'lumotning ichki tuzilishi ochiladi. <em>Clustering</em> (mijoz segmentlari), <em>Association Rules</em> (savat tahlili), <em>Anomaly Detection</em> (firibgarlik).</li></ul>",
+          en: "<ul><li><strong>Predictive (Supervised):</strong> Target label $y$ is known. Includes <em>Classification</em> (discrete categories) and <em>Regression</em> (continuous values).</li><li><strong>Descriptive (Unsupervised):</strong> No target label; discovers hidden structure via <em>Clustering</em>, <em>Association Rules</em>, and <em>Anomaly Detection</em>.</li></ul>"
         }
       }
     ],
     slides: [
-      {
-        title: { uz: "1-mavzu: Data Mining va KDD jarayoni", en: "Topic 1: Intro to Data Mining & KDD" },
-        subtitle: { uz: "MITQ2506 · Ma'lumotlarni intellektual tahlil qilish", en: "MITQ2506 · Knowledge Discovery in Databases" },
-        points: {
-          uz: ["\"Data Rich, Information Poor\" paradoksi", "Data Mining ning 4 ta asosiy sharti", "KDD 7 bosqichi va CRISP-DM", "Predictive vs Descriptive masalalar"],
-          en: ["The \"Data Rich, Information Poor\" paradox", "4 core criteria for valid Data Mining", "7 stages of KDD & CRISP-DM cycle", "Predictive vs Descriptive mining tasks"]
-        }
-      },
-      {
-        title: { uz: "Data Mining nima?", en: "What is Data Mining?" },
-        points: {
-          uz: ["Katta hajmdagi ma'lumotlardan yashirin naqshlarni ajratish", "1. Yangi — ilgari noma'lum bilim", "2. Trivial emas — oddiy SQL bilan chiqmaydi", "3. Foydali — qaror qabul qilishga xizmat qiladi", "4. Tushunarli — mutaxassis izohlay oladi"],
-          en: ["Extracting hidden, actionable patterns from large datasets", "1. Novel — previously unknown insights", "2. Non-trivial — beyond basic SQL queries", "3. Useful — drives real-world decisions", "4. Understandable — interpretable by humans"]
-        },
-        note: { uz: "Tog'-kon o'xshatishi: tonnalab xom ma'lumotdan bir necha gramm oltin ajratish.", en: "Mining analogy: sifting through tons of raw ore to extract precious gold nuggets." }
-      },
-      {
-        title: { uz: "KDD vs Data Mining", en: "KDD vs Data Mining" },
-        points: {
-          uz: ["KDD = Butun konveyer (yig'ishdan taqdimotgacha)", "Data Mining = KDD ning 5-bosqichi (algoritmlar)", "KDD chiziqli emas: xato chiqsa oldingi bosqichga qaytiladi", "CRISP-DM: Biznes → Ma'lumot → Tayyorlash → Model → Baho → Joriy etish"],
-          en: ["KDD = Full pipeline from collection to knowledge presentation", "Data Mining = Stage 5 of KDD (pattern extraction algorithms)", "KDD is iterative: feedback loops back to earlier stages", "CRISP-DM: Business → Data → Prep → Modeling → Eval → Deploy"]
-        }
-      },
-      {
-        title: { uz: "Data Mining masalalari", en: "Taxonomy of Data Mining Tasks" },
-        table: {
-          headers: { uz: ["Guruh", "Masala", "Misol"], en: ["Category", "Task", "Example"] },
-          rows: {
-            uz: [
-              ["Predictive", "Tasniflash", "Kredit riski (Ha/Yo'q)"],
-              ["Predictive", "Regressiya", "Uy narxini bashoratlash"],
-              ["Descriptive", "Klasterlash", "Mijoz segmentatsiyasi"],
-              ["Descriptive", "Assotsiatsiya", "Non → Sut savat tahlili"],
-              ["Descriptive", "Anomaliya", "Karta firibgarligini topish"]
-            ],
-            en: [
-              ["Predictive", "Classification", "Credit default (Yes/No)"],
-              ["Predictive", "Regression", "Forecasting house prices"],
-              ["Descriptive", "Clustering", "Customer segmentation"],
-              ["Descriptive", "Association", "Bread → Milk basket rules"],
-              ["Descriptive", "Anomaly", "Credit card fraud detection"]
-            ]
-          }
-        }
-      },
-      {
-        title: { uz: "SQL, Statistika va Data Mining", en: "SQL vs Statistics vs Data Mining" },
-        table: {
-          headers: { uz: ["Mezon", "SQL", "Statistika", "Data Mining"], en: ["Criteria", "SQL", "Statistics", "Data Mining"] },
-          rows: {
-            uz: [
-              ["Maqsad", "Aniq yozuv topish", "Gipoteza tekshirish", "Yashirin naqsh kashf etish"],
-              ["Yondashuv", "Qat'iy so'rov", "Eksperiment", "Ma'lumotga asoslangan"],
-              ["Natija", "Ma'lum faktlar", "p-qiymat / tasdiq", "Yangi qonuniyatlar"]
-            ],
-            en: [
-              ["Goal", "Retrieve known facts", "Test hypothesis", "Discover hidden patterns"],
-              ["Approach", "Deterministic query", "Theory-driven", "Data-driven discovery"],
-              ["Output", "Exact rows/sums", "Confirmed theory", "Predictive/descriptive models"]
-            ]
-          }
-        }
-      },
-      {
-        title: { uz: "L1 Laboratoriya (Python EDA)", en: "Lab 1: First Look with Pandas" },
-        code: `import pandas as pd
-df = pd.read_csv("titanic.csv")
-print("Shape:", df.shape)
-print(df.isnull().sum())
-print(df.describe().round(2))`
-      }
+      { title: { uz: "1-mavzu: Data Mining va KDD jarayoni", en: "Topic 1: Intro to Data Mining & KDD" }, subtitle: { uz: "MITQ2506 · 80 daqiqalik ma'ruza va seminar", en: "MITQ2506 · 80-Minute Lecture & Seminar" }, points: { uz: ["Ma'lumot portlashi va DRIP paradoksi", "Data Mining ning 4 ta fundamental sharti", "KDD 7 bosqichi va CRISP-DM metodologiyasi", "SQL, Statistika va Data Mining taqqoslash", "Predictive vs Descriptive masalalar va Laboratoriya"], en: ["Data explosion & DRIP paradox", "4 validity criteria of Data Mining", "7-stage KDD & CRISP-DM lifecycle", "SQL vs Statistics vs Data Mining", "Predictive vs Descriptive taxonomy & Lab 1"] }, speakerNote: { uz: "0–5 min: Kurs bilan tanishuv va maqsadlarni tushuntirish.", en: "0–5 min: Course introduction and syllabus goals." } },
+      { title: { uz: "Muammo: Data Rich, Information Poor (DRIP)", en: "The DRIP Paradox" }, points: { uz: ["Har daqiqada millionlab tranzaksiya, IoT va veb-loglar yoziladi", "Ma'lumotni saqlash arzonlashdi, lekin undan qaror chiqarish qiyin", "Oddiy hisobotlar faqat o'tmishni ko'rsatadi", "Data Mining xom ma'lumotni strategik bilimga aylantiradi"], en: ["Millions of events logged every minute", "Storage is cheap; actionable insight is scarce", "Dashboards summarize the past; Data Mining uncovers hidden laws", "Turns raw records into strategic knowledge"] } },
+      { title: { uz: "Data Mining ta'rifi", en: "Defining Data Mining" }, points: { uz: ["Katta hajmdagi ma'lumotlardan yashirin naqshlarni avtomatik ajratish", "Tog'-kon analogiyasi: tonnalab rudadan gramm oltin olish", "Statistika + Machine Learning + Ma'lumotlar bazasi kesishmasi"], en: ["Automatic discovery of hidden patterns in large datasets", "Mining analogy: extracting gold nuggets from tons of ore", "Intersection of Databases, Statistics & Machine Learning"] } },
+      { title: { uz: "Haqiqiy Data Mining uchun 4 ta shart", en: "4 Criteria for Valid Data Mining" }, points: { uz: ["1. Yangi (Novel) — tahlilchi oldindan bilmagan", "2. Trivial emas — oddiy SQL AVG/SUM bilan chiqmaydi", "3. Foydali (Actionable) — qaror va foydaga olib keladi", "4. Tushunarli (Understandable) — mantiqiy asosga ega"], en: ["1. Novel — previously unknown pattern", "2. Non-trivial — cannot be answered by simple SQL", "3. Actionable — leads to measurable value", "4. Understandable — domain experts can interpret it"] } },
+      { title: { uz: "Case Study: Google Flu Trends (2008–2015)", en: "Case Study: Google Flu Trends" }, points: { uz: ["2008: Qidiruv so'rovlari grippni CDC dan 2 hafta oldin topdi", "2015: Model real kasallanishni 2 baravar oshirib yubordi", "Sabab: yangiliklar ta'sirida qidiruv xulqi o'zgardi (Concept Drift)", "Dars: Tasodifiy korrelyatsiya ≠ sababiyat!"], en: ["2008: Search trends beat CDC reports by 2 weeks", "2015: Predictions overshot reality by 2x", "Cause: media hype shifted search behavior", "Lesson: Spurious correlation requires continuous validation"] } },
+      { title: { uz: "Talabalarga savol (Muhokama)", en: "Class Discussion" }, discussion: { q: { uz: "\"Do'kon direktorining 'O'tgan oyda jami 120 mln so'mlik non sotildi' degan hisoboti Data Mining hisoblanadimi?\" Nima uchun?", en: "\"Is a report stating 'Last month bread sales totaled \$12,000' considered Data Mining?\" Why or why not?" }, a: { uz: "Yo'q! Bu oddiy SQL <code>SUM()</code> agregatsiyasi (trivial fakt). Data Mining esa \"Juma kechqurun sut olganlarning 78% sariyog' ham oladi\" kabi yashirin qonuniyatni topadi.", en: "No! That is a trivial SQL aggregation. Data Mining discovers non-obvious patterns like '78% of Friday milk buyers also purchase butter'." } } },
+      { title: { uz: "KDD (Knowledge Discovery in Databases)", en: "KDD vs Data Mining" }, points: { uz: ["KDD — xom ma'lumotdan bilim taqdimotigacha 7 bosqichli jarayon", "Data Mining — KDD ning faqat 5-bosqichi (algoritmik qism)", "KDD iterativ: har qanday bosqichdan orqaga qaytish mumkin"], en: ["KDD = full 7-stage pipeline from raw data to knowledge", "Data Mining = Stage 5 (pattern extraction algorithms)", "Iterative feedback loops connect later stages back to earlier ones"] } },
+      { title: { uz: "Interaktiv KDD Konveyerini Tekshiring", en: "Interactive KDD Pipeline Explorer" }, widget: 'kdd-pipeline' },
+      { title: { uz: "CRISP-DM Sanoat Standarti (1999)", en: "CRISP-DM Standard (1999)" }, points: { uz: ["1. Business Understanding — muammo va KPI", "2. Data Understanding — EDA va ma'lumot sifati", "3. Data Preparation — 60–80% vaqt shu yerda ketadi!", "4. Modeling — algoritm tanlash", "5. Evaluation — biznes mezoniga tekshirish", "6. Deployment — tizimga joriy etish"], en: ["1. Business Understanding — goals & KPIs", "2. Data Understanding — EDA & data audit", "3. Data Preparation — consumes 60–80% of effort", "4. Modeling — training & tuning", "5. Evaluation — business & metric validation", "6. Deployment — production integration"] } },
+      { title: { uz: "SQL, Statistika va Data Mining farqi", en: "SQL vs Statistics vs Data Mining" }, table: { headers: { uz: ["Mezon", "SQL", "Statistika", "Data Mining"], en: ["Criteria", "SQL", "Statistics", "Data Mining"] }, rows: { uz: [["Maqsad", "Fakt topish", "Gipoteza tekshirish", "Naqsh kashf etish"], ["Yondashuv", "So'rov", "Nazariy model", "Ma'lumotga tayangan"], ["Hajm", "Aniq jadval", "Tanlanma", "Katta / Big Data"]], en: [["Goal", "Retrieve facts", "Test hypotheses", "Discover patterns"], ["Method", "Query", "Probabilistic test", "Algorithmic search"], ["Scale", "Structured", "Sampled", "Massive & noisy"]] } } },
+      { title: { uz: "Data Mining Masalalari: Bashoratlovchi (Predictive)", en: "Predictive Tasks (Supervised)" }, points: { uz: ["Tasniflash (Classification): diskret sinf yorlig'i (Spam / Spam emas)", "Regressiya (Regression): uzluksiz sonli bashorat (Uy narxi, Talab)", "O'quv to'plamida to'g'ri javob (y) oldindan ma'lum bo'ladi"], en: ["Classification: discrete label (Fraud / Legit)", "Regression: continuous quantity (House Price, Demand)", "Requires labeled historical examples (X, y)"] } },
+      { title: { uz: "Data Mining Masalalari: Tasvirlovchi (Descriptive)", en: "Descriptive Tasks (Unsupervised)" }, points: { uz: ["Klasterlash (Clustering): o'xshash obyektlarni guruhlash", "Assotsiatsiya (Association Rules): birga uchraydigan elementlar", "Anomaliya aniqlash (Outlier Detection): kamyob og'ishlar", "Oldindan belgilangan sinf yorliqlari yo'q"], en: ["Clustering: segment similar objects", "Association Rules: co-occurring items", "Anomaly Detection: rare deviations", "No predefined target label y"] } },
+      { title: { uz: "Qaysi masala qaysi turga kiradi? (Mashq)", en: "Identify the Task Type" }, discussion: { q: { uz: "Quyidagilarni tasniflang: (a) Kartadan 03:00 da 50 mln yechilishini tutish; (b) Talabalarni GPA va davomatga ko'ra 3 guruhga bo'lish; (c) Ertangi elektr sarfini kVt da bashoratlash.", en: "Classify: (a) Flagging a 3 AM \$5,000 card swipe; (b) Segmenting students into 3 behavioral groups; (c) Predicting tomorrow's kWh load." }, a: { uz: "(a) Anomaly Detection (yoki imbalanced Classification); (b) Clustering (Unsupervised); (c) Regression (Continuous Predictive).", en: "(a) Anomaly Detection; (b) Clustering (Unsupervised); (c) Regression (Predictive)." } } },
+      { title: { uz: "Data Mining dagi asosiy xavflar", en: "Common Pitfalls in Data Mining" }, points: { uz: ["Data Leakage: test ma'lumoti o'qitishga sizib kirishi", "Overfitting: model shovqinni yodlab olishi", "Sampling Bias: tanlanma real populyatsiyani aks ettirmasligi", "Etika va Maxfiylik: shaxsiy ma'lumotlarni oshkor qilish"], en: ["Data Leakage: future/test data leaking into training", "Overfitting: memorizing noise instead of signal", "Sampling Bias: non-representative training set", "Privacy & Bias: discriminatory or leaky models"] } },
+      { title: { uz: "Python Data Mining Ekotizimi", en: "Python Data Mining Stack" }, points: { uz: ["NumPy & Pandas — jadvallar va vektorli hisoblash", "Matplotlib & Seaborn — vizual EDA", "Scikit-Learn — tasniflash, klasterlash, preprocessing", "mlxtend / NetworkX — assotsiativ qoidalar va graflar"], en: ["NumPy & Pandas — tabular manipulation", "Matplotlib & Seaborn — exploratory visualization", "Scikit-Learn — unified ML & preprocessing API", "mlxtend / NetworkX — association rules & graphs"] } }
     ],
     lab: {
-      title: { uz: "L1: Python va Pandas da dastlabki tahlil (Titanic)", en: "L1: Exploratory Data Analysis on Titanic Dataset" },
-      tasks: {
-        uz: [
-          "Kodni ishga tushiring va qator/ustunlar sonini aniqlang",
-          "Qaysi ustunda eng ko'p yetishmayotgan qiymat borligini toping",
-          "Yo'lovchilarning o'rtacha yoshini hisoblang",
-          "Pclass ustuni qiymatlarini value_counts() bilan chiqaring"
-        ],
-        en: [
-          "Run the script and inspect dataset dimensions (df.shape)",
-          "Identify which column has the highest count of missing values",
-          "Compute the mean passenger age from df.describe()",
-          "Display class counts for Pclass using value_counts()"
-        ]
-      },
-      code: `import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
+      title: { uz: "L1: Titanic datasetida to'liq EDA va gipoteza tekshiruvi", en: "L1: Full Exploratory Data Analysis on Titanic" },
+      objective: { uz: "Pandas yordamida real datasetni yuklash, ma'lumot turlari, yetishmayotgan qiymatlar va sinflar kesimidagi qonuniyatlarni aniqlash.", en: "Load a real dataset in Pandas, audit missing values and types, and uncover initial survival patterns." },
+      steps: [
+        {
+          title: { uz: "Datasetni yuklash va struktura auditi", en: "Load Dataset & Inspect Schema" },
+          desc: { uz: "O'lcham, ustun turlari va dastlabki 5 qatorni tekshiring.", en: "Load CSV and inspect shape, dtypes, and missing counts." },
+          code: `import pandas as pd
 url = "https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv"
 df = pd.read_csv(url)
-
 print("Shape:", df.shape)
-print("\\nColumns:", df.columns.tolist())
-print("\\nFirst 5 rows:")
-print(df.head())
-
-print("\\nSummary statistics:")
-print(df.describe())
-
-print("\\nMissing values:")
-print(df.isnull().sum())
-
+print(df.info())
+print("\\nMissing values:\\n", df.isnull().sum()[df.isnull().sum() > 0])`
+        },
+        {
+          title: { uz: "Statistik tavsif va kategorik taqsimot", en: "Summary Statistics & Class Breakdown" },
+          desc: { uz: "Raqamli va matnli ustunlarni alohida tahlil qiling.", en: "Compute numeric quartiles and categorical frequencies." },
+          code: `print(df.describe().round(2))
+print("\\nPclass distribution:\\n", df['Pclass'].value_counts().sort_index())
+print("\\nSurvival rate by Sex:\\n", df.groupby('Sex')['Survived'].mean().round(3))
+print("\\nSurvival rate by Pclass:\\n", df.groupby('Pclass')['Survived'].mean().round(3))`
+        },
+        {
+          title: { uz: "Vizual EDA (Matplotlib)", en: "Visualizing Survival Patterns" },
+          desc: { uz: "Omon qolish va yosh taqsimotini grafikda chiqaring.", en: "Plot survival bar chart and age histogram." },
+          code: `import matplotlib.pyplot as plt
 fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 df['Survived'].value_counts().plot(kind='bar', ax=axes[0], color=['#ef4444', '#22c55e'])
 axes[0].set_title("Survived (0=No, 1=Yes)")
-df['Age'].dropna().hist(bins=20, ax=axes[1], color='#f59e0b', edgecolor='black')
-axes[1].set_title("Age Distribution")
+df['Age'].dropna().hist(bins=25, ax=axes[1], color='#f59e0b', edgecolor='black')
+axes[1].set_title("Passenger Age Distribution")
 plt.tight_layout()
-plt.savefig('l1-result.png', dpi=150)
-print("Saved l1-result.png")`
+plt.savefig("l1_eda.png", dpi=150)`
+        }
+      ],
+      variants: {
+        uz: [
+          "1-variant: Embarked (port) ustuni bo'yicha omon qolish foizini hisoblang.",
+          "2-variant: SibSp + Parch + 1 orqali FamilySize ustunini yarating va omon qolishga ta'sirini tekshiring.",
+          "3-variant: Fare (chipta narxi) ustunidagi eng katta 5 ta qiymatni va outlierlarni toping."
+        ],
+        en: [
+          "Variant 1: Compute survival rate grouped by Embarked port.",
+          "Variant 2: Engineer FamilySize = SibSp + Parch + 1 and analyze survival by family size.",
+          "Variant 3: Inspect the top 5 highest Fare values and check for extreme outliers."
+        ]
+      }
     },
     glossary: [
-      { uz: "Naqsh", en: "Pattern", defUz: "Ma'lumotdagi takrorlanuvchi foydali qonuniyat", defEn: "A recurring, meaningful regularity in data" },
-      { uz: "KDD", en: "KDD", defUz: "Ma'lumotlar bazasidan bilim kashf etishning to'liq jarayoni", defEn: "Knowledge Discovery in Databases end-to-end process" },
-      { uz: "Tasniflash", en: "Classification", defUz: "Obyektni oldindan berilgan sinflardan biriga ajratish", defEn: "Assigning an instance to a predefined discrete class" },
-      { uz: "Klasterlash", en: "Clustering", defUz: "O'xshash obyektlarni belgisiz guruhlarga ajratish", defEn: "Grouping similar unlabeled instances together" }
+      { uz: "DRIP paradoksi", en: "DRIP Paradox", defUz: "Ma'lumot ko'p, lekin foydali bilim kam bo'lgan holat", defEn: "Data Rich, Information Poor paradox" },
+      { uz: "KDD", en: "KDD", defUz: "Ma'lumotdan bilim kashf etishning 7 bosqichli jarayoni", defEn: "Knowledge Discovery in Databases 7-stage process" },
+      { uz: "CRISP-DM", en: "CRISP-DM", defUz: "Data Mining loyihalarining 6 fazali sanoat standarti", defEn: "6-phase Cross-Industry Standard Process for Data Mining" },
+      { uz: "Tasniflash", en: "Classification", defUz: "Diskret sinf yorliqlarini bashoratlash (Supervised)", defEn: "Predicting discrete class labels (Supervised)" },
+      { uz: "Klasterlash", en: "Clustering", defUz: "Yorliqsiz obyektlarni o'xshash guruhlarga ajratish", defEn: "Grouping unlabeled objects by similarity" }
     ],
     quiz: [
-      {
-        q: { uz: "Data Mining natijasi bo'lishi uchun qaysi shart MAJBURIY EMAS?", en: "Which condition is NOT strictly required for a valid Data Mining pattern?" },
-        options: [
-          { label: 'A', uz: "Yangi bilim bo'lishi", en: "Being novel knowledge" },
-          { label: 'B', uz: "Amalda foydali bo'lishi", en: "Being actionable/useful" },
-          { label: 'C', uz: "Faqat milliardlab qatordan iborat bo'lishi", en: "Coming strictly from billion-row datasets" },
-          { label: 'D', uz: "Inson tushuna olishi", en: "Being human-understandable" }
-        ],
-        answer: 'C',
-        explanation: { uz: "Data Mining kichik va o'rta hajmdagi jadvallarda ham muvaffaqiyatli qo'llanilishi mumkin.", en: "Data Mining can also discover valid patterns in small or medium-sized datasets." }
-      },
-      {
-        q: { uz: "KDD va Data Mining orasidagi to'g'ri munosabat qaysi?", en: "What is the relationship between KDD and Data Mining?" },
-        options: [
-          { label: 'A', uz: "Ular mutlaqo bir xil tushuncha", en: "They are identical synonyms" },
-          { label: 'B', uz: "Data Mining = KDD jarayonining markaziy bosqichi", en: "Data Mining is the central modeling step inside KDD" },
-          { label: 'C', uz: "KDD = Data Mining ning kichik qismi", en: "KDD is a sub-step of Data Mining" },
-          { label: 'D', uz: "Ular bir-biriga bog'liq emas", en: "They are completely unrelated fields" }
-        ],
-        answer: 'B',
-        explanation: { uz: "KDD ma'lumot yig'ishdan taqdimotgacha bo'lgan butun jarayon, Data Mining esa uning 5-bosqichidir.", en: "KDD covers the full pipeline from collection to presentation; Data Mining is stage 5." }
-      },
-      {
-        q: { uz: "CRISP-DM standartining birinchi bosqichi qaysi?", en: "What is the very first phase of the CRISP-DM standard?" },
-        options: [
-          { label: 'A', uz: "Ma'lumotni tayyorlash", en: "Data Preparation" },
-          { label: 'B', uz: "Modellash", en: "Modeling" },
-          { label: 'C', uz: "Biznesni tushunish", en: "Business Understanding" },
-          { label: 'D', uz: "Baholash", en: "Evaluation" }
-        ],
-        answer: 'C',
-        explanation: { uz: "Har qanday loyiha avvalo biznes maqsadi va muammoni tushunishdan boshlanadi.", en: "Every CRISP-DM project begins by clarifying business objectives and requirements." }
-      },
-      {
-        q: { uz: "\"Mijozlarni xarid odatiga ko'ra guruhlash\" — bu qaysi masala?", en: "\"Grouping customers by purchasing habits\" is an example of which task?" },
-        options: [
-          { label: 'A', uz: "Tasniflash (Classification)", en: "Classification" },
-          { label: 'B', uz: "Regressiya", en: "Regression" },
-          { label: 'C', uz: "Klasterlash (Clustering)", en: "Clustering" },
-          { label: 'D', uz: "Assotsiatsiya", en: "Association" }
-        ],
-        answer: 'C',
-        explanation: { uz: "Oldindan berilgan sinf yorliqlari yo'q bo'lsa, o'xshash obyektlarni guruhlash klasterlash deyiladi.", en: "Grouping similar objects without predefined labels is Clustering." }
-      },
-      {
-        q: { uz: "Google Flu Trends 2015-yilda nima sababdan xato bashorat bera boshladi?", en: "Why did Google Flu Trends begin overpredicting in 2015?" },
-        options: [
-          { label: 'A', uz: "Serverlar ishdan chiqdi", en: "Google servers went offline" },
-          { label: 'B', uz: "Model tasodifiy naqshlarga tayandi va qidiruv xulq-atvori o'zgardi", en: "Over-reliance on spurious correlations and shifting search behavior" },
-          { label: 'C', uz: "SQL so'rovlari sekinlashdi", en: "SQL queries became too slow" },
-          { label: 'D', uz: "Gripp butunlay yo'qoldi", en: "Influenza ceased to exist" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Validatsiyasiz korrelyatsiyalarga tayanish va konsepsiya o'zgarishi modelni buzdi.", en: "Spurious correlations and concept drift caused the model to fail without continuous validation." }
-      }
+      { q: { uz: "Data Mining natijasi bo'lishi uchun qaysi shart MAJBURIY EMAS?", en: "Which condition is NOT strictly required for a valid Data Mining pattern?" }, options: [{ label: 'A', uz: "Yangi bilim bo'lishi", en: "Being novel" }, { label: 'B', uz: "Amalda foydali bo'lishi", en: "Being actionable" }, { label: 'C', uz: "Faqat milliardlab qatordan iborat bo'lishi", en: "Requiring billion-row datasets" }, { label: 'D', uz: "Tushunarli bo'lishi", en: "Being understandable" }], answer: 'C', explanation: { uz: "Data Mining kichik va o'rta jadvallarda ham qo'llaniladi.", en: "Data Mining applies to small and medium datasets as well." } },
+      { q: { uz: "KDD va Data Mining orasidagi to'g'ri munosabat qaysi?", en: "What is the relationship between KDD and Data Mining?" }, options: [{ label: 'A', uz: "Sinonimlar", en: "Exact synonyms" }, { label: 'B', uz: "Data Mining = KDD ning markaziy 5-bosqichi", en: "Data Mining is Stage 5 inside KDD" }, { label: 'C', uz: "KDD = Data Mining ning bir qismi", en: "KDD is a sub-step" }, { label: 'D', uz: "Bog'liq emas", en: "Unrelated" }], answer: 'B', explanation: { uz: "KDD butun konveyer, Data Mining esa modellashtirish bosqichidir.", en: "KDD covers the full pipeline; Data Mining is the core modeling stage." } },
+      { q: { uz: "CRISP-DM standartining birinchi bosqichi qaysi?", en: "What is Phase 1 of CRISP-DM?" }, options: [{ label: 'A', uz: "Ma'lumot tayyorlash", en: "Data Preparation" }, { label: 'B', uz: "Modellash", en: "Modeling" }, { label: 'C', uz: "Biznesni tushunish", en: "Business Understanding" }, { label: 'D', uz: "Baholash", en: "Evaluation" }], answer: 'C', explanation: { uz: "Har bir loyiha biznes maqsadi va KPI ni aniqlashdan boshlanadi.", en: "Projects begin by defining business objectives and success criteria." } },
+      { q: { uz: "\"Mijozlarni xarid odatiga ko'ra guruhlash\" — bu qaysi masala?", en: "\"Segmenting customers by buying habits\" is which task?" }, options: [{ label: 'A', uz: "Tasniflash", en: "Classification" }, { label: 'B', uz: "Regressiya", en: "Regression" }, { label: 'C', uz: "Klasterlash", en: "Clustering" }, { label: 'D', uz: "Regulyarizatsiya", en: "Regularization" }], answer: 'C', explanation: { uz: "Oldindan sinf bo'lmaganda o'xshashlarni guruhlash klasterlashdir.", en: "Unsupervised grouping without predefined labels is Clustering." } },
+      { q: { uz: "Google Flu Trends 2015-yilda nima uchun xato bera boshladi?", en: "Why did Google Flu Trends fail by 2015?" }, options: [{ label: 'A', uz: "Server o'chdi", en: "Server crash" }, { label: 'B', uz: "Qidiruv xulqi o'zgardi va model tasodifiy korrelyatsiyalarga tayandi", en: "Search behavior shifted & spurious correlations broke the model" }, { label: 'C', uz: "SQL xato", en: "SQL error" }, { label: 'D', uz: "Gripp tugadi", en: "Flu vanished" }], answer: 'B', explanation: { uz: "Concept drift va validatsiyasiz korrelyatsiyalar natijani buzdi.", en: "Concept drift and unvalidated correlations caused overprediction." } }
     ]
   },
 
+  // ==================== TOPIC 2 ====================
   {
     id: 2,
     slug: '02-preprocessing',
     hours: 4,
     labs: 4,
-    keywords: ['Preprocessing', 'Imputation', 'Normalization', 'Encoding', 'PCA'],
+    keywords: ['Preprocessing', 'MCAR', 'MAR', 'IQR', 'Min-Max', 'Z-score', 'One-Hot', 'PCA'],
     title: {
       uz: "Ma'lumotlarni dastlabki qayta ishlash",
       en: "Data Preprocessing & Dimensionality Reduction"
     },
     description: {
-      uz: "Ma'lumotlarni tozalash, yetishmayotgan qiymatlar, normallashtirish, kodlash va PCA yordamida o'lchamni qisqartirish.",
-      en: "Handling missing data, outlier detection, Min-Max & Z-score scaling, categorical encoding, and PCA."
+      uz: "Ma'lumotlarni tozalash, MCAR/MAR/MNAR, outlierlar (IQR & Z-score), Min-Max/Z-score/Robust scaling, kodlash va PCA.",
+      en: "Data cleaning, missingness types, IQR & Z-score outliers, scaling methods, encoding, and PCA."
     },
     sections: [
       {
-        heading: { uz: "2.1. Preprocessing nima va nega kerak?", en: "2.1. Why Data Preprocessing Matters" },
+        heading: { uz: "2.1. Nega Preprocessing loyihaning 60–80% qismini oladi?", en: "2.1. Why Preprocessing Takes 60–80% of Project Time" },
         bodyHtml: {
-          uz: "<p>Haqiqiy dunyo ma'lumotlari shovqinli, to'liq emas va nomuvofiq bo'ladi. Data Mining loyihalarining <strong>60–80% vaqti</strong> ma'lumotni tayyorlashga ketadi (<em>\"Garbage in, garbage out\"</em>).</p><p>Asosiy bosqichlar: 1) Tozalash, 2) Integratsiya, 3) Tanlash, 4) O'zgartirish, 5) O'lchamni qisqartirish.</p>",
-          en: "<p>Real-world data is dirty: incomplete, noisy, and inconsistent. Roughly <strong>60–80% of Data Mining effort</strong> goes into preparation (<em>\"Garbage in, garbage out\"</em>).</p><p>Core stages: 1) Cleaning, 2) Integration, 3) Selection, 4) Transformation, 5) Dimensionality Reduction.</p>"
+          uz: "<p>Real hayotdagi jadvallar hech qachon ideal bo'lmaydi. Ularda 3 ta asosiy nuqson uchraydi: <strong>Incomplete</strong> (yetishmayotgan qiymatlar), <strong>Noisy</strong> (xato va outlierlar: masalan, yosh = -5 yoki 250) va <strong>Inconsistent</strong> (\"Toshkent\", \"toshkent\", \"Tashkent\").</p><p><strong>\"Garbage In, Garbage Out\"</strong> tamoyiliga ko'ra, tozalanmagan ma'lumotga eng zamonaviy algoritmni qo'llasangiz ham noto'g'ri natija olasiz. Preprocessing 5 bosqichdan iborat: <em>Tozalash → Integratsiya → Tanlash → Transformatsiya → O'lchamni qisqartirish</em>.</p>",
+          en: "<p>Real-world tables suffer from <strong>incompleteness</strong> (NaNs), <strong>noise</strong> (sensor errors, outliers like age=-5), and <strong>inconsistency</strong> (\"Tashkent\" vs \"toshkent\"). Preprocessing follows 5 stages: Cleaning, Integration, Selection, Transformation, and Dimensionality Reduction.</p>"
         }
       },
       {
-        heading: { uz: "2.2. Yetishmayotgan qiymatlar va Outlierlar", en: "2.2. Missing Values & Outliers" },
+        heading: { uz: "2.2. Yetishmayotgan qiymatlar mexanizmlari va Imputation", en: "2.2. Missing Data Mechanisms & Imputation" },
         bodyHtml: {
-          uz: "<p>Yetishmovchilik turlari: <strong>MCAR</strong> (butunlay tasodifiy), <strong>MAR</strong> (boshqa ustunga bog'liq), <strong>MNAR</strong> (o'ziga bog'liq). Usullar: o'chirish, Mean/Median (raqamli), Mode (kategorik), KNN/Regression imputation.</p><p>Outlierlarni aniqlash: <strong>IQR usuli</strong> ([Q1 - 1.5·IQR, Q3 + 1.5·IQR] tashqarisida) va <strong>Z-score</strong> (|z| &gt; 3).</p>",
-          en: "<p>Missingness mechanisms: <strong>MCAR</strong> (Completely at Random), <strong>MAR</strong> (At Random), <strong>MNAR</strong> (Not at Random). Remedies: deletion, Mean/Median (numeric), Mode (categorical), KNN/Regression imputation.</p><p>Outlier detection: <strong>IQR rule</strong> (outside [Q1 - 1.5·IQR, Q3 + 1.5·IQR]) and <strong>Z-score</strong> (|z| &gt; 3).</p>"
-        }
-      },
-      {
-        heading: { uz: "2.3. Normallashtirish va Kodlash", en: "2.3. Normalization & Categorical Encoding" },
-        bodyHtml: {
-          uz: "<p>Masofaga asoslangan algoritmlar (k-NN, K-Means, SVM) katta masshtabli ustunlarga og'ib ketmasligi uchun normallashtirish shart. Kategorik ustunlar uchun <strong>Label Encoding</strong> (tartibli) va <strong>One-Hot Encoding</strong> (tartibsiz) qo'llaniladi.</p>",
-          en: "<p>Distance-based algorithms (k-NN, K-Means, SVM) require feature scaling so large-range features do not dominate. Categorical columns use <strong>Label Encoding</strong> (ordinal) or <strong>One-Hot Encoding</strong> (nominal).</p>"
+          uz: "<p>Yetishmovchilik sababini bilmay turib to'ldirish xato xulosaga olib keladi:</p><ul><li><strong>MCAR (Missing Completely At Random):</strong> So'rovnoma varaqasi tasodifan yo'qolgan — boshqa hech bir ustunga bog'liq emas.</li><li><strong>MAR (Missing At Random):</strong> Boshqa kuzatilgan ustunga bog'liq (masalan, yosh o'tgan sari odamlar daromadni kamroq yozadi).</li><li><strong>MNAR (Missing Not At Random):</strong> Qiymatning o'ziga bog'liq (juda yuqori daromadlilar buni yashiradi) — eng xavfli tur!</li></ul>",
+          en: "<ul><li><strong>MCAR:</strong> Missingness is completely independent of all variables.</li><li><strong>MAR:</strong> Missingness depends on other observed columns.</li><li><strong>MNAR:</strong> Missingness depends on the unobserved value itself (hardest bias!).</li></ul>"
         },
-        formula: "Min-Max: x' = (x - x_min) / (x_max - x_min)   |   Z-score: x' = (x - μ) / σ"
-      },
-      {
-        heading: { uz: "2.4. PCA (Asosiy Komponentlar Tahlili)", en: "2.4. Principal Component Analysis (PCA)" },
-        bodyHtml: {
-          uz: "<p><strong>PCA</strong> — korrelyatsiyalashgan o'zgaruvchilarni bir-biriga ortogonal bo'lgan kamroq sondagi asosiy komponentlarga proyeksiya qiladi va maksimal dispersiyani (odatda 95%) saqlab qoladi.</p>",
-          en: "<p><strong>PCA</strong> projects correlated features onto fewer orthogonal principal components while preserving maximum variance (typically ≥ 95% cumulative variance).</p>"
-        }
-      }
-    ],
-    slides: [
-      {
-        title: { uz: "2-mavzu: Ma'lumotlarni qayta ishlash", en: "Topic 2: Data Preprocessing" },
-        subtitle: { uz: "Garbage in → Garbage out", en: "Data Cleaning, Scaling, Encoding & PCA" },
-        points: {
-          uz: ["Loyiha vaqtining 60–80% qismi", "MCAR, MAR, MNAR va Imputation", "Min-Max vs Z-score normallashtirish", "One-Hot Encoding va PCA"],
-          en: ["60–80% of project time spent here", "MCAR, MAR, MNAR & Imputation", "Min-Max vs Z-score Standardization", "One-Hot Encoding & PCA"]
-        }
-      },
-      {
-        title: { uz: "Yetishmayotgan qiymatlarni to'ldirish", en: "Handling Missing Values" },
         table: {
-          headers: { uz: ["Usul", "Qachon ishlatiladi", "Kamchiligi"], en: ["Method", "When to Use", "Limitation"] },
+          headers: { uz: ["Usul", "Qachon qo'llaniladi", "Afzalligi / Kamchiligi"], en: ["Method", "Best For", "Trade-off"] },
           rows: {
             uz: [
-              ["O'chirish", "<5% yetishmovchilik", "Foydali ma'lumot yo'qoladi"],
-              ["Mean (O'rtacha)", "Normal taqsimot", "Outlierlarga sezgir"],
-              ["Median", "Qiyshiq taqsimot", "Korrelyatsiyani e'tiborsiz qoldiradi"],
-              ["Mode (Moda)", "Kategorik ustunlar", "Chastotani oshirib yuboradi"]
+              ["O'chirish (Drop)", "MCAR va <5% satr bo'lsa", "Oddiy, lekin ma'lumot yo'qoladi"],
+              ["Mean (O'rtacha)", "Simmetrik raqamli ustun", "Outlierlarga sezgir, dispersiyani pasaytiradi"],
+              ["Median (Mediana)", "Qiyshiq (skewed) raqamli", "Outlierlarga chidamli"],
+              ["Mode (Moda)", "Kategorik matn ustunlar", "Eng ko'p uchragan sinfni kuchaytiradi"],
+              ["KNN / Iterative", "Ustunlar kuchli bog'liq bo'lsa", "Aniqroq, lekin sekinroq"]
             ],
             en: [
-              ["Deletion", "<5% missing rows", "Reduces sample size"],
-              ["Mean", "Symmetric numeric", "Sensitive to outliers"],
-              ["Median", "Skewed numeric", "Ignores feature correlations"],
-              ["Mode", "Categorical columns", "Biases toward dominant class"]
+              ["Listwise Deletion", "MCAR & <5% rows", "Simple, shrinks sample size"],
+              ["Mean Imputation", "Symmetric numeric", "Distorted by outliers; shrinks variance"],
+              ["Median Imputation", "Skewed numeric", "Robust against extreme values"],
+              ["Mode Imputation", "Categorical text", "Inflates majority category"],
+              ["KNN / MICE", "Correlated features", "Accurate, higher compute cost"]
             ]
           }
         }
       },
       {
-        title: { uz: "Outlierlarni aniqlash", en: "Outlier Detection Rules" },
-        formula: "IQR = Q3 - Q1  →  Chegaralar / Bounds: [Q1 - 1.5·IQR, Q3 + 1.5·IQR]",
-        points: {
-          uz: ["IQR usuli: qiyshiq ma'lumotlar uchun chidamli", "Z-score: |z| > 3 bo'lsa outlier", "Vizual: Boxplot va Scatter plot"],
-          en: ["IQR rule: robust for skewed distributions", "Z-score: flag points with |z| > 3", "Visual: Boxplot and Scatter plots"]
+        heading: { uz: "2.3. Shovqin va Outlierlarni aniqlash (IQR va Z-score)", en: "2.3. Outlier Detection: IQR vs Z-Score" },
+        bodyHtml: {
+          uz: "<p><strong>IQR (Interquartile Range) usuli</strong> taqsimot shakliga bog'liq emas va ekstremal qiymatlarga chidamli. <strong>Z-score</strong> esa normal (Gaussian) taqsimotni talab qiladi, aks holda katta outlier o'rtacha $\\mu$ va $\\sigma$ ni o'ziga tortib <em>masking</em> effektini keltirib chiqaradi.</p>",
+          en: "<p>The <strong>IQR fence</strong> is distribution-free and outlier-resistant, whereas <strong>Z-score</strong> assumes normality and suffers from <em>masking</em> when extreme outliers inflate $\\mu$ and $\\sigma$.</p>"
+        },
+        latex: "IQR = Q_3 - Q_1, \\quad [Q_1 - 1.5\\cdot IQR,\\; Q_3 + 1.5\\cdot IQR] \\qquad | \\qquad z = \\frac{x - \\mu}{\\sigma},\\; |z| > 3"
+      },
+      {
+        heading: { uz: "2.4. Normallashtirish (Min-Max, Z-Score, RobustScaler)", en: "2.4. Feature Scaling: Min-Max, Z-Score & RobustScaler" },
+        bodyHtml: {
+          uz: "<p>Agar <em>Yosh</em> [18..65] va <em>Daromad</em> [1,000,000..50,000,000] bir jadvalda bo'lsa, Evklid masofasi faqat Daromadga qarab qoladi. Shu sabab k-NN, K-Means, SVM va Neyron tarmoqlar oldidan scaling majburiy! (Decision Tree va Random Forest uchun esa shart emas).</p>",
+          en: "<p>Distance-based models (k-NN, K-Means, SVM) break if Income ($10^7$) overwhelms Age ($10^1$). Tree models are scale-invariant.</p>"
+        },
+        latex: "x'_{\\text{minmax}} = \\frac{x - x_{\\min}}{x_{\\max} - x_{\\min}} \\qquad x'_{\\text{z}} = \\frac{x - \\mu}{\\sigma} \\qquad x'_{\\text{robust}} = \\frac{x - \\text{Median}}{IQR}",
+        widget: 'scaling-demo'
+      },
+      {
+        heading: { uz: "2.5. Kategorik kodlash va O'lcham la'nati", en: "2.5. Categorical Encoding & Curse of Dimensionality" },
+        bodyHtml: {
+          uz: "<ul><li><strong>Ordinal / Label Encoding:</strong> Tartibli kategoriyalar uchun (\"Past\"=0, \"O'rta\"=1, \"Yuqori\"=2). Shahar nomlariga qo'llash xato (Toshkent &lt; Andijon ma'nosi chiqadi!).</li><li><strong>One-Hot Encoding:</strong> Tartibsiz (nominal) kategoriyalarni alohida 0/1 ustunlarga ajratadi. Xavf: 1000 ta noyob shahar bo'lsa 1000 ta ustun paydo bo'ladi.</li><li><strong>Target / Frequency Encoding:</strong> Yuqori kardinalitetli ustunlarda ustunlar sonini portlatmaslik uchun ishlatiladi.</li></ul>",
+          en: "<ul><li><strong>Ordinal Encoding:</strong> Only for ordered levels (Low=0, Med=1, High=2).</li><li><strong>One-Hot Encoding:</strong> Nominal categories → binary columns (watch out for high cardinality!).</li><li><strong>Frequency / Target Encoding:</strong> Compact alternative for hundreds of categories.</li></ul>"
         }
       },
       {
-        title: { uz: "Normallashtirish formulalari", en: "Feature Scaling Methods" },
-        formula: "Min-Max: (x - min) / (max - min) ∈ [0,1]   |   Z-score: (x - μ) / σ",
-        points: {
-          uz: ["Min-Max: piksellar, neyron tarmoqlar (chegaralangan)", "Z-score: SVM, k-NN, PCA (μ=0, σ=1)", "RobustScaler: outlier ko'p bo'lganda (Mediana/IQR)"],
-          en: ["Min-Max: bounded [0,1] for images & neural nets", "Z-score: μ=0, σ=1 for SVM, k-NN, PCA", "RobustScaler: uses median & IQR when outliers exist"]
-        }
-      },
-      {
-        title: { uz: "PCA Bosqichlari", en: "PCA Pipeline Steps" },
-        points: {
-          uz: ["1. Ma'lumotni Z-score bilan standartlashtirish", "2. Kovariatsiya matritsasini hisoblash", "3. Eigenvalue va Eigenvector topish", "4. 95% dispersiya saqlovchi K ta komponent tanlash"],
-          en: ["1. Standardize features (Z-score)", "2. Compute covariance matrix", "3. Extract eigenvalues & eigenvectors", "4. Project onto top K components (≥95% variance)"]
-        }
+        heading: { uz: "2.6. PCA (Principal Component Analysis)", en: "2.6. Dimensionality Reduction with PCA" },
+        bodyHtml: {
+          uz: "<p>Ko'p o'lchovli fazoda (masalan, 500 ustun) nuqtalar orasidagi masofa ma'nosini yo'qotadi (<em>Curse of Dimensionality</em>). <strong>PCA</strong> korrelyatsiyalashgan belgilarni o'zaro ortogonal <strong>Asosiy Komponentlarga (PC1, PC2, ...)</strong> aylantiradi:</p><ol><li>Ma'lumotni Z-score bilan standartlashtirish (majburiy!).</li><li>Kovariatsiya matritsasi $\\Sigma = \\frac{1}{n-1}X^T X$ ni hisoblash.</li><li>Eigenvalue $\\lambda_i$ va Eigenvector $v_i$ larni topish.</li><li>Kumulativ dispersiyaning 95% ini qoplaydigan $k$ ta komponentni tanlash.</li></ol>",
+          en: "<p><strong>PCA</strong> mitigates the Curse of Dimensionality by projecting standardized data onto orthogonal Principal Components maximizing variance: (1) Z-score standardize, (2) Compute covariance matrix $\\Sigma$, (3) Eigendecomposition, (4) Keep top $k$ components explaining ≥95% variance.</p>"
+        },
+        latex: "\\text{Explained Variance Ratio}_j = \\frac{\\lambda_j}{\\sum_{i=1}^d \\lambda_i}"
       }
     ],
+    slides: [
+      { title: { uz: "2-mavzu: Ma'lumotlarni qayta ishlash", en: "Topic 2: Data Preprocessing" }, subtitle: { uz: "Tozalash · Normallashtirish · Kodlash · PCA (80 daqiqa)", en: "Cleaning · Scaling · Encoding · PCA (80 min)" }, points: { uz: ["Real ma'lumotlar nuqsonlari va 5 bosqich", "Yetishmayotgan qiymatlar: MCAR, MAR, MNAR", "Outlierlar: IQR vs Z-Score (Masking)", "Min-Max, Z-Score va RobustScaler", "Encoding va PCA o'lcham qisqartirish"], en: ["Dirty data types & 5-stage pipeline", "Missingness: MCAR, MAR, MNAR", "Outliers: IQR vs Z-score masking", "Min-Max, Z-score & RobustScaler", "Categorical Encoding & PCA math"] } },
+      { title: { uz: "Nega Preprocessing shuncha ko'p vaqt oladi?", en: "Why Preprocessing Takes 60–80% Effort" }, points: { uz: ["Incomplete: sensor uzilishi, foydalanuvchi to'ldirmagan maydonlar", "Noisy: -999 harorat, 250 yosh, matn xatolari", "Inconsistent: sana formatlari (DD/MM vs MM/DD), valyuta farqi", "\"Garbage In, Garbage Out\" — yomon ma'lumot yaxshi modelni ham buzadi"], en: ["Incomplete: blank fields, dropped sensor packets", "Noisy: age=250, temp=-999, typos", "Inconsistent: mixed date formats, units, casing", "Garbage In, Garbage Out"] } },
+      { title: { uz: "Yetishmayotgan qiymatlarning 3 mexanizmi", en: "3 Mechanisms of Missingness" }, points: { uz: ["MCAR: Butunlay tasodifiy (server tasodifan paket tushirib qoldirdi)", "MAR: Boshqa ustunga bog'liq (yosh/jinsga qarab bo'sh qoldirilgan)", "MNAR: Qiymatning o'ziga bog'liq (eng boylar daromadini yashiradi)", "MNAR da oddiy o'chirish natijani keskin siljitadi!"], en: ["MCAR: Missing Completely At Random (safe to drop if <5%)", "MAR: Depends on observed columns (recoverable via KNN/MICE)", "MNAR: Depends on missing value itself (highest bias risk)"] } },
+      { title: { uz: "Imputation usullarini tanlash", en: "Choosing an Imputation Strategy" }, table: { headers: { uz: ["Usul", "Qachon", "Xavf"], en: ["Strategy", "When", "Pitfall"] }, rows: { uz: [["Mean", "Normal taqsimot", "Outlier buzadi"], ["Median", "Qiyshiq taqsimot", "Korrelyatsiyani yo'qotadi"], ["Mode", "Kategorik matn", "Disbalans"], ["KNN Imputer", "Bog'liq ustunlar", "Sekin (O(n²))"]], en: [["Mean", "Symmetric", "Outlier sensitive"], ["Median", "Skewed", "Ignores relations"], ["Mode", "Categorical", "Skews dominant class"], ["KNN Imputer", "Correlated", "Slow on huge data"]] } } },
+      { title: { uz: "Outlierlarni aniqlash: IQR va Z-Score", en: "Outlier Detection: IQR vs Z-Score" }, latex: "IQR = Q_3 - Q_1, \\quad [Q_1 - 1.5\\,IQR,\\; Q_3 + 1.5\\,IQR] \\qquad z = \\frac{x-\\mu}{\\sigma}", points: { uz: ["IQR usuli: 25% va 75% kvartillar orasiga tayanadi (chidamli)", "Z-score: |z| > 3 bo'lgan nuqtalar (~99.7% normal qoida)", "Masking muammosi: 1 ta ulkan outlier o'rtachani buzib, kichik outlierni yashiradi"], en: ["IQR fences are robust to extreme values", "Z-score flags |z| > 3 assuming Gaussian spread", "Masking effect: one huge outlier inflates σ hiding others"] } },
+      { title: { uz: "Qo'lda hisoblash misoli (IQR)", en: "Worked Example: IQR Outlier Check" }, points: { uz: ["Maoshlar: [3.2, 3.5, 4.0, 4.1, 4.5, 5.0, 5.2, 18.0]", "Q1 = 3.75, Q3 = 5.10 → IQR = 1.35", "Yuqori chegara = 5.10 + 1.5 × 1.35 = 7.125", "18.0 > 7.125 → 18.0 aniq outlier!"], en: ["Salaries: [3.2, 3.5, 4.0, 4.1, 4.5, 5.0, 5.2, 18.0]", "Q1 = 3.75, Q3 = 5.10 → IQR = 1.35", "Upper fence = 5.10 + 1.5 × 1.35 = 7.125", "18.0 > 7.125 → confirmed outlier!"] } },
+      { title: { uz: "Normallashtirish: Min-Max, Z-Score, Robust", en: "Feature Scaling Formulas" }, latex: "x'_{mm} = \\frac{x-x_{\\min}}{x_{\\max}-x_{\\min}}, \\quad x'_z = \\frac{x-\\mu}{\\sigma}, \\quad x'_{rob} = \\frac{x-\\text{Med}}{IQR}", points: { uz: ["Min-Max [0, 1]: tasvirlar va neyron tarmoqlar", "Z-score (μ=0, σ=1): SVM, PCA, LogReg, k-NN", "RobustScaler: outlierlar o'chirilmagan bo'lsa eng xavfsiz"], en: ["Min-Max [0, 1]: images & neural networks", "Z-score (μ=0, σ=1): SVM, PCA, k-NN", "RobustScaler: safest when outliers remain"] } },
+      { title: { uz: "Interaktiv Scaling Lab: Outlier ta'sirini ko'ring", en: "Interactive Scaling Lab: Outlier Impact" }, widget: 'scaling-demo' },
+      { title: { uz: "Talabalarga savol (Scaling & Tree)", en: "Class Discussion: Scaling" }, discussion: { q: { uz: "Random Forest va k-NN modellarini bir datasetda o'qityapsiz. Qaysi birida StandardScaler majburiy va nima uchun?", en: "You train Random Forest and k-NN on the same unscaled dataset. Which strictly requires StandardScaler and why?" }, a: { uz: "<strong>k-NN</strong> da majburiy, chunki u Evklid masofasini hisoblaydi. Random Forest esa faqat har bir ustunni o'z chegarasi bilan solishtiradi (<code>Yosh > 30</code>), shu sabab masshtabga befarq.", en: "<strong>k-NN</strong> requires scaling because Euclidean distance is scale-sensitive. Decision trees/Random Forest split single features monotonically and are scale-invariant." } } },
+      { title: { uz: "Kategorik o'zgaruvchilarni kodlash", en: "Categorical Variable Encoding" }, points: { uz: ["Label Encoding: 'Andijon'=0, 'Buxoro'=1, 'Toshkent'=2 → XATO tartib yaratadi!", "One-Hot Encoding: har kategoriya uchun alohida 0/1 ustun", "Dummy Variable Trap: chiziqli modellar uchun drop_first=True"], en: ["Label Encoding imposes false numerical order on cities", "One-Hot Encoding creates clean binary indicator columns", "Drop one column (drop_first=True) for linear regression"] } },
+      { title: { uz: "Diskretizatsiya (Binning)", en: "Discretization / Binning" }, points: { uz: ["Uzluksiz yoshni guruhlarga bo'lish: 0–18, 19–35, 36–60, 60+", "Equal-Width (teng oraliq): outlierlarga sezgir", "Equal-Frequency / Quantile (teng sonli): har savatda N/k ta element"], en: ["Converting continuous features into ordinal intervals", "Equal-Width: uniform step size (sensitive to outliers)", "Equal-Frequency (Quantile): equal sample counts per bin"] } },
+      { title: { uz: "O'lcham la'nati (Curse of Dimensionality)", en: "The Curse of Dimensionality" }, points: { uz: ["Ustunlar soni d oshgan sari fazoning hajmi eksponensial kengayadi", "Yuqori o'lchamda barcha nuqtalar bir-biridan deyarli bir xil uzoqlashadi", "Overfitting kuchayadi va hisoblash vaqti keskin ortadi"], en: ["Volume grows exponentially with dimension d", "Nearest & farthest neighbor distances converge", "Increases sparsity, overfitting, and compute cost"] } },
+      { title: { uz: "PCA — Asosiy Komponentlar Tahlili", en: "PCA: Principal Component Analysis" }, latex: "\\Sigma = \\frac{1}{n-1}X^T X, \\quad \\Sigma v_j = \\lambda_j v_j", points: { uz: ["Maqsad: ma'lumot dispersiyasini maksimal saqlab kam o'lchamga o'tish", "Yangi o'qlar (PC1, PC2) bir-biriga perpendikulyar (korrelyatsiyasiz)", "PC1 eng ko'p dispersiyani, PC2 qolgan eng ko'p dispersiyani tushuntiradi"], en: ["Projects correlated features onto orthogonal axes of maximum variance", "PC1 captures largest variance; PC2 captures next largest orthogonal variance"] } },
+      { title: { uz: "PCA 5 ta qadami va Scree Plot", en: "5 Steps of PCA & Choosing K" }, points: { uz: ["1. Z-score standartlashtirish (SHART!)", "2. Kovariatsiya matritsasini qurish", "3. Eigenvalue (λ) va Eigenvector (v) hisoblash", "4. λ larni kamayish tartibida saralash", "5. ≥95% kumulativ dispersiya yoki Elbow (Scree plot) bo'yicha k tanlash"], en: ["1. Standardize to μ=0, σ=1", "2. Covariance matrix", "3. Eigendecomposition", "4. Sort eigenvalues descending", "5. Keep k components covering ≥95% variance"] } },
+      { title: { uz: "Muhim ogohlantirish: Data Leakage!", en: "Critical Rule: Prevent Data Leakage!" }, points: { uz: ["Imputer, Scaler va PCA ni FAQAT X_train ustida fit() qiling!", "X_test ustida faqat transform() ishlatiladi", "Aks holda test ma'lumoti statistikasi o'qitishga sizib kiradi"], en: ["Always call fit_transform() ONLY on X_train", "Only call transform() on X_test", "Use sklearn.pipeline.Pipeline inside Cross-Validation"] } }
+    ],
     lab: {
-      title: { uz: "L2–L4: Imputation, Scaling va PCA", en: "L2–L4: Imputation, Scaling & PCA in Scikit-Learn" },
-      tasks: {
-        uz: [
-          "Median imputation bilan NaN qiymatlarni to'ldiring",
-          "Min-Max va Z-score natijalarini taqqoslang",
-          "4 o'lchamli ma'lumotni PCA orqali 2D ga tushiring"
-        ],
-        en: [
-          "Impute missing NaN values using median strategy",
-          "Compare MinMaxScaler and StandardScaler outputs",
-          "Reduce 4D data to 2D with PCA and check explained variance"
-        ]
-      },
-      code: `import pandas as pd, numpy as np
+      title: { uz: "L2–L4: Imputation, Scaling, One-Hot Encoding va PCA", en: "L2–L4: Full Preprocessing Pipeline & PCA" },
+      objective: { uz: "Yetishmayotgan qiymatlarni to'ldirish, IQR outlierlarni tekshirish, StandardScaler/RobustScaler solishtirish va PCA bilan 95% dispersiyani saqlash.", en: "Impute missing data, detect IQR outliers, compare scalers, and apply PCA." },
+      steps: [
+        {
+          title: { uz: "Shovqinli va bo'sh ma'lumot generatsiyasi + Imputation", en: "Create Dirty Data & Impute Missing Values" },
+          desc: { uz: "10% NaN qo'shib SimpleImputer(median) bilan to'ldiring.", en: "Inject 10% NaNs and impute safely with SimpleImputer." },
+          code: `import pandas as pd, numpy as np
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.decomposition import PCA
 
 np.random.seed(42)
 df = pd.DataFrame({
-    'Age': np.random.randint(18, 65, 100).astype(float),
-    'Income': np.random.randint(1000, 10000, 100).astype(float),
-    'Experience': np.random.randint(0, 40, 100).astype(float),
-    'Score': np.random.randint(0, 100, 100).astype(float)
+    'Yosh': np.random.randint(18, 65, 120).astype(float),
+    'Daromad': np.random.randint(2000, 15000, 120).astype(float),
+    'Tajriba': np.random.randint(0, 35, 120).astype(float),
+    'Ball': np.random.randint(40, 100, 120).astype(float)
 })
-for col in df.columns:
-    df.loc[np.random.choice(df.index, 10, replace=False), col] = np.nan
+for c in df.columns:
+    df.loc[np.random.choice(df.index, 12, replace=False), c] = np.nan
 
 df_clean = pd.DataFrame(SimpleImputer(strategy='median').fit_transform(df), columns=df.columns)
-df_z = StandardScaler().fit_transform(df_clean)
+print("Remaining NaNs:", df_clean.isnull().sum().sum())`
+        },
+        {
+          title: { uz: "IQR Outlier tahlili va Scalerlar taqqoslash", en: "IQR Outlier Check & Scaler Comparison" },
+          desc: { uz: "MinMaxScaler, StandardScaler va RobustScaler natijalarini solishtiring.", en: "Compare MinMax, Standard, and Robust scaling on df_clean." },
+          code: `from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
+
+Q1, Q3 = df_clean['Daromad'].quantile([0.25, 0.75])
+IQR = Q3 - Q1
+outliers = df_clean[(df_clean['Daromad'] < Q1 - 1.5*IQR) | (df_clean['Daromad'] > Q3 + 1.5*IQR)]
+print("Outliers count:", len(outliers))
+
+z_scaled = StandardScaler().fit_transform(df_clean)
+print("Z-score mean:", z_scaled.mean(axis=0).round(2), "std:", z_scaled.std(axis=0).round(2))`
+        },
+        {
+          title: { uz: "PCA bilan o'lchamni qisqartirish (4D → 2D)", en: "PCA Projection (4D → 2D)" },
+          desc: { uz: "Standartlashtirilgan ma'lumotga PCA qo'llab saqlangan dispersiyani tekshiring.", en: "Apply PCA to standardized data and inspect variance ratio." },
+          code: `from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
 pca = PCA(n_components=2)
-components = pca.fit_transform(df_z)
-print(f"Explained variance: {pca.explained_variance_ratio_.sum()*100:.1f}%")`
+comp = pca.fit_transform(z_scaled)
+print("Variance ratios:", pca.explained_variance_ratio_.round(3))
+print(f"Total kept: {pca.explained_variance_ratio_.sum()*100:.1f}%")
+
+plt.scatter(comp[:, 0], comp[:, 1], c='#f59e0b', alpha=0.7)
+plt.xlabel("PC1"); plt.ylabel("PC2"); plt.title("PCA 4D -> 2D")
+plt.savefig("l2_pca.png", dpi=150)`
+        }
+      ],
+      variants: {
+        uz: [
+          "1-variant: Daromad ustuniga sun'iy 2 ta outlier (500000) qo'shib MinMaxScaler vs RobustScaler farqini grafikda ko'rsating.",
+          "2-variant: Kategorik 'Shahar' ustunini qo'shib OneHotEncoder bilan pipeline tuzing.",
+          "3-variant: PCA(n_components=0.95) parametrini berib 95% dispersiya uchun nechta komponent qolishini aniqlang."
+        ],
+        en: [
+          "Variant 1: Inject two extreme outliers (500000) into Daromad and compare MinMax vs RobustScaler.",
+          "Variant 2: Add a categorical City column and process it with ColumnTransformer + OneHotEncoder.",
+          "Variant 3: Run PCA(n_components=0.95) on Wine dataset and report retained components."
+        ]
+      }
     },
     glossary: [
-      { uz: "Normallashtirish", en: "Normalization", defUz: "Qiymatlarni yagona shkalaga keltirish ([0,1] yoki μ=0, σ=1)", defEn: "Scaling numeric features to a standard range" },
-      { uz: "One-Hot Encoding", en: "One-Hot Encoding", defUz: "Har bir kategoriya uchun alohida 0/1 ustun yaratish", defEn: "Converting categories into binary indicator columns" },
-      { uz: "PCA", en: "PCA", defUz: "Dispersiyani saqlab o'lchamni kamaytiruvchi chiziqli usul", defEn: "Linear projection reducing dimensionality while keeping variance" }
+      { uz: "MCAR / MAR / MNAR", en: "MCAR / MAR / MNAR", defUz: "Ma'lumot yetishmasligining tasodifiy va bog'liq mexanizmlari", defEn: "Mechanisms describing why data values are missing" },
+      { uz: "IQR", en: "IQR", defUz: "Q3 - Q1 kvartillararo kenglik (outlier aniqlash mezoni)", defEn: "Interquartile range Q3 - Q1 used for robust outlier bounds" },
+      { uz: "RobustScaler", en: "RobustScaler", defUz: "Mediana va IQR asosida masshtablovchi outlierga chidamli usul", defEn: "Scaler using median and IQR, resistant to outliers" },
+      { uz: "PCA", en: "PCA", defUz: "Dispersiyani saqlab o'lchamni qisqartiruvchi chiziqli transformatsiya", defEn: "Orthogonal projection reducing dimensionality while maximizing variance" }
     ],
     quiz: [
-      {
-        q: { uz: "Haqiqiy loyihalarda preprocessing odatda qancha vaqt oladi?", en: "What share of time does data preprocessing typically take?" },
-        options: [
-          { label: 'A', uz: "10–20%", en: "10–20%" },
-          { label: 'B', uz: "30–40%", en: "30–40%" },
-          { label: 'C', uz: "60–80%", en: "60–80%" },
-          { label: 'D', uz: "95–100%", en: "95–100%" }
-        ],
-        answer: 'C',
-        explanation: { uz: "Ma'lumotni yig'ish, tozalash va tayyorlash loyihaning 60-80% vaqtini oladi.", en: "Cleaning, imputing, and transforming data consumes 60–80% of real-world DM projects." }
-      },
-      {
-        q: { uz: "Z-score standartlashtirish natijasida qanday statistika hosil bo'ladi?", en: "What are the mean and standard deviation after Z-score standardization?" },
-        options: [
-          { label: 'A', uz: "Barcha qiymatlar [0, 1] da", en: "All values bounded in [0, 1]" },
-          { label: 'B', uz: "O'rtacha = 0, standart og'ish = 1", en: "Mean = 0, Standard Deviation = 1" },
-          { label: 'C', uz: "Faqat [-1, 1] oraliqda", en: "Strictly bounded in [-1, 1]" },
-          { label: 'D', uz: "Logarifmik shkala", en: "Logarithmic scale" }
-        ],
-        answer: 'B',
-        explanation: { uz: "x' = (x - μ)/σ formulasi o'rtachani 0 ga, dispersiyani 1 ga tenglashtiradi.", en: "Subtracting the mean and dividing by std produces mean=0 and std=1." }
-      },
-      {
-        q: { uz: "PCA ning asosiy maqsadi nima?", en: "What is the primary goal of PCA?" },
-        options: [
-          { label: 'A', uz: "Yetishmayotgan qiymatlarni to'ldirish", en: "Impute missing values" },
-          { label: 'B', uz: "Maksimal ma'lumotni saqlab o'lchamni qisqartirish", en: "Reduce dimensionality while preserving maximum variance" },
-          { label: 'C', uz: "Anomaliyalarni o'chirish", en: "Delete outliers" },
-          { label: 'D', uz: "Sinflarni tasniflash", en: "Classify labeled samples" }
-        ],
-        answer: 'B',
-        explanation: { uz: "PCA xususiyatlar sonini kamaytirib, ma'lumotdagi asosiy dispersiyani saqlab qoladi.", en: "PCA compresses features into fewer orthogonal components preserving variance." }
-      },
-      {
-        q: { uz: "Kategorik ustun uchun qaysi imputation usuli to'g'ri?", en: "Which imputation strategy suits a categorical column?" },
-        options: [
-          { label: 'A', uz: "O'rtacha (Mean)", en: "Mean" },
-          { label: 'B', uz: "Mediana", en: "Median" },
-          { label: 'C', uz: "Moda (eng ko'p uchragan qiymat)", en: "Mode (most frequent value)" },
-          { label: 'D', uz: "Z-score", en: "Z-score" }
-        ],
-        answer: 'C',
-        explanation: { uz: "Kategorik matnlarda o'rtacha yoki mediana hisoblab bo'lmaydi, shu sabab moda ishlatiladi.", en: "Mode replaces missing categories with the most frequent label." }
-      },
-      {
-        q: { uz: "MCAR qisqartmasi nimani anglatadi?", en: "What does MCAR stand for?" },
-        options: [
-          { label: 'A', uz: "Missing Completely At Random", en: "Missing Completely At Random" },
-          { label: 'B', uz: "Missing Conditionally At Random", en: "Missing Conditionally At Random" },
-          { label: 'C', uz: "Multiple Classification And Regression", en: "Multiple Classification And Regression" },
-          { label: 'D', uz: "Mean Centered Attribute Reduction", en: "Mean Centered Attribute Reduction" }
-        ],
-        answer: 'A',
-        explanation: { uz: "MCAR — qiymatning yo'qolishi boshqa hech qanday o'zgaruvchiga bog'liq bo'lmagan tasodifiy holat.", en: "MCAR means missingness is completely independent of any observed or unobserved data." }
-      }
+      { q: { uz: "Haqiqiy loyihalarda preprocessing odatda qancha vaqt oladi?", en: "What fraction of time does preprocessing take in real projects?" }, options: [{ label: 'A', uz: "10–20%", en: "10–20%" }, { label: 'B', uz: "30–40%", en: "30–40%" }, { label: 'C', uz: "60–80%", en: "60–80%" }, { label: 'D', uz: "95–100%", en: "95–100%" }], answer: 'C', explanation: { uz: "Tozalash, kodlash va tayyorlash 60–80% vaqtni oladi.", en: "Data preparation consumes 60–80% of real Data Mining projects." } },
+      { q: { uz: "Z-score standartlashtirish natijasida qanday statistika hosil bo'ladi?", en: "What are the mean and std after Z-score scaling?" }, options: [{ label: 'A', uz: "[0, 1] chegara", en: "Bounded [0, 1]" }, { label: 'B', uz: "O'rtacha = 0, standart og'ish = 1", en: "Mean = 0, Std = 1" }, { label: 'C', uz: "[-1, 1] chegara", en: "Bounded [-1, 1]" }, { label: 'D', uz: "Logarifmik", en: "Logarithmic" }], answer: 'B', explanation: { uz: "x' = (x - μ)/σ o'rtachani 0 va std ni 1 qiladi.", en: "Centering by mean and dividing by std produces μ=0, σ=1." } },
+      { q: { uz: "PCA dan oldin qaysi amal MAJBURIY bajariladi?", en: "Which step is MANDATORY right before PCA?" }, options: [{ label: 'A', uz: "Z-score standartlashtirish", en: "Z-score standardization" }, { label: 'B', uz: "Label encoding", en: "Label encoding" }, { label: 'C', uz: "Budash (Pruning)", en: "Pruning" }, { label: 'D', uz: "Apriori", en: "Apriori" }], answer: 'A', explanation: { uz: "Aks holda katta diapazonli ustunlar PC1 ni egallab oladi.", en: "Without standardization, large-variance units dominate PC1." } },
+      { q: { uz: "Kategorik ustun uchun qaysi imputation usuli to'g'ri?", en: "Which imputation fits a categorical column?" }, options: [{ label: 'A', uz: "Mean", en: "Mean" }, { label: 'B', uz: "Median", en: "Median" }, { label: 'C', uz: "Mode (Moda)", en: "Mode" }, { label: 'D', uz: "Z-score", en: "Z-score" }], answer: 'C', explanation: { uz: "Matnli kategoriyada faqat eng ko'p uchraydigan qiymat (Mode) olinadi.", en: "Categories cannot be averaged, so Mode is used." } },
+      { q: { uz: "MCAR nimani anglatadi?", en: "What does MCAR stand for?" }, options: [{ label: 'A', uz: "Missing Completely At Random", en: "Missing Completely At Random" }, { label: 'B', uz: "Missing Conditionally At Random", en: "Missing Conditionally At Random" }, { label: 'C', uz: "Multiple Class Regression", en: "Multiple Class Regression" }, { label: 'D', uz: "Mean Centered Reduction", en: "Mean Centered Reduction" }], answer: 'A', explanation: { uz: "MCAR — boshqa o'zgaruvchilarga mutlaqo bog'liq bo'lmagan tasodifiy yo'qolish.", en: "Missingness is completely independent of observed or hidden values." } }
     ]
   },
 
+  // ==================== TOPIC 3 ====================
   {
     id: 3,
     slug: '03-classification-dt',
     hours: 2,
     labs: 2,
-    keywords: ['Decision Tree', 'Entropy', 'Information Gain', 'Gini', 'Pruning'],
+    keywords: ['Decision Tree', 'Entropy', 'Information Gain', 'Gain Ratio', 'Gini', 'ID3', 'CART', 'Pruning'],
     title: {
       uz: "Qaror daraxti yordamida tasniflash",
       en: "Classification with Decision Trees"
     },
     description: {
-      uz: "Qaror daraxti tuzilishi, Entropiya, Information Gain, Gini indeksi, ID3/C4.5/CART va Pruning usullari.",
-      en: "Decision tree structure, Entropy, Information Gain, Gini impurity, ID3/C4.5/CART comparison, and pruning."
+      uz: "Daraxt tuzilishi, Entropiya, Information Gain, Gain Ratio, Gini indeksi, qo'lda daraxt qurish misoli, ID3/C4.5/CART va Pruning.",
+      en: "Tree anatomy, Entropy, Information Gain, Gain Ratio, Gini Impurity, step-by-step hand example, ID3/C4.5/CART, and pruning."
     },
     sections: [
       {
-        heading: { uz: "3.1. Tasniflash va Qaror daraxti tuzilishi", en: "3.1. Classification & Tree Anatomy" },
+        heading: { uz: "3.1. Tasniflash va Qaror daraxti tuzilishi", en: "3.1. Supervised Classification & Tree Anatomy" },
         bodyHtml: {
-          uz: "<p><strong>Qaror daraxti (Decision Tree)</strong> — if-else qoidalar ierarxiyasidan tashkil topgan intuitiv tasniflagich:</p><ul><li><strong>Ildiz tugun (Root):</strong> birinchi va eng muhim bo'linish.</li><li><strong>Ichki tugun (Internal):</strong> atribut bo'yicha test sharti.</li><li><strong>Shox (Branch):</strong> test natijasi.</li><li><strong>Barg (Leaf):</strong> yakuniy sinf bashorati.</li></ul>",
-          en: "<p>A <strong>Decision Tree</strong> classifies instances via a hierarchy of interpretable if-else rules:</p><ul><li><strong>Root Node:</strong> the top-level most informative split.</li><li><strong>Internal Node:</strong> attribute test condition.</li><li><strong>Branch:</strong> outcome of a test.</li><li><strong>Leaf Node:</strong> final predicted class label.</li></ul>"
+          uz: "<p><strong>Qaror daraxti (Decision Tree)</strong> — ma'lumotlar fazosini ketma-ket to'g'ri burchakli hududlarga bo'luvchi, oq-quti (white-box) modelidir. Har bir yo'l bitta <code>IF ... AND ... THEN ...</code> qoidasiga ekvivalent.</p><ul><li><strong>Ildiz tugun (Root):</strong> butun datasetni birinchi bo'luvchi eng kuchli atribut.</li><li><strong>Ichki tugun (Internal Node):</strong> atribut testi (masalan, <code>Yosh ≤ 30</code>).</li><li><strong>Shox (Branch):</strong> test natijasi (Ha/Yo'q).</li><li><strong>Barg (Leaf Node):</strong> yakuniy sinf yorlig'i.</li></ul>",
+          en: "<p>A <strong>Decision Tree</strong> recursively partitions feature space into axis-aligned regions. Every root-to-leaf path forms an interpretable <code>IF-THEN</code> rule.</p>"
         }
       },
       {
-        heading: { uz: "3.2. Entropiya, Information Gain va Gini indeksi", en: "3.2. Entropy, Information Gain & Gini Impurity" },
+        heading: { uz: "3.2. Nopoklik mezonlari: Entropiya, Information Gain va Gini", en: "3.2. Impurity Criteria: Entropy, IG & Gini" },
         bodyHtml: {
-          uz: "<p><strong>Entropiya H(S)</strong> — tugundagi tartibsizlik (aralashganlik) o'lchovi. H=0 (butunlay sof), H=1 (ikkilik sinflar teng 50/50). <strong>Information Gain</strong> ajralishdan keyin entropiya qanchalik kamayganini ko'rsatadi.</p><p><strong>CART</strong> algoritmi esa tezroq hisoblanadigan <strong>Gini indeksini</strong> ishlatadi.</p>",
-          en: "<p><strong>Entropy H(S)</strong> measures node impurity: H=0 means pure (one class), H=1 means 50/50 split. <strong>Information Gain</strong> selects the attribute maximizing entropy reduction.</p><p><strong>CART</strong> uses <strong>Gini Impurity</strong>, avoiding logarithms for faster computation.</p>"
+          uz: "<p>Har bir tugunda eng yaxshi atributni tanlash uchun bo'linishdan keyingi <strong>\"soflik\" (purity)</strong> o'lchanadi:</p><ul><li><strong>Entropiya H(S):</strong> Shennon axborot nazariyasidan olingan tartibsizlik o'lchovi ($0 \\le H(S) \\le \\log_2 C$). Ikkilik sinfda $H=0$ (sof), $H=1$ (50/50 teng aralash).</li><li><strong>Information Gain:</strong> bo'linish natijasida entropiya qanchalik kamaygani.</li><li><strong>Gini indeksi:</strong> CART algoritmi ishlatadigan logarifmsiz tez mezon ($0 \\le \\text{Gini} \\le 0.5$ ikkilikda).</li></ul>",
+          en: "<p>We select splits maximizing node purity via <strong>Entropy / Information Gain</strong> (ID3, C4.5) or minimizing <strong>Gini Impurity</strong> (CART, avoids logarithms for speed).</p>"
         },
-        formula: "H(S) = -Σ p_i · log₂(p_i)   |   IG(S,A) = H(S) - Σ (|S_v|/|S|)·H(S_v)   |   Gini(S) = 1 - Σ p_i²"
+        latex: "H(S) = -\\sum_{i=1}^{C} p_i \\log_2(p_i), \\quad IG(S, A) = H(S) - \\sum_{v \\in \\text{Values}(A)} \\frac{|S_v|}{|S|} H(S_v), \\quad \\text{Gini}(S) = 1 - \\sum_{i=1}^{C} p_i^2",
+        widget: 'dt-split'
       },
       {
-        heading: { uz: "3.3. ID3, C4.5, CART va Pruning", en: "3.3. ID3, C4.5, CART & Overfitting Control" },
+        heading: { uz: "3.3. Qo'lda hisoblash misoli: Kredit ma'qullash", en: "3.3. Step-by-Step Hand Example: Loan Approval" },
         bodyHtml: {
-          uz: "<p>Chuqur daraxt o'quv ma'lumotini yodlab olib <strong>overfitting</strong>ga tushadi (train 99%, test 65%). Buni oldini olish uchun <strong>Pre-pruning</strong> (<code>max_depth</code>, <code>min_samples_leaf</code>) va <strong>Post-pruning</strong> (ortiqcha shoxlarni qirqish) qo'llaniladi.</p>",
-          en: "<p>Overly deep trees memorize noise causing <strong>overfitting</strong> (99% train, 65% test). Prevent it with <strong>Pre-pruning</strong> (<code>max_depth</code>, <code>min_samples_leaf</code>) or <strong>Post-pruning</strong> (cost-complexity pruning).</p>"
+          uz: "<p>Faraz qilaylik, 10 ta mijoz: <strong>6 ta Ha</strong>, <strong>4 ta Yo'q</strong>. Boshlang'ich entropiya:</p><p>$H(S) = -(0.6\\log_2 0.6 + 0.4\\log_2 0.4) = -(0.6(-0.737) + 0.4(-1.322)) = 0.971$</p><p>Agar <em>\"Daromad = Yuqori\"</em> (4 Ha, 0 Yo'q) va <em>\"Past\"</em> (2 Ha, 4 Yo'q) bo'lsa: $H(\\text{Yuqori}) = 0$, $H(\\text{Past}) = 0.918$. Unda:</p><p>$IG(S, \\text{Daromad}) = 0.971 - (0.4 \\cdot 0 + 0.6 \\cdot 0.918) = 0.420$ bit!</p>",
+          en: "<p>For 10 applicants (6 Yes, 4 No): $H(S) = 0.971$. Splitting on Income yields High=(4 Yes, 0 No; $H=0$) and Low=(2 Yes, 4 No; $H=0.918$), giving $IG = 0.971 - 0.6(0.918) = 0.420$ bits.</p>"
+        }
+      },
+      {
+        heading: { uz: "3.4. ID3, C4.5 (Gain Ratio) va CART taqqoslash", en: "3.4. ID3 vs C4.5 vs CART Comparison" },
+        bodyHtml: {
+          uz: "<p><strong>ID3 muammosi:</strong> ko'p noyob qiymatli ustunni (masalan, <em>Talaba_ID</em>) tanlab yuboradi, chunki har bir ID uchun $H=0$ bo'ladi! <strong>C4.5</strong> buni <strong>Gain Ratio = IG / SplitInfo</strong> orqali jazolaydi.</p>",
+          en: "<p><strong>ID3 bias:</strong> favors high-cardinality IDs since each unique ID yields $H=0$. <strong>C4.5</strong> fixes this via <strong>Gain Ratio = IG / SplitInfo</strong>.</p>"
         },
         table: {
-          headers: { uz: ["Algoritm", "Mezon", "Xususiyat"], en: ["Algorithm", "Split Criterion", "Key Feature"] },
+          headers: { uz: ["Algoritm", "Mezon", "Uzluksiz ustun / NaN", "Daraxt turi"], en: ["Algorithm", "Criterion", "Continuous / NaN", "Tree Shape"] },
           rows: {
             uz: [
-              ["ID3", "Information Gain", "Faqat kategorik atributlar"],
-              ["C4.5", "Gain Ratio", "Raqamli atribut va NaN qo'llab-quvvatlaydi"],
-              ["CART", "Gini Index", "Ikkilik daraxt, klassifikatsiya va regressiya"]
+              ["ID3 (1986)", "Information Gain", "Yo'q (faqat kategorik)", "Ko'p shoxli"],
+              ["C4.5 (1993)", "Gain Ratio", "Ha (threshold + vaznli NaN)", "Ko'p shoxli"],
+              ["CART (1984)", "Gini / MSE", "Ha (tasniflash & regressiya)", "Faqat ikkilik (Binary)"]
             ],
             en: [
-              ["ID3", "Information Gain", "Categorical attributes only"],
-              ["C4.5", "Gain Ratio", "Supports continuous features & missing values"],
-              ["CART", "Gini Index", "Binary splits; classification & regression"]
+              ["ID3 (1986)", "Information Gain", "No (categorical only)", "Multi-way"],
+              ["C4.5 (1993)", "Gain Ratio", "Yes (thresholds & NaNs)", "Multi-way"],
+              ["CART (1984)", "Gini / MSE", "Yes (classification & reg.)", "Strictly Binary"]
             ]
           }
+        }
+      },
+      {
+        heading: { uz: "3.5. Overfitting va Budash (Pre- & Post-Pruning)", en: "3.5. Overfitting & Tree Pruning" },
+        bodyHtml: {
+          uz: "<p>Cheklanmagan daraxt har bir shovqinli nuqta uchun alohida barg yaratib, Train da 100%, Test da esa past natija beradi. Yechimlar:</p><ul><li><strong>Pre-pruning:</strong> daraxt o'sishini oldindan to'xtatish (<code>max_depth</code>, <code>min_samples_split</code>, <code>min_samples_leaf</code>).</li><li><strong>Post-pruning (Cost-Complexity Pruning):</strong> avval to'liq daraxt qurib, so'ngra <code>ccp_alpha</code> mezoni bilan kuchsiz shoxlarni qirqib tashlash.</li></ul>",
+          en: "<p>Unconstrained trees memorize training noise (100% train, poor test). Mitigate via <strong>Pre-pruning</strong> (<code>max_depth</code>, <code>min_samples_leaf</code>) or <strong>Post-pruning</strong> (<code>ccp_alpha</code> cost-complexity pruning).</p>"
         }
       }
     ],
     slides: [
-      {
-        title: { uz: "3-mavzu: Qaror daraxtlari", en: "Topic 3: Decision Trees" },
-        subtitle: { uz: "Entropiya, Information Gain va Gini indeksi", en: "Entropy, Information Gain, Gini & Pruning" },
-        points: {
-          uz: ["Daraxt tuzilishi: Root, Node, Branch, Leaf", "Entropiya va Information Gain formulalari", "ID3, C4.5 va CART farqlari", "Overfitting va Pruning (Budash)"],
-          en: ["Tree anatomy: Root, Internal, Branch, Leaf", "Entropy & Information Gain math", "ID3 vs C4.5 vs CART", "Overfitting & Pre/Post-Pruning"]
-        }
-      },
-      {
-        title: { uz: "Entropiya va Gini indeksi", en: "Impurity Measures: Entropy vs Gini" },
-        formula: "H(S) = -Σ p_i log₂(p_i)    |    Gini(S) = 1 - Σ p_i²",
-        points: {
-          uz: ["H=0 (Gini=0): tugun mutlaqo sof (bitta sinf)", "H=1 (Gini=0.5): ikki sinf teng 50/50 aralashgan", "Information Gain = ajralishdan oldingi H - keyingi o'rtacha H"],
-          en: ["H=0 (Gini=0): completely pure node", "H=1 (Gini=0.5): maximum impurity (50/50 binary split)", "Information Gain chooses the split with largest impurity drop"]
-        }
-      },
-      {
-        title: { uz: "Algoritmlar taqqoslash", en: "ID3 vs C4.5 vs CART" },
-        table: {
-          headers: { uz: ["Algoritm", "Mezon", "Daraxt turi"], en: ["Algorithm", "Metric", "Tree Structure"] },
-          rows: {
-            uz: [
-              ["ID3", "Information Gain", "Ko'p shoxli"],
-              ["C4.5", "Gain Ratio", "Ko'p shoxli + uzluksiz"],
-              ["CART", "Gini / MSE", "Doimo ikkilik (Binary)"]
-            ],
-            en: [
-              ["ID3", "Information Gain", "Multi-way splits"],
-              ["C4.5", "Gain Ratio", "Multi-way + continuous"],
-              ["CART", "Gini / MSE", "Always binary splits"]
-            ]
-          }
-        }
-      },
-      {
-        title: { uz: "Overfitting va Budash (Pruning)", en: "Overfitting & Pruning" },
-        points: {
-          uz: ["Belgi: Train aniqlik 99%, Test aniqlik 65%", "Pre-pruning: max_depth, min_samples_split bilan cheklash", "Post-pruning: to'liq daraxtdan kuchsiz shoxlarni kesish"],
-          en: ["Symptom: 99% train accuracy vs 65% test accuracy", "Pre-pruning: stop early via max_depth / min_samples_leaf", "Post-pruning: grow full tree then trim weak branches"]
-        }
-      }
+      { title: { uz: "3-mavzu: Qaror daraxtlari", en: "Topic 3: Decision Trees" }, subtitle: { uz: "Entropiya · Information Gain · Gini · Pruning (80 daqiqa)", en: "Entropy · Info Gain · Gini · Pruning (80 min)" }, points: { uz: ["Qaror daraxti tuzilishi va IF-THEN qoidalar", "Entropiya, Information Gain va Gini formulalari", "Qo'lda daraxt qurish misoli (Kredit)", "ID3, C4.5 (Gain Ratio) va CART farqlari", "Overfitting, Pre/Post-Pruning va Laboratoriya"], en: ["Tree anatomy & IF-THEN rules", "Entropy, Information Gain & Gini math", "Step-by-step worked loan example", "ID3 vs C4.5 vs CART", "Overfitting, Pruning & Lab 3"] } },
+      { title: { uz: "Qaror Daraxti Tuzilishi", en: "Anatomy of a Decision Tree" }, points: { uz: ["Ildiz tugun (Root): eng yaxshi dastlabki ajralish", "Ichki tugun (Internal Node): bitta atribut testi", "Shox (Branch): test javobiga ko'ra yo'l", "Barg (Leaf): yakuniy bashorat sinfi"], en: ["Root Node: best top-level split", "Internal Node: single attribute test", "Branch: test outcome path", "Leaf Node: final class label"] } },
+      { title: { uz: "Nega Qaror Daraxti Mashhur?", en: "Strengths of Decision Trees" }, points: { uz: ["White-box model: shifokor va bankirga tushunarli", "Normallashtirish (Scaling) talab qilmaydi", "Chiziqsiz chegaralarni ham ajrata oladi", "Ham raqamli, ham kategorik belgilar bilan ishlaydi"], en: ["White-box interpretability for finance & healthcare", "No feature scaling required", "Learns non-linear decision boundaries", "Handles mixed numeric and categorical features"] } },
+      { title: { uz: "Entropiya H(S) Tushunchasi", en: "Understanding Entropy H(S)" }, latex: "H(S) = -\\sum_{i=1}^C p_i \\log_2(p_i)", points: { uz: ["p_i — tugundagi i-sinfning ulushi", "H = 0: barcha obyektlar 1 ta sinfda (mutlaqo sof)", "H = 1: ikki sinf teng 50% / 50% aralashgan (maksimal noaniqlik)", "Konvensiya: 0 · log₂(0) = 0"], en: ["p_i = fraction of class i in node S", "H = 0: completely pure node", "H = 1: 50/50 binary split (maximum uncertainty)", "By convention, 0 · log₂(0) = 0"] } },
+      { title: { uz: "Information Gain (Axborot Ortishi)", en: "Information Gain Formula" }, latex: "IG(S, A) = H(S) - \\sum_{v} \\frac{|S_v|}{|S|} H(S_v)", points: { uz: ["Bo'linishdan oldingi entropiya minus shoxlarning vaznli o'rtacha entropiyasi", "ID3 har qadamda eng katta IG beradigan atributni tanlaydi"], en: ["Entropy before split minus weighted average entropy of children", "Greedy top-down search picks attribute maximizing IG"] } },
+      { title: { uz: "Gini Indeksi (CART Algoritmi)", en: "Gini Impurity (CART)" }, latex: "\\text{Gini}(S) = 1 - \\sum_{i=1}^C p_i^2", points: { uz: ["Gini = 0: sof tugun; Gini = 0.5: teng 50/50 aralash", "Logarifm hisoblanmagani uchun Entropiyadan tezroq", "Scikit-Learn da default criterion='gini'"], en: ["Gini = 0 pure; Gini = 0.5 max binary impurity", "Faster than Entropy (no log computations)", "Default in Scikit-Learn DecisionTreeClassifier"] } },
+      { title: { uz: "Interaktiv Lab: Chegarani siljiting va Entropiya/Gini ni kuzating!", en: "Interactive Split Lab: Slide Threshold" }, widget: 'dt-split' },
+      { title: { uz: "Qo'lda hisoblash misoli: Kredit", en: "Worked Example: Credit Scoring" }, points: { uz: ["Jami 10 ta mijoz: 6 Ha, 4 Yo'q → H(S) = 0.971", "Daromad=Yuqori: (4 Ha, 0 Yo'q) → H = 0", "Daromad=Past: (2 Ha, 4 Yo'q) → H = 0.918", "IG = 0.971 - [0.4(0) + 0.6(0.918)] = 0.420 bit"], en: ["10 applicants: 6 Yes, 4 No → H(S) = 0.971", "Income=High: (4 Yes, 0 No) → H = 0", "Income=Low: (2 Yes, 4 No) → H = 0.918", "IG = 0.971 - 0.6(0.918) = 0.420 bits"] } },
+      { title: { uz: "ID3 Tuzog'i: Noyob ID ustuni muammosi", en: "The ID3 Trap: High-Cardinality Bias" }, discussion: { q: { uz: "Talaba_ID ustuni bo'yicha bo'lsak, har bir talaba alohida bargga tushib Entropiya = 0 bo'ladi va IG maksimal chiqadi. Nima uchun ID3 bu ustunni tanlashi falokat?", en: "Splitting on Student_ID gives Entropy=0 in every leaf and maximum Information Gain. Why is choosing Student_ID catastrophic?" }, a: { uz: "Daraxt yangi talaba uchun umuman umumlashtira olmaydi (100% Overfitting)! C4.5 buni <strong>Gain Ratio = IG / SplitInfo</strong> orqali hal qiladi.", en: "It memorizes IDs with zero generalization to unseen students! C4.5 fixes this using <strong>Gain Ratio = IG / SplitInfo</strong>." } } },
+      { title: { uz: "ID3 vs C4.5 vs CART Taqqoslash", en: "Comparing ID3, C4.5 & CART" }, table: { headers: { uz: ["Algoritm", "Mezon", "Daraxt"], en: ["Algorithm", "Metric", "Split"] }, rows: { uz: [["ID3", "Information Gain", "Ko'p shoxli"], ["C4.5", "Gain Ratio", "Ko'p shoxli"], ["CART", "Gini / MSE", "Ikkilik (Binary)"]], en: [["ID3", "Info Gain", "Multi-way"], ["C4.5", "Gain Ratio", "Multi-way"], ["CART", "Gini / MSE", "Binary"]] } } },
+      { title: { uz: "Uzluksiz atributlar bilan bo'lish (CART)", en: "Splitting Continuous Features" }, points: { uz: ["Qiymatlar saralanadi va qo'shni o'rta nuqtalar (x ≤ t) tekshiriladi", "Masalan: Harorat = [18, 22, 28, 35] → nomzodlar: 20, 25, 31.5", "Eng katta Gini pasayishi bergan t tanlanadi"], en: ["Sort unique values and test midpoints (x ≤ t)", "Pick threshold t yielding highest impurity reduction"] } },
+      { title: { uz: "Overfitting: Train 99% vs Test 65%", en: "Overfitting in Deep Trees" }, points: { uz: ["Daraxt chuqurlashgan sari faqat 1–2 ta namunadan iborat shovqinli barglar hosil bo'ladi", "Model yuqori dispersiyaga (High Variance) tushadi", "Ma'lumotdagi kichik o'zgarish butun daraxtni o'zgartirib yuboradi"], en: ["Deep trees create tiny leaves fitting random noise", "High variance: small data perturbations drastically alter the tree"] } },
+      { title: { uz: "Budash (Pruning): Pre-Pruning vs Post-Pruning", en: "Pre-Pruning vs Post-Pruning" }, points: { uz: ["Pre-pruning: max_depth=4, min_samples_leaf=5, min_samples_split=10", "Post-pruning: to'liq daraxt qurib ccp_alpha orqali kuchsiz shoxlarni qirqish", "Validation egri chizig'i orqali optimal chuqurlik topiladi"], en: ["Pre-pruning: early stopping via max_depth, min_samples_leaf", "Post-pruning: cost-complexity trimming with ccp_alpha", "Pick optimal depth using Cross-Validation curve"] } },
+      { title: { uz: "Muhokama: Chuqurlik (max_depth) tanlash", en: "Class Discussion: Tree Depth" }, discussion: { q: { uz: "Iris datasetida max_depth=1, 3, 15 lar uchun Train/Test aniqligi mos ravishda: (67%/64%), (97%/96%), (100%/87%). Qaysi holat Underfitting va qaysi biri Overfitting?", en: "On a dataset, max_depth=1, 3, 15 yield Train/Test accuracies: (67%/64%), (97%/96%), (100%/87%). Which is Underfitting and which is Overfitting?" }, a: { uz: "<strong>max_depth=1:</strong> Underfitting (ikkalasi ham past). <strong>max_depth=15:</strong> Overfitting (Train 100%, Test tushib ketgan). <strong>max_depth=3:</strong> Optimal muvozanat!", en: "<strong>max_depth=1:</strong> Underfitting. <strong>max_depth=15:</strong> Overfitting. <strong>max_depth=3:</strong> Sweet spot!" } } }
     ],
     lab: {
-      title: { uz: "L3: Iris datasetida Decision Tree", en: "L3: Decision Tree on Iris Dataset" },
-      tasks: {
-        uz: [
-          "max_depth=3 va criterion='gini' bilan model o'qiting",
-          "export_text() yordamida qoidalarni chop eting",
-          "max_depth ni 1 dan 10 gacha o'zgartirib test aniqlikni kuzating"
-        ],
-        en: [
-          "Train DecisionTreeClassifier with max_depth=3 and criterion='gini'",
-          "Print human-readable rules using export_text()",
-          "Vary max_depth from 1 to 10 and observe overfitting"
-        ]
-      },
-      code: `from sklearn.datasets import load_iris
+      title: { uz: "L3: Iris va Breast Cancer da Qaror Daraxti va Pruning", en: "L3: Decision Trees & Cost-Complexity Pruning" },
+      objective: { uz: "Gini vs Entropy solishtirish, max_depth ta'sirini o'rganish va ccp_alpha orqali post-pruning bajarish.", en: "Compare Gini vs Entropy, sweep max_depth, and apply ccp_alpha pruning." },
+      steps: [
+        {
+          title: { uz: "Bazaviy daraxt va Qoidalarni chiqarish", en: "Train Baseline Tree & Export Rules" },
+          desc: { uz: "Iris datasetida max_depth=3 daraxt o'qiting.", en: "Train max_depth=3 tree on Iris and inspect text rules." },
+          code: `from sklearn.datasets import load_iris
 from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 iris = load_iris()
-X_train, X_test, y_train, y_test = train_test_split(
-    iris.data, iris.target, test_size=0.3, random_state=42
-)
-dt = DecisionTreeClassifier(max_depth=3, criterion='gini', random_state=42)
-dt.fit(X_train, y_train)
-print(f"Test Accuracy: {accuracy_score(y_test, dt.predict(X_test)):.3f}")
+X_tr, X_te, y_tr, y_te = train_test_split(iris.data, iris.target, test_size=0.3, random_state=42)
+dt = DecisionTreeClassifier(max_depth=3, criterion='gini', random_state=42).fit(X_tr, y_tr)
+print("Test Accuracy:", round(accuracy_score(y_te, dt.predict(X_te)), 3))
 print(export_text(dt, feature_names=list(iris.feature_names)))`
-    },
-    glossary: [
-      { uz: "Entropiya", en: "Entropy", defUz: "Tugundagi sinflar noaniqligi o'lchovi", defEn: "Measure of class uncertainty or impurity in a node" },
-      { uz: "Gini indeksi", en: "Gini Index", defUz: "Tasodifiy elementni noto'g'ri tasniflash ehtimoli", defEn: "Probability of misclassifying a randomly chosen element" },
-      { uz: "Pruning (Budash)", en: "Pruning", defUz: "Overfittingni kamaytirish uchun ortiqcha shoxlarni qisqartirish", defEn: "Trimming tree branches to prevent overfitting" }
-    ],
-    quiz: [
-      {
-        q: { uz: "Qaror daraxtida \"barg\" (leaf node) nima?", en: "What does a leaf node represent in a Decision Tree?" },
-        options: [
-          { label: 'A', uz: "Birinchi ajralish nuqtasi", en: "First splitting attribute" },
-          { label: 'B', uz: "Yakuniy sinf bashorati", en: "Final predicted class label" },
-          { label: 'C', uz: "Atribut testi", en: "Attribute test condition" },
-          { label: 'D', uz: "Ortiqcha tugun", en: "A redundant branch" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Barg tugunlar daraxtning oxirgi nuqtasi bo'lib, yakuniy sinfni qaytaradi.", en: "Leaf nodes are terminal nodes outputting the final class prediction." }
-      },
-      {
-        q: { uz: "Entropiya H=0 bo'lsa, bu nimani anglatadi?", en: "What does Entropy H = 0 mean?" },
-        options: [
-          { label: 'A', uz: "Obyektlar teng taqsimlangan", en: "Classes are equally mixed" },
-          { label: 'B', uz: "Barcha obyektlar bir xil sinfda (sof)", en: "All instances belong to a single class (pure)" },
-          { label: 'C', uz: "Ma'lumot yetishmaydi", en: "Missing data exists" },
-          { label: 'D', uz: "Daraxt juda chuqur", en: "The tree is too deep" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Noaniqlik nolga teng bo'lganda barcha namunalar bitta sinfga tegishli bo'ladi.", en: "Zero entropy means zero impurity — 100% of samples belong to one class." }
-      },
-      {
-        q: { uz: "ID3 algoritmi qaysi mezondan foydalanadi?", en: "Which split criterion does ID3 use?" },
-        options: [
-          { label: 'A', uz: "Gini indeksi", en: "Gini Index" },
-          { label: 'B', uz: "Information Gain", en: "Information Gain" },
-          { label: 'C', uz: "MSE", en: "MSE" },
-          { label: 'D', uz: "Silhouette", en: "Silhouette Score" }
-        ],
-        answer: 'B',
-        explanation: { uz: "ID3 Information Gain asosida, CART esa Gini indeksi asosida bo'ladi.", en: "ID3 splits by maximizing Information Gain; CART uses Gini Impurity." }
-      },
-      {
-        q: { uz: "Overfitting (ortiqcha o'rganish) belgilari qaysi?", en: "Which pattern clearly signals overfitting?" },
-        options: [
-          { label: 'A', uz: "O'quv past, test yuqori", en: "Low train, high test accuracy" },
-          { label: 'B', uz: "O'quv juda yuqori, test past", en: "Very high train accuracy, much lower test accuracy" },
-          { label: 'C', uz: "Ikkalasi ham past", en: "Both train and test are low" },
-          { label: 'D', uz: "Ikkalasi ham yuqori", en: "Both train and test are high" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Model o'quv ma'lumotini yodlab olgan, lekin yangi ma'lumotga umumlashtira olmayapti.", en: "Memorizing training noise yields high train score but poor generalization on unseen test data." }
-      },
-      {
-        q: { uz: "CART algoritmi qaysi mezondan foydalanadi?", en: "Which impurity metric does CART use by default?" },
-        options: [
-          { label: 'A', uz: "Gain Ratio", en: "Gain Ratio" },
-          { label: 'B', uz: "Information Gain", en: "Information Gain" },
-          { label: 'C', uz: "Gini Index", en: "Gini Index" },
-          { label: 'D', uz: "Cosine Similarity", en: "Cosine Similarity" }
-        ],
-        answer: 'C',
-        explanation: { uz: "CART ikkilik daraxt qurishda Gini indeksini minimallaydi.", en: "CART builds binary trees using the Gini Impurity criterion." }
-      }
-    ]
-  },
-
-  {
-    id: 4,
-    slug: '04-classification-bayes',
-    hours: 2,
-    labs: 1,
-    keywords: ['Naive Bayes', 'k-NN', 'Bayes Theorem', 'Euclidean', 'Distance'],
-    title: {
-      uz: "Naive Bayes va k-NN algoritmlari",
-      en: "Naive Bayes & k-Nearest Neighbors"
-    },
-    description: {
-      uz: "Bayes teoremasi, shartli mustaqillik taxmini, Gaussian/Multinomial Naive Bayes hamda k-NN masofa o'lchovlari.",
-      en: "Bayes' theorem, conditional independence assumption, Gaussian & Multinomial NB, and distance-based k-NN."
-    },
-    sections: [
-      {
-        heading: { uz: "4.1. Naive Bayes tasniflagichi", en: "4.1. Naive Bayes Classifier" },
-        bodyHtml: {
-          uz: "<p><strong>Naive Bayes</strong> — Bayes teoremasiga asoslangan ehtimollik modeli. \"Naive\" deyilishiga sabab: barcha xususiyatlar sinf berilganda o'zaro <strong>mustaqil</strong> deb faraz qilinadi.</p><ul><li><strong>Gaussian NB:</strong> uzluksiz normal taqsimlangan sonlar.</li><li><strong>Multinomial NB:</strong> so'z chastotalari (spam filtri, matn).</li><li><strong>Bernoulli NB:</strong> ikkilik (0/1) belgilar.</li></ul>",
-          en: "<p><strong>Naive Bayes</strong> is a probabilistic classifier grounded in Bayes' Theorem. It is called \"naive\" because it assumes features are conditionally <strong>independent</strong> given the class.</p><ul><li><strong>Gaussian NB:</strong> continuous normally distributed features.</li><li><strong>Multinomial NB:</strong> word count vectors (spam filtering, text).</li><li><strong>Bernoulli NB:</strong> binary (0/1) feature presence.</li></ul>"
         },
-        formula: "P(C|X) = [ P(X|C) · P(C) ] / P(X)   where   P(X|C) ≈ Π P(x_i | C)"
-      },
-      {
-        heading: { uz: "4.2. k-NN (k-Eng Yaqin Qo'shni)", en: "4.2. k-Nearest Neighbors (k-NN)" },
-        bodyHtml: {
-          uz: "<p><strong>k-NN</strong> — o'qitish davri bo'lmagan (lazy learner) algoritm. Yangi obyektga eng yaqin <em>k</em> ta qo'shni topiladi va ko'pchilik ovozi bilan sinf belgilanadi.</p><p><strong>Muhim:</strong> k-NN masofa hisoblagani uchun normallashtirish majburiy! Kichik k (k=1) overfittingga, juda katta k underfittingga olib keladi.</p>",
-          en: "<p><strong>k-NN</strong> is a non-parametric lazy learner. At prediction time, it finds the <em>k</em> closest training points and assigns the majority class.</p><p><strong>Crucial:</strong> Feature scaling is mandatory for k-NN! Small k (k=1) risks overfitting to noise; overly large k causes underfitting.</p>"
+        {
+          title: { uz: "Overfitting egri chizig'i (max_depth = 1..12)", en: "Depth Sweep: Underfitting vs Overfitting" },
+          desc: { uz: "Breast Cancer datasetida Train va Test aniqligini taqqoslang.", en: "Plot train vs test accuracy across depths 1..12 on Breast Cancer." },
+          code: `from sklearn.datasets import load_breast_cancer
+bc = load_breast_cancer()
+X_tr, X_te, y_tr, y_te = train_test_split(bc.data, bc.target, test_size=0.3, random_state=42)
+for d in [1, 2, 3, 5, 8, None]:
+    m = DecisionTreeClassifier(max_depth=d, random_state=42).fit(X_tr, y_tr)
+    print(f"depth={str(d):4s} | train={m.score(X_tr, y_tr):.3f} | test={m.score(X_te, y_te):.3f}")`
         },
-        formula: "Euclidean: d = √Σ(x_i - y_i)²   |   Manhattan: d = Σ|x_i - y_i|"
-      }
-    ],
-    slides: [
-      {
-        title: { uz: "4-mavzu: Naive Bayes va k-NN", en: "Topic 4: Naive Bayes & k-NN" },
-        subtitle: { uz: "Ehtimollik va masofaga asoslangan tasniflash", en: "Probabilistic & Instance-Based Learning" },
-        points: {
-          uz: ["Bayes teoremasi va mustaqillik taxmini", "Gaussian, Multinomial, Bernoulli NB", "k-NN algoritmi va Evklid/Manhattan masofasi", "k ni tanlash va normallashtirish zarurati"],
-          en: ["Bayes' Theorem & independence assumption", "Gaussian, Multinomial & Bernoulli NB", "k-NN voting & Euclidean/Manhattan distance", "Choosing optimal k & feature scaling"]
+        {
+          title: { uz: "Post-Pruning (ccp_alpha)", en: "Cost-Complexity Post-Pruning" },
+          desc: { uz: "cost_complexity_pruning_path orqali optimal alpha ni toping.", en: "Evaluate pruned subtrees across ccp_alpha values." },
+          code: `path = DecisionTreeClassifier(random_state=42).cost_complexity_pruning_path(X_tr, y_tr)
+for alpha in path.ccp_alphas[::4]:
+    clf = DecisionTreeClassifier(random_state=42, ccp_alpha=alpha).fit(X_tr, y_tr)
+    print(f"alpha={alpha:.4f} | nodes={clf.tree_.node_count:3d} | test={clf.score(X_te, y_te):.3f}")`
         }
-      },
-      {
-        title: { uz: "Bayes Teoremasi", en: "Bayes' Theorem" },
-        formula: "P(C|X) = P(X|C) · P(C) / P(X)",
-        points: {
-          uz: ["Posterior: P(C|X) — izlanayotgan ehtimol", "Likelihood: P(X|C) — sinf ichidagi belgilar ehtimoli", "Prior: P(C) — sinfning boshlang'ich ulushi"],
-          en: ["Posterior P(C|X): updated probability of class C given X", "Likelihood P(X|C): probability of features X under class C", "Prior P(C): baseline class frequency"]
-        }
-      },
-      {
-        title: { uz: "k-NN Ishlash Tartibi va k qiymati", en: "How k-NN Works & Choosing k" },
-        points: {
-          uz: ["1. Barcha nuqtalargacha masofani hisoblash", "2. Eng yaqin k ta qo'shnini saralash", "3. Ko'pchilik ovozi bilan bashorat berish", "k=1: shovqinga sezgir (overfitting)", "Optimal k: Cross-Validation orqali topiladi (odatda toq son)"],
-          en: ["1. Compute distance to every training sample", "2. Pick the k nearest neighbors", "3. Predict majority class vote", "k=1: sensitive to noise (overfitting)", "Select optimal k via Cross-Validation"]
-        }
-      }
-    ],
-    lab: {
-      title: { uz: "L4: Wine datasetida Naive Bayes va k-NN", en: "L4: GaussianNB & k-NN Tuning on Wine Dataset" },
-      tasks: {
+      ],
+      variants: {
         uz: [
-          "StandardScaler bilan ma'lumotni normallashtiring",
-          "GaussianNB va k-NN aniqligini solishtiring",
-          "k=1..20 uchun 5-fold CV bilan optimal k ni toping"
+          "1-variant: criterion='entropy' va criterion='gini' ni 5-fold CV bilan solishtiring.",
+          "2-variant: plot_tree() bilan daraxt rasmini chizing va eng muhim 2 ta ildiz atributni yozing.",
+          "3-variant: min_samples_leaf=10 qo'yib barg tugunlar soni qanchaga kamayganini tekshiring."
         ],
         en: [
-          "Standardize features with StandardScaler before k-NN",
-          "Compare GaussianNB vs KNeighborsClassifier accuracy",
-          "Sweep k=1..20 with 5-fold cross-validation to find optimal k"
+          "Variant 1: Compare criterion='entropy' vs 'gini' using 5-fold cross-validation.",
+          "Variant 2: Plot the tree with plot_tree() and document the top 2 splitting features.",
+          "Variant 3: Set min_samples_leaf=10 and report leaf count reduction."
         ]
-      },
-      code: `from sklearn.datasets import load_wine
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
-import numpy as np
-
-wine = load_wine()
-X_train, X_test, y_train, y_test = train_test_split(wine.data, wine.target, test_size=0.3, random_state=42)
-scaler = StandardScaler()
-X_tr_s = scaler.fit_transform(X_train)
-X_te_s = scaler.transform(X_test)
-
-nb = GaussianNB().fit(X_train, y_train)
-print("GaussianNB:", round(nb.score(X_test, y_test), 3))
-
-scores = [cross_val_score(KNeighborsClassifier(k), X_tr_s, y_train, cv=5).mean() for k in range(1, 21)]
-best_k = int(np.argmax(scores)) + 1
-knn = KNeighborsClassifier(best_k).fit(X_tr_s, y_train)
-print(f"Best k={best_k}, k-NN:", round(knn.score(X_te_s, y_test), 3))`
+      }
     },
     glossary: [
-      { uz: "Posterior ehtimol", en: "Posterior Probability", defUz: "X belgilari kuzatilgandan keyingi C sinf ehtimoli P(C|X)", defEn: "Updated probability of class C after observing features X" },
-      { uz: "Lazy Learner", en: "Lazy Learner", defUz: "O'qitish bosqichisiz faqat bashorat paytida hisoblovchi model (k-NN)", defEn: "Algorithm deferring computation until query time (e.g., k-NN)" }
+      { uz: "Entropiya", en: "Entropy", defUz: "Tugundagi sinflar tartibsizligi o'lchovi", defEn: "Information-theoretic measure of node impurity" },
+      { uz: "Information Gain", en: "Information Gain", defUz: "Bo'linishdan keyingi entropiya kamayishi", defEn: "Reduction in entropy achieved by a split" },
+      { uz: "Gain Ratio", en: "Gain Ratio", defUz: "Ko'p qiymatli atributlarni jazolovchi normallashgan IG", defEn: "Normalized IG penalizing high-cardinality splits" },
+      { uz: "Gini indeksi", en: "Gini Impurity", defUz: "CART algoritmi ishlatadigan kvadratik nopoklik o'lchovi", defEn: "Quadratic impurity criterion used by CART" },
+      { uz: "Pruning", en: "Pruning", defUz: "Overfittingni oldini olish uchun daraxtni qirqish", defEn: "Trimming weak branches to prevent overfitting" }
     ],
     quiz: [
-      {
-        q: { uz: "Naive Bayesda \"naive\" (soddadil) so'zi nimani anglatadi?", en: "Why is Naive Bayes called \"naive\"?" },
-        options: [
-          { label: 'A', uz: "Algoritm juda eski", en: "The algorithm is outdated" },
-          { label: 'B', uz: "Atributlar o'zaro mustaqil deb taxmin qilinadi", en: "It assumes features are conditionally independent" },
-          { label: 'C', uz: "Faqat ikki sinf uchun ishlaydi", en: "It only supports binary classes" },
-          { label: 'D', uz: "O'qitish talab qilmaydi", en: "It requires no training" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Atributlar bir-biridan mustaqil degan kuchli soddalashtirish sababli shunday nomlangan.", en: "It makes the simplifying assumption that predictors are independent given the class." }
-      },
-      {
-        q: { uz: "k-NN da k=1 bo'lsa qanday xavf kuchayadi?", en: "What happens in k-NN when k=1?" },
-        options: [
-          { label: 'A', uz: "Underfitting", en: "Severe underfitting" },
-          { label: 'B', uz: "Overfitting va shovqinga sezgirlik", en: "Overfitting and high sensitivity to noise" },
-          { label: 'C', uz: "Normallashtirish kerak bo'lmaydi", en: "Scaling is no longer needed" },
-          { label: 'D', uz: "Barcha nuqtalar bir sinfga tushadi", en: "All points collapse to one class" }
-        ],
-        answer: 'B',
-        explanation: { uz: "k=1 faqat bitta eng yaqin nuqtaga qaraydi, shuning uchun bitta shovqin nuqta qarorni buzadi.", en: "With k=1, a single noisy neighbor dictates the prediction." }
-      },
-      {
-        q: { uz: "k-NN da normallashtirish nima uchun zarur?", en: "Why is feature scaling critical for k-NN?" },
-        options: [
-          { label: 'A', uz: "Katta diapazonli ustunlar masofani bosib ketmasligi uchun", en: "So large-scale features don't dominate distance calculations" },
-          { label: 'B', uz: "Kategorik ustunlarni o'chirish uchun", en: "To remove categorical columns" },
-          { label: 'C', uz: "Prior ehtimollarni topish uchun", en: "To compute prior probabilities" },
-          { label: 'D', uz: "Daraxt chuqurligini kamaytirish uchun", en: "To prune tree depth" }
-        ],
-        answer: 'A',
-        explanation: { uz: "Masalan, 0–10000 daromad ustuni 0–100 yosh ustunidan masofani butunlay ustun qilib qo'yadi.", en: "Unscaled features with large magnitudes overwhelm smaller-scale attributes in Euclidean distance." }
-      },
-      {
-        q: { uz: "Gaussian Naive Bayes qaysi ma'lumotlar uchun mos?", en: "When is Gaussian Naive Bayes most appropriate?" },
-        options: [
-          { label: 'A', uz: "Faqat matn so'z chastotalari", en: "Only text word counts" },
-          { label: 'B', uz: "Uzluksiz, normal taqsimotga yaqin raqamli belgilar", en: "Continuous numeric features following roughly normal distributions" },
-          { label: 'C', uz: "Faqat 0/1 ikkilik belgilar", en: "Only binary 0/1 flags" },
-          { label: 'D', uz: "Tranzaksiya savatlari", en: "Market basket transactions" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Gaussian NB har bir uzluksiz atribut uchun o'rtacha va dispersiya bo'yicha normal taqsimot quradi.", en: "Gaussian NB models continuous features using class-conditional Gaussian distributions." }
-      },
-      {
-        q: { uz: "k-NN ning katta datasetlardagi asosiy kamchiligi nima?", en: "What is the main drawback of k-NN on massive datasets?" },
-        options: [
-          { label: 'A', uz: "O'qitish vaqti juda sekin", en: "Extremely slow training phase" },
-          { label: 'B', uz: "Bashorat paytida barcha nuqtalarga masofa hisoblash sekin (O(n))", en: "Slow prediction time O(n) and high memory storage" },
-          { label: 'C', uz: "Ko'p sinflarni ajrata olmaydi", en: "Cannot handle multi-class problems" },
-          { label: 'D', uz: "Chiziqsiz chegaralar qura olmaydi", en: "Cannot form non-linear decision boundaries" }
-        ],
-        answer: 'B',
-        explanation: { uz: "k-NN barcha o'quv ma'lumotini saqlaydi va har so'rovda masofalarni hisoblaydi.", en: "Because k-NN is lazy, query inference scales linearly with dataset size." }
-      }
-    ]
-  },
-
-  {
-    id: 5,
-    slug: '05-evaluation',
-    hours: 2,
-    labs: 1,
-    keywords: ['Confusion Matrix', 'Precision', 'Recall', 'F1-score', 'ROC', 'AUC'],
-    title: {
-      uz: "Tasniflash modellarini baholash",
-      en: "Model Evaluation Metrics & Validation"
-    },
-    description: {
-      uz: "Confusion Matrix, Accuracy tuzog'i, Precision, Recall, F1-score, ROC-AUC va K-katlamli Cross-Validation.",
-      en: "Confusion Matrix, the accuracy paradox, Precision, Recall, F1-score, ROC-AUC curves, and K-Fold CV."
-    },
-    sections: [
-      {
-        heading: { uz: "5.1. Accuracy tuzog'i va Confusion Matrix", en: "5.1. The Accuracy Paradox & Confusion Matrix" },
-        bodyHtml: {
-          uz: "<p>Agar 100 ta tranzaksiyadan 95 tasi oddiy, 5 tasi firibgar bo'lsa, hammani \"oddiy\" deydigan foydasiz model ham <strong>95% Accuracy</strong> beradi! Shuning uchun <strong>Confusion Matrix</strong> (TP, TN, FP, FN) tahlili zarur.</p>",
-          en: "<p>If 95% of transactions are legitimate and 5% are fraud, a useless dummy model predicting \"legit\" achieves <strong>95% Accuracy</strong>! Thus we inspect the <strong>Confusion Matrix</strong> (TP, TN, FP, FN).</p>"
-        },
-        table: {
-          headers: { uz: ["", "Bashorat: Musbat", "Bashorat: Manfiy"], en: ["", "Predicted Positive", "Predicted Negative"] },
-          rows: {
-            uz: [
-              ["Haqiqiy: Musbat", "TP (To'g'ri musbat)", "FN (2-tur xato — o'tkazib yuborish)"],
-              ["Haqiqiy: Manfiy", "FP (1-tur xato — yolg'on signal)", "TN (To'g'ri manfiy)"]
-            ],
-            en: [
-              ["Actual Positive", "TP (True Positive)", "FN (False Negative / Type II)"],
-              ["Actual Negative", "FP (False Positive / Type I)", "TN (True Negative)"]
-            ]
-          }
-        }
-      },
-      {
-        heading: { uz: "5.2. Precision, Recall, F1-score va ROC-AUC", en: "5.2. Precision, Recall, F1-score & ROC-AUC" },
-        bodyHtml: {
-          uz: "<ul><li><strong>Precision:</strong> spam filtri uchun muhim (muhim xatni spamga tashlamaslik — FP kam bo'lishi).</li><li><strong>Recall:</strong> tibbiy diagnostika va firibgarlikda muhim (kasalni o'tkazib yubormaslik — FN kam bo'lishi).</li><li><strong>F1-score:</strong> Precision va Recall ning garmonik o'rtachasi.</li><li><strong>ROC-AUC:</strong> AUC=1.0 mukammal, AUC=0.5 tasodifiy model.</li></ul>",
-          en: "<ul><li><strong>Precision:</strong> crucial when False Positives are costly (e.g., spam filtering).</li><li><strong>Recall:</strong> crucial when False Negatives are dangerous (e.g., cancer screening, fraud).</li><li><strong>F1-score:</strong> harmonic mean balancing Precision and Recall.</li><li><strong>ROC-AUC:</strong> AUC=1.0 is ideal; AUC=0.5 equals random guessing.</li></ul>"
-        },
-        formula: "Precision = TP/(TP+FP)  |  Recall = TP/(TP+FN)  |  F1 = 2·P·R/(P+R)"
-      }
-    ],
-    slides: [
-      {
-        title: { uz: "5-mavzu: Modellarni baholash", en: "Topic 5: Model Evaluation Metrics" },
-        subtitle: { uz: "Confusion Matrix, Precision/Recall, ROC-AUC, CV", en: "Beyond Accuracy: Imbalanced Data & Validation" },
-        points: {
-          uz: ["Accuracy paradoksi (noteng sinflar)", "Confusion Matrix: TP, FP, FN, TN", "Precision vs Recall vs F1-score", "ROC egri chizig'i, AUC va K-Fold CV"],
-          en: ["The Accuracy Paradox on imbalanced classes", "Confusion Matrix: TP, FP, FN, TN", "Precision vs Recall vs F1-score", "ROC Curve, AUC & K-Fold Cross-Validation"]
-        }
-      },
-      {
-        title: { uz: "Baholash formulalari", en: "Core Evaluation Formulas" },
-        formula: "Accuracy = (TP+TN)/N  |  P = TP/(TP+FP)  |  R = TP/(TP+FN)  |  F1 = 2PR/(P+R)",
-        points: {
-          uz: ["Spam filtri → Precision muhim (FP kamaytirish)", "Saraton diagnostikasi → Recall muhim (FN kamaytirish)", "Noteng sinflar muvozanati → F1-score"],
-          en: ["Spam filter → optimize Precision (avoid false alarms)", "Disease screening → optimize Recall (catch every patient)", "Balanced trade-off → F1-score"]
-        }
-      },
-      {
-        title: { uz: "ROC-AUC va K-Fold Cross-Validation", en: "ROC-AUC & K-Fold Cross-Validation" },
-        points: {
-          uz: ["ROC: barcha thresholdlarda TPR (y) va FPR (x) grafigi", "AUC = 1.0 mukammal | AUC = 0.5 tasodifiy", "K-Fold CV (k=5 yoki 10): ma'lumotni k qismga bo'lib har birini navbat bilan test qilish"],
-          en: ["ROC plots TPR vs FPR across all probability thresholds", "AUC = 1.0 perfect | AUC = 0.5 random coin flip", "K-Fold CV: average score across k rotating validation folds"]
-        }
-      }
-    ],
-    lab: {
-      title: { uz: "L5: Breast Cancer datasetida ROC-AUC va CV", en: "L5: Confusion Matrix, ROC-AUC & 5-Fold CV" },
-      tasks: {
-        uz: [
-          "Confusion Matrixdan TP, FN, FP, TN qiymatlarini ajrating",
-          "Precision, Recall va F1 ni qo'lda ham hisoblang",
-          "ROC egri chizig'i va 5-katlamli CV o'rtachasini chiqaring"
-        ],
-        en: [
-          "Extract TP, FN, FP, TN from confusion_matrix()",
-          "Verify Precision, Recall, and F1 against classification_report()",
-          "Compute ROC-AUC and 5-fold cross-validation mean ± std"
-        ]
-      },
-      code: `from sklearn.datasets import load_breast_cancer
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix, roc_auc_score, classification_report
-
-data = load_breast_cancer()
-X_tr, X_te, y_tr, y_te = train_test_split(data.data, data.target, test_size=0.3, random_state=42)
-clf = DecisionTreeClassifier(max_depth=5, random_state=42).fit(X_tr, y_tr)
-y_pred = clf.predict(X_te)
-y_prob = clf.predict_proba(X_te)[:, 1]
-
-print("Confusion Matrix:\\n", confusion_matrix(y_te, y_pred))
-print("ROC AUC:", round(roc_auc_score(y_te, y_prob), 3))
-cv = cross_val_score(clf, data.data, data.target, cv=5)
-print(f"5-Fold CV: {cv.mean():.3f} ± {cv.std():.3f}")`
-    },
-    glossary: [
-      { uz: "Precision", en: "Precision", defUz: "Musbat deb bashorat qilinganlar orasida haqiqiy musbatlar ulushi", defEn: "Share of predicted positives that are truly positive" },
-      { uz: "Recall", en: "Recall", defUz: "Barcha haqiqiy musbatlarning model topa olgan ulushi", defEn: "Share of actual positives successfully detected" },
-      { uz: "AUC", en: "AUC", defUz: "ROC egri chizig'i ostidagi maydon (0.5–1.0)", defEn: "Area Under the ROC Curve measuring class separation" }
-    ],
-    quiz: [
-      {
-        q: { uz: "Tibbiy diagnostikada (kasallikni aniqlash) qaysi ko'rsatkich muhimroq?", en: "Which metric is most critical in medical disease screening?" },
-        options: [
-          { label: 'A', uz: "Precision", en: "Precision" },
-          { label: 'B', uz: "Recall", en: "Recall" },
-          { label: 'C', uz: "Accuracy", en: "Accuracy" },
-          { label: 'D', uz: "Support", en: "Support" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Kasallikni o'tkazib yubormaslik (FN ni minimallashtirish) hayotiy muhim, shuning uchun Recall ustun.", en: "Missing a sick patient (False Negative) is dangerous, so maximizing Recall is vital." }
-      },
-      {
-        q: { uz: "AUC = 0.5 nimani anglatadi?", en: "What does AUC = 0.5 indicate?" },
-        options: [
-          { label: 'A', uz: "Mukammal model", en: "A perfect classifier" },
-          { label: 'B', uz: "Tasodifiy taxmin bilan teng model", en: "No better than random guessing" },
-          { label: 'C', uz: "50% overfitting", en: "50% overfitting" },
-          { label: 'D', uz: "Hisoblash xatosi", en: "Calculation error" }
-        ],
-        answer: 'B',
-        explanation: { uz: "AUC=0.5 ROC grafigida diagonal chiziqqa to'g'ri keladi — model sinflarni ajrata olmaydi.", en: "AUC=0.5 sits on the diagonal line representing pure random chance." }
-      },
-      {
-        q: { uz: "Spam filtri uchun (muhim xatni bloklamaslik) qaysi ko'rsatkich muhimroq?", en: "For an email spam filter (avoiding blocking important mail), which matters more?" },
-        options: [
-          { label: 'A', uz: "Recall", en: "Recall" },
-          { label: 'B', uz: "Precision", en: "Precision" },
-          { label: 'C', uz: "WCSS", en: "WCSS" },
-          { label: 'D', uz: "Lift", en: "Lift" }
-        ],
-        answer: 'B',
-        explanation: { uz: "Oddiy xatni spamga tashlash (FP) zararli, shuning uchun Precision yuqori bo'lishi kerak.", en: "Minimizing False Positives (good emails marked spam) requires high Precision." }
-      },
-      {
-        q: { uz: "Confusion matrisada FN (False Negative) nima?", en: "What is a False Negative (FN)?" },
-        options: [
-          { label: 'A', uz: "Musbatni musbat deb topish", en: "Predicting positive for actual positive" },
-          { label: 'B', uz: "Manfiyni manfiy deb topish", en: "Predicting negative for actual negative" },
-          { label: 'C', uz: "Haqiqiy musbatni manfiy deb o'tkazib yuborish", en: "Predicting negative when actual class is positive" },
-          { label: 'D', uz: "Manfiyni musbat deyish", en: "Predicting positive when actual is negative" }
-        ],
-        answer: 'C',
-        explanation: { uz: "FN — musbat holatni sezmay qolish (2-tur xato).", en: "FN is a Type II error where a true positive case is missed." }
-      },
-      {
-        q: { uz: "5-katlamli cross-validation da ma'lumot necha marta test sifatida ishlatiladi?", en: "In 5-fold cross-validation, how many times is each fold used as test data?" },
-        options: [
-          { label: 'A', uz: "1 marta (umumiy 5 ta iteratsiyada)", en: "Once per fold across 5 total iterations" },
-          { label: 'B', uz: "Faqat bitta tasodifiy bo'linishda", en: "Only once on a single fixed split" },
-          { label: 'C', uz: "10 marta", en: "10 times" },
-          { label: 'D', uz: "Hech qachon", en: "Never" }
-        ],
-        answer: 'A',
-        explanation: { uz: "5 ta teng qismning har biri 5 ta iteratsiya davomida aniq 1 martadan test to'plami bo'ladi.", en: "Across 5 iterations, each of the 5 folds serves once as the validation set." }
-      }
+      { q: { uz: "Qaror daraxtida \"barg\" (leaf node) nima?", en: "What is a leaf node in a Decision Tree?" }, options: [{ label: 'A', uz: "Ildiz ajralish", en: "Root split" }, { label: 'B', uz: "Yakuniy sinf bashorati", en: "Final predicted class label" }, { label: 'C', uz: "Atribut testi", en: "Attribute test" }, { label: 'D', uz: "Shox", en: "Branch" }], answer: 'B', explanation: { uz: "Barg tugun yakuniy bashoratni qaytaradi.", en: "Leaf nodes represent terminal class predictions." } },
+      { q: { uz: "Entropiya H=0 nimani bildiradi?", en: "What does Entropy H = 0 mean?" }, options: [{ label: 'A', uz: "50/50 teng aralash", en: "50/50 split" }, { label: 'B', uz: "Barcha obyektlar bir sinfda (sof)", en: "All instances share one class (pure)" }, { label: 'C', uz: "Bo'sh tugun", en: "Empty node" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "Noaniqlik nolga teng — tugun sof.", en: "Zero uncertainty means 100% single-class purity." } },
+      { q: { uz: "ID3 ning ko'p qiymatli ustunga og'ib ketish muammosini C4.5 qanday hal qiladi?", en: "How does C4.5 fix ID3's bias toward many-valued attributes?" }, options: [{ label: 'A', uz: "Gini indeksi bilan", en: "With Gini Index" }, { label: 'B', uz: "Gain Ratio bilan", en: "With Gain Ratio" }, { label: 'C', uz: "PCA bilan", en: "With PCA" }, { label: 'D', uz: "K-Means bilan", en: "With K-Means" }], answer: 'B', explanation: { uz: "Gain Ratio IG ni SplitInfo ga bo'lib ko'p shoxli ustunlarni jazolaydi.", en: "Gain Ratio divides IG by SplitInfo." } },
+      { q: { uz: "Overfitting belgilari qaysi?", en: "Which metric pattern shows overfitting?" }, options: [{ label: 'A', uz: "Train past, Test yuqori", en: "Low train, high test" }, { label: 'B', uz: "Train 99%, Test 65%", en: "Train 99%, Test 65%" }, { label: 'C', uz: "Ikkalasi 65%", en: "Both 65%" }, { label: 'D', uz: "Ikkalasi 98%", en: "Both 98%" }], answer: 'B', explanation: { uz: "O'quv ma'lumotini yodlab olgan model testda yomon natija beradi.", en: "Large gap between high train accuracy and low test accuracy." } },
+      { q: { uz: "CART algoritmi qaysi mezon va tuzilmani ishlatadi?", en: "Which metric and tree structure does CART use?" }, options: [{ label: 'A', uz: "Information Gain, ko'p shoxli", en: "IG, multi-way" }, { label: 'B', uz: "Gini indeksi, ikkilik (binary) daraxt", en: "Gini Index, strictly binary tree" }, { label: 'C', uz: "Gain Ratio, ko'p shoxli", en: "Gain Ratio, multi-way" }, { label: 'D', uz: "Z-score", en: "Z-score" }], answer: 'B', explanation: { uz: "CART har tugunda Gini bilan ikkilik bo'linish qiladi.", en: "CART splits every node into 2 children using Gini impurity." } }
     ]
   }
 );
