@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Lecture Slides — Data Mining (Reveal.js)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/night.css" id="reveal-theme">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <style>
+    body {
+      margin: 0;
+      background: #0b1120;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .slides-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 52px;
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #24324d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      gap: 0.75rem;
+      color: #f1f5f9;
+      font-size: 0.85rem;
+    }
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .topbar-btn {
+      background: #162033;
+      color: #f1f5f9;
+      border: 1px solid #24324d;
+      border-radius: 8px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .topbar-btn:hover {
+      border-color: #f59e0b;
+      color: #f59e0b;
+    }
+    .topbar-btn.active {
+      background: #f59e0b;
+      color: #0b1120;
+      border-color: #f59e0b;
+    }
+    .topic-select {
+      background: #162033;
+      color: #f1f5f9;
+      border: 1px solid #24324d;
+      border-radius: 8px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.82rem;
+      max-width: 320px;
+    }
+    .reveal-wrapper {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    .reveal {
+      font-size: 30px;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      color: #f59e0b;
+      font-weight: 700;
+    }
+    .reveal h1 { font-size: 1.75em; }
+    .reveal h2 { font-size: 1.3em; margin-bottom: 0.6em; }
+    .reveal ul {
+      display: block;
+      text-align: left;
+      margin: 0.5em auto;
+      max-width: 880px;
+    }
+    .reveal li {
+      margin-bottom: 0.45em;
+      line-height: 1.4;
+      color: #e2e8f0;
+      font-size: 0.88em;
+    }
+    .slide-subtitle {
+      color: #94a3b8;
+      font-size: 0.78em;
+      margin-bottom: 0.8em;
+    }
+    .slide-formula {
+      background: #080d18;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 10px;
+      padding: 0.55em 0.85em;
+      color: #fde68a;
+      font-family: monospace;
+      font-size: 0.76em;
+      margin: 0.6em auto;
+      max-width: 880px;
+    }
+    .slide-note {
+      background: rgba(59, 130, 246, 0.14);
+      border-left: 4px solid #3b82f6;
+      padding: 0.5em 0.8em;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.72em;
+      color: #cbd5e1;
+      text-align: left;
+      max-width: 880px;
+      margin: 0.7em auto 0;
+    }
+    .reveal table {
+      margin: 0.5em auto;
+      font-size: 0.68em;
+      border-collapse: collapse;
+    }
+    .reveal table th {
+      background: #162033;
+      color: #f59e0b;
+      border: 1px solid #334155;
+      padding: 0.45em 0.75em;
+    }
+    .reveal table td {
+      border: 1px solid #334155;
+      padding: 0.4em 0.75em;
+      color: #e2e8f0;
+    }
+    .reveal pre {
+      width: 92%;
+      font-size: 0.55em;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    }
+    .hint-keys {
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+    @media (max-width: 720px) {
+      .hint-keys { display: none; }
+      .topic-select { max-width: 170px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="slides-topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="topbar-btn" id="btn-home">← Kurs</a>
+      <select class="topic-select" id="slide-topic-select" aria-label="Select topic"></select>
+      <a href="topic.html?id=1" class="topbar-btn" id="btn-notes">📖 Notes</a>
+    </div>
+    <div class="topbar-right">
+      <span class="hint-keys" id="hint-keys">←/→ · Esc · F</span>
+      <button type="button" class="topbar-btn" id="btn-uz">O'Z</button>
+      <button type="button" class="topbar-btn" id="btn-en">EN</button>
+    </div>
+  </div>
+
+  <div class="reveal-wrapper">
+    <div class="reveal">
+      <div class="slides" id="reveal-slides-container"></div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data-topics-1.js"></script>
+  <script src="js/data-topics-2.js"></script>
+  <script src="js/data-topics-3.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+  <script>
+    (function () {
+      const topics = window.DM_TOPICS;
+      const params = new URLSearchParams(window.location.search);
+      let currentId = Math.min(topics.length, Math.max(1, Number(params.get('topic')) || 1));
+      let deck = null;
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
+      function renderDeck() {
+        const lang = window.DM_APP.getLang();
+        const topic = topics.find((t) => t.id === currentId) || topics[0];
+
+        document.title = `${topic.id}. ${topic.title[lang]} — Slides (Reveal.js)`;
+        document.getElementById('btn-home').textContent = lang === 'uz' ? '← Bosh sahifa' : '← Course Home';
+        document.getElementById('btn-notes').href = `topic.html?id=${topic.id}`;
+        document.getElementById('btn-notes').textContent = lang === 'uz' ? '📖 Ma\'ruza' : '📖 Study Notes';
+        document.getElementById('btn-uz').classList.toggle('active', lang === 'uz');
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+        const sel = document.getElementById('slide-topic-select');
+        sel.innerHTML = topics.map((tp) => `
+          <option value="${tp.id}" ${tp.id === currentId ? 'selected' : ''}>${tp.id}. ${tp.title[lang]}</option>
+        `).join('');
+
+        const container = document.getElementById('reveal-slides-container');
+        let html = '';
+
+        topic.slides.forEach((sl, idx) => {
+          html += `<section>`;
+          if (idx === 0) {
+            html += `<p style="font-size:0.65em; color:#94a3b8; letter-spacing:0.08em; text-transform:uppercase;">MITQ2506 · DATA MINING · TOPIC ${topic.id}</p>`;
+            html += `<h1>${sl.title[lang]}</h1>`;
+          } else {
+            html += `<h2>${sl.title[lang]}</h2>`;
+          }
+          if (sl.subtitle) {
+            html += `<div class="slide-subtitle">${sl.subtitle[lang]}</div>`;
+          }
+          if (sl.formula) {
+            html += `<div class="slide-formula">${escapeHtml(sl.formula)}</div>`;
+          }
+          if (sl.points && sl.points[lang]) {
+            html += `<ul>${sl.points[lang].map((pt) => `<li class="fragment fade-in">${pt}</li>`).join('')}</ul>`;
+          }
+          if (sl.table) {
+            html += `<table><thead><tr>${sl.table.headers[lang].map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${sl.table.rows[lang].map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+          }
+          if (sl.code) {
+            html += `<pre><code class="language-python" data-trim>${escapeHtml(sl.code)}</code></pre>`;
+          }
+          if (sl.note) {
+            html += `<div class="slide-note">${sl.note[lang]}</div>`;
+          }
+          html += `</section>`;
+        });
+
+        if (topic.glossary && topic.glossary.length) {
+          html += `<section>
+            <h2>${lang === 'uz' ? 'Asosiy Atamalar (Glossary)' : 'Key Terminology'}</h2>
+            <table>
+              <thead><tr><th>O'zbekcha</th><th>English</th><th>${lang === 'uz' ? 'Ta\'rif' : 'Definition'}</th></tr></thead>
+              <tbody>
+                ${topic.glossary.map((g) => `<tr><td><strong>${g.uz}</strong></td><td>${g.en}</td><td>${lang === 'uz' ? g.defUz : g.defEn}</td></tr>`).join('')}
+              </tbody>
+            </table>
+          </section>`;
+        }
+
+        if (topic.lab) {
+          html += `<section>
+            <h2>💻 ${topic.lab.title[lang]}</h2>
+            <pre><code class="language-python" data-trim>${escapeHtml(topic.lab.code)}</code></pre>
+          </section>`;
+        }
+
+        const nextTopic = topics.find((t) => t.id === topic.id + 1);
+        html += `<section>
+          <h2>${lang === 'uz' ? 'Navbatdagi qadamlar' : 'Next Steps'}</h2>
+          <ul>
+            <li>📝 <a href="topic.html?id=${topic.id}#topic-quiz">${lang === 'uz' ? `${topic.id}-mavzu bo'yicha 5 ta testni yeching` : `Take the 5-question Topic ${topic.id} Quiz`}</a></li>
+            <li>🧪 <a href="practice.html">${lang === 'uz' ? 'Amaliy masalalar va kalkulyatorlarda mashq qiling' : 'Practice with hands-on exercises & calculators'}</a></li>
+            ${nextTopic ? `<li>➡️ <a href="slides.html?topic=${nextTopic.id}">${lang === 'uz' ? 'Keyingi slaydlar' : 'Next Deck'}: ${nextTopic.id}. ${nextTopic.title[lang]}</a></li>` : ''}
+          </ul>
+        </section>`;
+
+        container.innerHTML = html;
+
+        if (!deck) {
+          deck = new Reveal({
+            hash: false,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            plugins: [RevealHighlight, RevealNotes]
+          });
+          deck.initialize();
+        } else {
+          deck.sync();
+          deck.slide(0);
+          if (window.hljs) {
+            container.querySelectorAll('pre code').forEach((el) => {
+              delete el.dataset.highlighted;
+              window.hljs.highlightElement(el);
+            });
+          }
+        }
+      }
+
+      document.getElementById('slide-topic-select').addEventListener('change', (e) => {
+        currentId = Number(e.target.value);
+        const url = new URL(window.location.href);
+        url.searchParams.set('topic', currentId);
+        window.history.replaceState({}, '', url.toString());
+        renderDeck();
+      });
+
+      document.getElementById('btn-uz').addEventListener('click', () => {
+        window.DM_APP.setLang('uz');
+        renderDeck();
+      });
+
+      document.getElementById('btn-en').addEventListener('click', () => {
+        window.DM_APP.setLang('en');
+        renderDeck();
+      });
+
+      renderDeck();
+    })();
+  </script>
+</body>
+</html>
