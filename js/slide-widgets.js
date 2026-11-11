@@ -33,11 +33,11 @@
   }
 
   function boxStyle() {
-    return 'background:#0f172a;border:1px solid #334155;border-radius:12px;padding:14px 16px;color:#e2e8f0;text-align:left;font-size:15px;';
+    return 'background:var(--sw-panel, #0f172a);border:1px solid var(--sw-border, #334155);border-radius:14px;padding:16px 18px;color:var(--sw-text, #e2e8f0);text-align:left;font-size:18px;';
   }
 
   function btnStyle(active) {
-    return `padding:5px 11px;border-radius:7px;border:1px solid ${active ? '#f59e0b' : '#334155'};background:${active ? '#f59e0b' : '#1e293b'};color:${active ? '#0b1120' : '#e2e8f0'};font-weight:600;font-size:13px;cursor:pointer;`;
+    return `padding:7px 13px;border-radius:8px;border:1px solid ${active ? '#f59e0b' : 'var(--sw-border, #334155)'};background:${active ? '#f59e0b' : 'var(--sw-btn, #1e293b)'};color:${active ? '#0b1120' : 'var(--sw-text, #e2e8f0)'};font-weight:700;font-size:15px;cursor:pointer;`;
   }
 
   // 1. KDD Pipeline Explorer
@@ -58,7 +58,7 @@
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
           ${stages.map((st, i) => `<button type="button" data-idx="${i}" style="${btnStyle(i === active)}">${st.n}. ${st[lang]}</button>`).join('')}
         </div>
-        <div style="background:#162033;border-left:4px solid #f59e0b;padding:12px;border-radius:0 8px 8px 0;">
+        <div style="background:var(--sw-sub, #162033);border-left:4px solid #f59e0b;padding:12px;border-radius:0 8px 8px 0;">
           <strong style="color:#fbbf24;">${s.n}. ${s[lang]}</strong>
           <p style="margin:6px 0 0;line-height:1.5;">${lang === 'uz' ? s.dUz : s.dEn}</p>
         </div>
@@ -224,10 +224,10 @@
           <input type="range" id="roc-thr" min="0.1" max="0.9" step="0.05" value="${thr}" style="flex:1;">
         </div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-bottom:8px;">
-          <div style="background:#162033;padding:8px;border-radius:8px;"><strong>TP: ${tp}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><strong>FP: ${fp}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><strong>FN: ${fn}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><strong>TN: ${tn}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TP: ${tp}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FP: ${fp}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FN: ${fn}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TN: ${tn}</strong></div>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#fbbf24;">
           <span>Precision: ${(prec * 100).toFixed(0)}%</span>
@@ -405,9 +405,9 @@
           <input type="range" id="ens-n" min="1" max="50" value="${nTrees}" style="flex:1;">
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Single Tree</div><strong>Err: ${singleErr}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="font-size:12px;color:#10b981;">Random Forest</div><strong>Err: ${rfErr}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="font-size:12px;color:#fbbf24;">Grad. Boosting</div><strong>Err: ${gbErr}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Single Tree</div><strong>Err: ${singleErr}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#10b981;">Random Forest</div><strong>Err: ${rfErr}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#fbbf24;">Grad. Boosting</div><strong>Err: ${gbErr}</strong></div>
         </div>
       </div>`;
       el.querySelector('#ens-n').oninput = (e) => { nTrees = Number(e.target.value); draw(); };
@@ -579,7 +579,7 @@
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
           ${scales.map((sc, i) => `<button type="button" data-sc="${i}" style="${btnStyle(i === cur)}">${sc[lang]}</button>`).join('')}
         </div>
-        <div style="background:#162033;padding:10px 12px;border-radius:8px;font-size:13px;">
+        <div style="background:var(--sw-sub, #162033);padding:10px 12px;border-radius:8px;font-size:13px;">
           <div><strong>${lang === 'uz' ? 'Ruxsat etilgan amallar:' : 'Valid Operations:'}</strong> <span style="color:#fbbf24;">${s.ops}</span></div>
           <div><strong>${lang === 'uz' ? 'Markaziy o\'lchov:' : 'Central Tendency:'}</strong> ${s.stat}</div>
           <div><strong>${lang === 'uz' ? 'Misollar:' : 'Examples:'}</strong> ${lang === 'uz' ? s.exUz : s.exEn}</div>
@@ -630,9 +630,9 @@
           <input type="range" id="fs-p" min="0" max="1" step="0.05" value="${p}" style="flex:1;">
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:13px;">
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#3b82f6;">Entropy</div><strong>${ent.toFixed(3)}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#f59e0b;">Gini (max 0.5)</div><strong>${gini.toFixed(3)}</strong></div>
-          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#10b981;">Misclass. Error</div><strong>${err.toFixed(3)}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#3b82f6;">Entropy</div><strong>${ent.toFixed(3)}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#f59e0b;">Gini (max 0.5)</div><strong>${gini.toFixed(3)}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#10b981;">Misclass. Error</div><strong>${err.toFixed(3)}</strong></div>
         </div>
       </div>`;
       el.querySelector('#fs-p').oninput = (e) => { p = Number(e.target.value); draw(); };

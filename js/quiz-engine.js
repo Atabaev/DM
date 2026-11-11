@@ -220,21 +220,22 @@
     if (!ex || !slot) return;
     if (ex.type === 'mcq') {
       slot.innerHTML = `
-        <div style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:14px;text-align:left;font-size:17px;">
-          <div style="font-weight:700;margin-bottom:10px;color:#fbbf24;">${ex.q[lang]}</div>
-          <div style="display:grid;gap:6px;">
-            ${ex.options.map((o) => `<button type="button" data-o="${o.label}" style="text-align:left;padding:8px 12px;border-radius:8px;border:1px solid #334155;background:#162033;color:#e2e8f0;cursor:pointer;font-size:15px;"><strong>${o.label})</strong> ${o[lang]}</button>`).join('')}
+        <div class="slide-ex-card">
+          <div class="slide-ex-title">${ex.q[lang]}</div>
+          <div class="slide-ex-options">
+            ${ex.options.map((o) => `<button type="button" class="slide-ex-opt" data-o="${o.label}"><strong>${o.label})</strong> ${o[lang]}</button>`).join('')}
           </div>
-          <div id="sl-mcq-fb" style="margin-top:8px;font-size:14px;"></div>
+          <div class="slide-ex-fb" id="sl-mcq-fb"></div>
         </div>`;
       slot.querySelectorAll('[data-o]').forEach((b) => {
         b.onclick = () => {
           const ok = b.dataset.o === ex.answer;
           slot.querySelectorAll('[data-o]').forEach((x) => {
-            x.style.borderColor = x.dataset.o === ex.answer ? '#10b981' : (x === b ? '#ef4444' : '#334155');
-            x.style.background = x.dataset.o === ex.answer ? 'rgba(16,185,129,0.2)' : (x === b && !ok ? 'rgba(239,68,68,0.2)' : '#162033');
+            x.classList.remove('correct', 'wrong');
+            if (x.dataset.o === ex.answer) x.classList.add('correct');
+            else if (x === b && !ok) x.classList.add('wrong');
           });
-          slot.querySelector('#sl-mcq-fb').innerHTML = `<span style="color:${ok ? '#10b981' : '#f87171'};">${ok ? '✓ ' : '✗ '}${ex.explanation[lang]}</span>`;
+          slot.querySelector('#sl-mcq-fb').innerHTML = `<span class="${ok ? 'fb-ok' : 'fb-bad'}">${ok ? '✓ ' : '✗ '}${ex.explanation[lang]}</span>`;
         };
       });
     } else if (ex.type === 'matching') {
@@ -243,14 +244,14 @@
       let sel = null, done = new Set();
       function drawM() {
         slot.innerHTML = `
-          <div style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;text-align:left;font-size:15px;">
-            <div style="margin-bottom:8px;color:#fbbf24;font-weight:700;">🔗 ${lang === 'uz' ? 'Moslashtiring' : 'Match Pairs'} (${done.size}/${pairs.length})</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div style="display:flex;flex-direction:column;gap:5px;">
-                ${pairs.map((p, i) => `<button type="button" data-ml="${i}" ${done.has(i) ? 'disabled' : ''} style="text-align:left;padding:6px 10px;border-radius:7px;border:1px solid ${done.has(i) ? '#10b981' : sel === i ? '#f59e0b' : '#334155'};background:${done.has(i) ? 'rgba(16,185,129,0.18)' : sel === i ? 'rgba(245,158,11,0.18)' : '#162033'};color:#e2e8f0;cursor:pointer;font-size:14px;">${p.left[lang]}</button>`).join('')}
+          <div class="slide-ex-card">
+            <div class="slide-ex-title">🔗 ${lang === 'uz' ? 'Moslashtiring' : 'Match Pairs'} (${done.size}/${pairs.length})</div>
+            <div class="slide-match-grid">
+              <div class="slide-match-col">
+                ${pairs.map((p, i) => `<button type="button" class="slide-ex-opt ${done.has(i) ? 'correct' : sel === i ? 'selected' : ''}" data-ml="${i}" ${done.has(i) ? 'disabled' : ''}>${p.left[lang]}</button>`).join('')}
               </div>
-              <div style="display:flex;flex-direction:column;gap:5px;">
-                ${rightOrder.map((oi) => `<button type="button" data-mr="${oi}" ${done.has(oi) ? 'disabled' : ''} style="text-align:left;padding:6px 10px;border-radius:7px;border:1px solid ${done.has(oi) ? '#10b981' : '#334155'};background:${done.has(oi) ? 'rgba(16,185,129,0.18)' : '#162033'};color:#e2e8f0;cursor:pointer;font-size:14px;">${pairs[oi].right[lang]}</button>`).join('')}
+              <div class="slide-match-col">
+                ${rightOrder.map((oi) => `<button type="button" class="slide-ex-opt ${done.has(oi) ? 'correct' : ''}" data-mr="${oi}" ${done.has(oi) ? 'disabled' : ''}>${pairs[oi].right[lang]}</button>`).join('')}
               </div>
             </div>
           </div>`;
@@ -263,23 +264,26 @@
     } else if (ex.type === 'fillGap') {
       const items = ex.items;
       slot.innerHTML = `
-        <div style="background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;text-align:left;font-size:15px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <strong style="color:#fbbf24;">✍️ ${lang === 'uz' ? 'Bo\'shliqni to\'ldiring' : 'Fill in the Gap'}</strong>
-            <button type="button" id="sl-gap-btn" style="padding:4px 10px;border-radius:6px;border:none;background:#f59e0b;color:#0b1120;font-weight:700;cursor:pointer;">${lang === 'uz' ? 'Tekshirish' : 'Check'}</button>
+        <div class="slide-ex-card">
+          <div class="slide-ex-header">
+            <span class="slide-ex-title" style="margin:0;">✍️ ${lang === 'uz' ? 'Bo\'shliqni to\'ldiring' : 'Fill in the Gap'}</span>
+            <button type="button" class="slide-ex-btn" id="sl-gap-btn">${lang === 'uz' ? 'Tekshirish' : 'Check'}</button>
           </div>
           ${items.map((it, i) => {
-            const inp = `<input type="text" data-sg="${i}" style="width:130px;padding:2px 6px;border-radius:5px;border:1px solid #f59e0b;background:#080d18;color:#fff;font-family:monospace;">`;
-            return `<div style="margin-bottom:6px;">${i + 1}. ${it.text[lang].replace('___', inp)} <span data-sfb="${i}" style="font-size:13px;"></span></div>`;
+            const inp = `<input type="text" class="slide-ex-input" data-sg="${i}" placeholder="...">`;
+            return `<div class="slide-gap-row">${i + 1}. ${it.text[lang].replace('___', inp)} <span data-sfb="${i}" class="slide-ex-fb-inline"></span></div>`;
           }).join('')}
         </div>`;
       slot.querySelector('#sl-gap-btn').onclick = () => {
         items.forEach((it, i) => {
-          const v = slot.querySelector(`[data-sg="${i}"]`).value.trim().toLowerCase();
+          const inpEl = slot.querySelector(`[data-sg="${i}"]`);
+          const v = inpEl.value.trim().toLowerCase();
           const ansList = (Array.isArray(it.answer) ? it.answer : [it.answer]).map((a) => a.toLowerCase());
           const ok = ansList.includes(v);
+          inpEl.classList.remove('correct', 'wrong');
+          inpEl.classList.add(ok ? 'correct' : 'wrong');
           const fb = slot.querySelector(`[data-sfb="${i}"]`);
-          fb.innerHTML = ok ? '<span style="color:#10b981;">✓</span>' : `<span style="color:#f87171;">✗ (${ansList[0]})</span>`;
+          fb.innerHTML = ok ? '<span class="fb-ok">✓</span>' : `<span class="fb-bad">✗ (${ansList[0]})</span>`;
         });
       };
     }

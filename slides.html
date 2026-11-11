@@ -10,61 +10,360 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <style>
-    body { margin: 0; background: #0b1120; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    :root {
+      --sl-bg: #0b1120;
+      --sl-bar: rgba(11, 17, 32, 0.96);
+      --sl-panel: #162033;
+      --sl-card: #0f172a;
+      --sl-border: #2c3e5e;
+      --sl-text: #f1f5f9;
+      --sl-muted: #94a3b8;
+      --sl-accent: #f59e0b;
+      --sl-accent-text: #0b1120;
+      --sl-formula-bg: #080d18;
+      --sl-formula-text: #fde68a;
+      --sl-note-bg: rgba(59, 130, 246, 0.14);
+      --sl-note-text: #cbd5e1;
+      --sl-table-th: #162033;
+      --sl-ok: #10b981;
+      --sl-ok-bg: rgba(16, 185, 129, 0.18);
+      --sl-bad: #ef4444;
+      --sl-bad-bg: rgba(239, 68, 68, 0.18);
+      --sw-panel: #0f172a;
+      --sw-sub: #162033;
+      --sw-text: #e2e8f0;
+      --sw-border: #334155;
+      --sw-btn: #1e293b;
+    }
+
+    [data-theme="light"] {
+      --sl-bg: #ffffff;
+      --sl-bar: rgba(248, 250, 252, 0.96);
+      --sl-panel: #ffffff;
+      --sl-card: #f8fafc;
+      --sl-border: #cbd5e1;
+      --sl-text: #0f172a;
+      --sl-muted: #475569;
+      --sl-accent: #d97706;
+      --sl-accent-text: #ffffff;
+      --sl-formula-bg: #fffbeb;
+      --sl-formula-text: #92400e;
+      --sl-note-bg: rgba(37, 99, 235, 0.08);
+      --sl-note-text: #1e293b;
+      --sl-table-th: #f1f5f9;
+      --sl-ok: #059669;
+      --sl-ok-bg: rgba(16, 185, 129, 0.14);
+      --sl-bad: #dc2626;
+      --sl-bad-bg: rgba(239, 68, 68, 0.12);
+      --sw-panel: #ffffff;
+      --sw-sub: #f1f5f9;
+      --sw-text: #0f172a;
+      --sw-border: #cbd5e1;
+      --sw-btn: #e2e8f0;
+    }
+
+    body {
+      margin: 0;
+      background: var(--sl-bg);
+      color: var(--sl-text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Bypass fragments completely when animation is OFF */
+    body.no-fragments .reveal .slides section .fragment {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
     .slides-topbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 52px;
-      background: rgba(11, 17, 32, 0.94); backdrop-filter: blur(10px);
-      border-bottom: 1px solid #24324d; display: flex; align-items: center;
-      justify-content: space-between; padding: 0 1rem; gap: 0.75rem; color: #f1f5f9; font-size: 0.85rem;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 120;
+      min-height: 56px;
+      background: var(--sl-bar);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--sl-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0.9rem;
+      gap: 0.5rem;
+      color: var(--sl-text);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
     }
-    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 0.55rem; }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
     .topbar-btn {
-      background: #162033; color: #f1f5f9; border: 1px solid #24324d; border-radius: 8px;
-      padding: 0.35rem 0.7rem; font-size: 0.8rem; font-weight: 600; text-decoration: none; cursor: pointer;
+      background: var(--sl-panel);
+      color: var(--sl-text);
+      border: 1px solid var(--sl-border);
+      border-radius: 8px;
+      padding: 0.38rem 0.72rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .topbar-btn:hover { border-color: #f59e0b; color: #f59e0b; }
-    .topbar-btn.active { background: #f59e0b; color: #0b1120; border-color: #f59e0b; }
+
+    .topbar-btn:hover { border-color: var(--sl-accent); color: var(--sl-accent); }
+    .topbar-btn.active { background: var(--sl-accent); color: var(--sl-accent-text); border-color: var(--sl-accent); }
+    .topbar-btn.off-state { opacity: 0.82; border-style: dashed; }
+
     .topic-select {
-      background: #162033; color: #f1f5f9; border: 1px solid #24324d;
-      border-radius: 8px; padding: 0.35rem 0.65rem; font-size: 0.82rem; max-width: 320px;
+      background: var(--sl-panel);
+      color: var(--sl-text);
+      border: 1px solid var(--sl-border);
+      border-radius: 8px;
+      padding: 0.38rem 0.65rem;
+      font-size: 0.82rem;
+      max-width: 260px;
     }
-    .reveal-wrapper { position: fixed; top: 52px; left: 0; right: 0; bottom: 0; }
-    .reveal { font-size: 26px; }
-    .reveal h1, .reveal h2, .reveal h3 { text-transform: none; color: #f59e0b; font-weight: 700; }
-    .reveal h1 { font-size: 1.6em; }
-    .reveal h2 { font-size: 1.2em; margin-bottom: 0.45em; }
-    .reveal ul { display: block; text-align: left; margin: 0.45em auto; max-width: 900px; }
-    .reveal li { margin-bottom: 0.36em; line-height: 1.38; color: #e2e8f0; font-size: 0.84em; }
-    .slide-subtitle { color: #94a3b8; font-size: 0.74em; margin-bottom: 0.65em; }
+
+    .slide-jump-select {
+      max-width: 220px;
+    }
+
+    .reveal-wrapper {
+      position: fixed;
+      top: 58px; left: 0; right: 0; bottom: 0;
+      background: var(--sl-bg);
+    }
+
+    /* +30% larger typography across desktop & wide 1400x850 canvas */
+    .reveal {
+      font-size: 34px;
+      color: var(--sl-text);
+    }
+    .reveal .slides {
+      text-align: center;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      color: var(--sl-accent);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+    }
+    .reveal h1 { font-size: 1.72em; line-height: 1.15; }
+    .reveal h2 { font-size: 1.32em; margin-bottom: 0.45em; line-height: 1.2; }
+    .reveal p, .reveal li { color: var(--sl-text); }
+    .reveal ul {
+      display: block;
+      text-align: left;
+      margin: 0.45em auto;
+      max-width: 1180px;
+    }
+    .reveal li {
+      margin-bottom: 0.42em;
+      line-height: 1.42;
+      font-size: 0.92em;
+    }
+    .reveal a { color: var(--sl-accent); }
+    .reveal .slide-number {
+      background: var(--sl-panel);
+      color: var(--sl-text);
+      border: 1px solid var(--sl-border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 16px;
+    }
+    .reveal .controls { color: var(--sl-accent); }
+
+    .slide-subtitle { color: var(--sl-muted); font-size: 0.82em; margin-bottom: 0.7em; }
     .slide-formula {
-      background: #080d18; border: 1px solid rgba(245, 158, 11, 0.45); border-radius: 10px;
-      padding: 0.5em 0.85em; color: #fde68a; font-size: 0.78em; margin: 0.5em auto; max-width: 900px;
+      background: var(--sl-formula-bg);
+      border: 1px solid var(--sl-accent);
+      border-radius: 12px;
+      padding: 0.6em 1em;
+      color: var(--sl-formula-text);
+      font-size: 0.95em;
+      margin: 0.55em auto;
+      max-width: 1180px;
+      overflow-x: auto;
     }
     .slide-note {
-      background: rgba(59, 130, 246, 0.14); border-left: 4px solid #3b82f6;
-      padding: 0.5em 0.8em; border-radius: 0 8px 8px 0; font-size: 0.7em;
-      color: #cbd5e1; text-align: left; max-width: 900px; margin: 0.55em auto 0;
+      background: var(--sl-note-bg);
+      border-left: 5px solid #3b82f6;
+      padding: 0.6em 0.95em;
+      border-radius: 0 10px 10px 0;
+      font-size: 0.78em;
+      color: var(--sl-note-text);
+      text-align: left;
+      max-width: 1180px;
+      margin: 0.6em auto 0;
     }
     .slide-discussion {
-      background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4);
-      border-radius: 12px; padding: 0.7em 0.9em; text-align: left; max-width: 880px; margin: 0.5em auto; font-size: 0.76em;
+      background: var(--sl-card);
+      border: 2px solid var(--sl-accent);
+      border-radius: 14px;
+      padding: 0.85em 1.1em;
+      text-align: left;
+      max-width: 1140px;
+      margin: 0.55em auto;
+      font-size: 0.86em;
+      color: var(--sl-text);
     }
     .reveal-ans-btn {
-      margin-top: 0.55em; background: #f59e0b; color: #0b1120; border: none;
-      border-radius: 7px; padding: 0.4em 0.9em; font-weight: 700; font-size: 0.85em; cursor: pointer;
+      margin-top: 0.65em;
+      background: var(--sl-accent);
+      color: var(--sl-accent-text);
+      border: none;
+      border-radius: 9px;
+      padding: 0.48em 1.05em;
+      font-weight: 700;
+      font-size: 0.88em;
+      cursor: pointer;
     }
     .slide-ans-box {
-      display: none; margin-top: 0.55em; background: rgba(16, 185, 129, 0.14);
-      border-left: 4px solid #10b981; padding: 0.5em 0.75em; border-radius: 0 8px 8px 0; color: #d1fae5;
+      display: none;
+      margin-top: 0.65em;
+      background: var(--sl-ok-bg);
+      border-left: 5px solid var(--sl-ok);
+      padding: 0.55em 0.85em;
+      border-radius: 0 10px 10px 0;
+      color: var(--sl-text);
     }
     .slide-ans-box.open { display: block; }
-    .slide-widget-slot, .slide-exercise-slot { max-width: 840px; margin: 0.5em auto; }
-    .reveal table { margin: 0.45em auto; font-size: 0.64em; border-collapse: collapse; }
-    .reveal table th { background: #162033; color: #f59e0b; border: 1px solid #334155; padding: 0.4em 0.7em; }
-    .reveal table td { border: 1px solid #334155; padding: 0.36em 0.7em; color: #e2e8f0; }
-    .reveal pre { width: 92%; font-size: 0.52em; box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
-    .hint-keys { color: #94a3b8; font-size: 0.75rem; }
-    @media (max-width: 720px) { .hint-keys { display: none; } .topic-select { max-width: 160px; } }
+
+    /* Interactive Slide Exercises (+30% larger & theme-aware) */
+    .slide-widget-slot, .slide-exercise-slot {
+      max-width: 1120px;
+      margin: 0.5em auto;
+    }
+    .slide-ex-card {
+      background: var(--sl-card);
+      border: 1.5px solid var(--sl-border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      text-align: left;
+      color: var(--sl-text);
+      font-size: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    }
+    .slide-ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .slide-ex-title {
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: var(--sl-accent);
+      font-size: 24px;
+      line-height: 1.3;
+    }
+    .slide-ex-options {
+      display: grid;
+      gap: 10px;
+    }
+    .slide-ex-opt {
+      text-align: left;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--sl-border);
+      background: var(--sl-panel);
+      color: var(--sl-text);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1.35;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .slide-ex-opt:hover:not(:disabled) {
+      border-color: var(--sl-accent);
+    }
+    .slide-ex-opt.selected {
+      border-color: var(--sl-accent);
+      background: rgba(245, 158, 11, 0.16);
+    }
+    .slide-ex-opt.correct {
+      border-color: var(--sl-ok);
+      background: var(--sl-ok-bg);
+    }
+    .slide-ex-opt.wrong {
+      border-color: var(--sl-bad);
+      background: var(--sl-bad-bg);
+    }
+    .slide-match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .slide-match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .slide-ex-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: var(--sl-accent);
+      color: var(--sl-accent-text);
+      font-weight: 800;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .slide-gap-row {
+      margin-bottom: 12px;
+      font-size: 21px;
+      line-height: 1.5;
+    }
+    .slide-ex-input {
+      width: 180px;
+      padding: 5px 10px;
+      border-radius: 7px;
+      border: 1.5px solid var(--sl-accent);
+      background: var(--sl-panel);
+      color: var(--sl-text);
+      font-family: monospace;
+      font-size: 20px;
+    }
+    .slide-ex-input.correct { border-color: var(--sl-ok); background: var(--sl-ok-bg); }
+    .slide-ex-input.wrong { border-color: var(--sl-bad); background: var(--sl-bad-bg); }
+    .slide-ex-fb { margin-top: 12px; font-size: 19px; font-weight: 600; }
+    .fb-ok { color: var(--sl-ok); }
+    .fb-bad { color: var(--sl-bad); }
+
+    .reveal table { margin: 0.45em auto; font-size: 0.74em; border-collapse: collapse; width: 92%; max-width: 1160px; }
+    .reveal table th { background: var(--sl-table-th); color: var(--sl-accent); border: 1px solid var(--sl-border); padding: 0.45em 0.8em; }
+    .reveal table td { border: 1px solid var(--sl-border); padding: 0.4em 0.8em; color: var(--sl-text); }
+    .reveal pre { width: 94%; font-size: 0.62em; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); border-radius: 10px; }
+
+    .hint-keys { color: var(--sl-muted); font-size: 0.75rem; white-space: nowrap; }
+
+    /* Mobile Optimization */
+    @media (max-width: 768px) {
+      .slides-topbar {
+        padding: 0.35rem 0.5rem;
+        gap: 0.35rem;
+      }
+      .reveal-wrapper {
+        top: 96px;
+      }
+      .hint-keys { display: none; }
+      .topic-select { max-width: 155px; font-size: 0.78rem; }
+      .slide-jump-select { max-width: 130px; }
+      .topbar-btn { padding: 0.38rem 0.55rem; font-size: 0.76rem; min-height: 36px; }
+      .reveal { font-size: 38px; }
+      .slide-ex-card { padding: 16px; font-size: 24px; }
+      .slide-ex-title { font-size: 26px; }
+      .slide-ex-opt { padding: 16px 18px; font-size: 23px; min-height: 54px; }
+      .slide-match-grid { grid-template-columns: 1fr; }
+      .slide-ex-input { width: 100%; font-size: 22px; margin: 6px 0; }
+      .slide-ex-btn { min-height: 46px; padding: 10px 18px; font-size: 21px; }
+    }
   </style>
 </head>
 <body>
@@ -72,11 +371,16 @@
     <div class="topbar-left">
       <a href="index.html" class="topbar-btn" id="btn-home">← Kurs</a>
       <select class="topic-select" id="slide-topic-select" aria-label="Select topic"></select>
+      <select class="topic-select slide-jump-select" id="slide-jump-select" aria-label="Jump to slide"></select>
       <a href="topic.html?id=1" class="topbar-btn" id="btn-notes">📖 Ma'ruza</a>
-      <a href="labs.html?id=1" class="topbar-btn" id="btn-lab">🧪 Lab</a>
+      <a href="labs.html?id=1" class="topbar-btn" id="btn-lab">🧪 L1</a>
     </div>
     <div class="topbar-right">
-      <span class="hint-keys">←/→ · Esc · F · S</span>
+      <span class="hint-keys" title="Shift + ←/→ skip fragments">Shift+←/→ · Esc/O</span>
+      <button type="button" class="topbar-btn" id="btn-fragments" title="Toggle step-by-step fragments">⚡ Animatsiya: ON</button>
+      <button type="button" class="topbar-btn" id="btn-overview" title="Overview Grid (Esc / O)">⊞ Overview</button>
+      <button type="button" class="topbar-btn" id="btn-theme" title="Light / Dark Theme">☀️</button>
+      <button type="button" class="topbar-btn" id="btn-fullscreen" title="Fullscreen (F)">⛶</button>
       <button type="button" class="topbar-btn" id="btn-uz">O'Z</button>
       <button type="button" class="topbar-btn" id="btn-en">EN</button>
     </div>
@@ -104,10 +408,42 @@
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
   <script>
     (function () {
+      const STORAGE_FRAG = 'dm_slides_fragments';
       const topics = window.DM_TOPICS;
       const params = new URLSearchParams(window.location.search);
       let currentId = Math.min(topics.length, Math.max(1, Number(params.get('topic')) || 1));
       let deck = null;
+
+      function getFragmentsEnabled() {
+        try { return localStorage.getItem(STORAGE_FRAG) !== 'off'; } catch (e) { return true; }
+      }
+      function setFragmentsEnabled(on) {
+        try { localStorage.setItem(STORAGE_FRAG, on ? 'on' : 'off'); } catch (e) { /* ignore */ }
+      }
+
+      function syncThemeUI() {
+        const theme = window.DM_APP.getTheme();
+        document.documentElement.setAttribute('data-theme', theme);
+        const btn = document.getElementById('btn-theme');
+        if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
+
+      function syncFragmentsUI() {
+        const on = getFragmentsEnabled();
+        const lang = window.DM_APP.getLang();
+        document.body.classList.toggle('no-fragments', !on);
+        const btn = document.getElementById('btn-fragments');
+        if (btn) {
+          btn.textContent = lang === 'uz'
+            ? `⚡ Animatsiya: ${on ? 'ON' : 'OFF'}`
+            : `⚡ Animation: ${on ? 'ON' : 'OFF'}`;
+          btn.classList.toggle('active', on);
+          btn.classList.toggle('off-state', !on);
+        }
+        if (deck) {
+          deck.configure({ fragments: on });
+        }
+      }
 
       function escapeHtml(str) {
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -125,7 +461,16 @@
         }
       }
 
+      function populateJumpMenu(slideTitles, activeIdx) {
+        const jumpSel = document.getElementById('slide-jump-select');
+        if (!jumpSel) return;
+        jumpSel.innerHTML = slideTitles.map((ttl, i) => `
+          <option value="${i}" ${i === activeIdx ? 'selected' : ''}>${i + 1}. ${ttl}</option>
+        `).join('');
+      }
+
       function renderDeck() {
+        syncThemeUI();
         const lang = window.DM_APP.getLang();
         const topic = topics.find((t) => t.id === currentId) || topics[0];
         const tag = topic.code || (topic.isBonus ? `B${topic.id - 15}` : `M${topic.id}`);
@@ -148,14 +493,14 @@
 
         const container = document.getElementById('reveal-slides-container');
         let html = '';
-
-        // Track slide interactive exercises mapped dynamically
+        const slideTitles = [];
         const slideExercises = [];
 
         topic.slides.forEach((sl, idx) => {
+          slideTitles.push(sl.title[lang]);
           html += `<section>`;
           if (idx === 0) {
-            html += `<p style="font-size:0.62em; color:#94a3b8; letter-spacing:0.08em; text-transform:uppercase;">MITQ2506 · TAN TEXTBOOK · ${tag} (80 MIN)</p>`;
+            html += `<p style="font-size:0.62em; color:var(--sl-muted); letter-spacing:0.08em; text-transform:uppercase;">MITQ2506 · TAN TEXTBOOK · ${tag} (80 MIN)</p>`;
             html += `<h1>${sl.title[lang]}</h1>`;
           } else {
             html += `<h2>${sl.title[lang]}</h2>`;
@@ -183,69 +528,68 @@
           html += `</section>`;
         });
 
-        // Interactive In-Slide Quiz Check (MCQ #1 from topic quiz)
         if (topic.quiz && topic.quiz.length) {
           const exIdx = slideExercises.length;
           slideExercises.push({ type: 'mcq', ...topic.quiz[0] });
-          html += `<section>
-            <h2>📝 ${lang === 'uz' ? 'Interaktiv Tekshiruv (Quiz)' : 'In-Slide Quick Check (Quiz)'}</h2>
-            <div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div>
-          </section>`;
+          const ttl = lang === 'uz' ? 'Interaktiv Tekshiruv (Quiz)' : 'Quick Check (Quiz)';
+          slideTitles.push(ttl);
+          html += `<section><h2>📝 ${ttl}</h2><div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div></section>`;
         }
 
-        // Interactive In-Slide Matching Exercise
         if (topic.matching && topic.matching.length) {
           const exIdx = slideExercises.length;
           slideExercises.push({ type: 'matching', pairs: topic.matching });
-          html += `<section>
-            <h2>🔗 ${lang === 'uz' ? 'Moslashtirish Mashqi (Matching)' : 'In-Slide Matching Exercise'}</h2>
-            <div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div>
-          </section>`;
+          const ttl = lang === 'uz' ? 'Moslashtirish Mashqi' : 'Matching Exercise';
+          slideTitles.push(ttl);
+          html += `<section><h2>🔗 ${ttl}</h2><div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div></section>`;
         }
 
-        // Interactive In-Slide Fill-in-the-Gap Exercise
         if (topic.fillGap && topic.fillGap.length) {
           const exIdx = slideExercises.length;
           slideExercises.push({ type: 'fillGap', items: topic.fillGap });
-          html += `<section>
-            <h2>✍️ ${lang === 'uz' ? 'Bo\'shliqni To\'ldiring (Fill the Gap)' : 'In-Slide Fill in the Gap'}</h2>
-            <div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div>
-          </section>`;
+          const ttl = lang === 'uz' ? 'Bo\'shliqni To\'ldiring' : 'Fill in the Gap';
+          slideTitles.push(ttl);
+          html += `<section><h2>✍️ ${ttl}</h2><div class="slide-exercise-slot" data-ex-idx="${exIdx}"></div></section>`;
         }
 
         if (topic.glossary && topic.glossary.length) {
+          const ttl = lang === 'uz' ? 'Asosiy Atamalar' : 'Key Terminology';
+          slideTitles.push(ttl);
           html += `<section>
-            <h2>📖 ${lang === 'uz' ? 'Asosiy Atamalar (Glossary)' : 'Key Terminology'}</h2>
+            <h2>📖 ${ttl}</h2>
             <table>
               <thead><tr><th>O'zbekcha</th><th>English</th><th>${lang === 'uz' ? 'Ta\'rif' : 'Definition'}</th></tr></thead>
-              <tbody>
-                ${topic.glossary.map((g) => `<tr><td><strong>${g.uz}</strong></td><td>${g.en}</td><td>${lang === 'uz' ? g.defUz : g.defEn}</td></tr>`).join('')}
-              </tbody>
+              <tbody>${topic.glossary.map((g) => `<tr><td><strong>${g.uz}</strong></td><td>${g.en}</td><td>${lang === 'uz' ? g.defUz : g.defEn}</td></tr>`).join('')}</tbody>
             </table>
           </section>`;
         }
 
         if (topic.lab && topic.lab.steps) {
           topic.lab.steps.forEach((st, i) => {
+            const ttl = `${lang === 'uz' ? `Lab ${i + 1}-qadam` : `Lab Step ${i + 1}`}: ${st.title[lang]}`;
+            slideTitles.push(ttl);
             html += `<section>
-              <h2>💻 ${lang === 'uz' ? `L${topic.id} · ${i + 1}-qadam` : `L${topic.id} · Step ${i + 1}`}: ${st.title[lang]}</h2>
-              <p style="font-size:0.72em; color:#cbd5e1;">${st.desc[lang]}</p>
+              <h2>💻 ${ttl}</h2>
+              <p style="font-size:0.78em; color:var(--sl-muted);">${st.desc[lang]}</p>
               <pre><code class="language-python" data-trim>${escapeHtml(st.code)}</code></pre>
             </section>`;
           });
         }
 
         const nextTopic = topics.find((t) => t.id === topic.id + 1);
+        const endTtl = lang === 'uz' ? 'Dars Xulosasi' : 'Summary';
+        slideTitles.push(endTtl);
         html += `<section>
           <h2>🎯 ${lang === 'uz' ? 'Dars xulosasi va Vazifalar' : 'Summary & Assignments'}</h2>
           <ul>
             <li>📝 <a href="topic.html?id=${topic.id}#topic-quiz">${lang === 'uz' ? `${tag} bo'yicha barcha test, moslashtirish va bo'shliq mashqlarini yeching` : `Complete all Quiz, Matching & Fill-Gap exercises`}</a></li>
-            ${!topic.isBonus ? `<li>🧪 <a href="labs.html?id=${topic.id}">${lang === 'uz' ? `L${topic.id} Laboratoriya ishini bajaring` : `Complete Lab L${topic.id} Assignment`}</a></li>` : ''}
+            ${!topic.isBonus ? `<li>🧪 <a href="labs.html?id=${topic.id}">${lang === 'uz' ? `L${topic.id} Laboratoriya ishini bajaring` : `Complete Lab L${topic.id}`}</a></li>` : ''}
             ${nextTopic ? `<li>➡️ <a href="slides.html?topic=${nextTopic.id}">${lang === 'uz' ? 'Keyingi mavzu' : 'Next Deck'}: ${nextTopic.code || 'B' + (nextTopic.id - 15)}. ${nextTopic.title[lang]}</a></li>` : ''}
           </ul>
         </section>`;
 
         container.innerHTML = html;
+        populateJumpMenu(slideTitles, 0);
 
         container.querySelectorAll('[data-widget]').forEach((slot) => {
           if (window.DM_WIDGETS) window.DM_WIDGETS.renderWidget(slot, slot.getAttribute('data-widget'));
@@ -263,12 +607,34 @@
 
         renderMath(container);
 
+        const fragOn = getFragmentsEnabled();
         if (!deck) {
-          deck = new Reveal({ hash: false, slideNumber: 'c/t', transition: 'slide', plugins: [RevealHighlight, RevealNotes] });
-          deck.initialize();
+          deck = new Reveal({
+            width: 1400,
+            height: 850,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.5,
+            touch: true,
+            overview: true,
+            fragments: fragOn,
+            hash: false,
+            slideNumber: 'c/t',
+            transition: 'slide',
+            plugins: [RevealHighlight, RevealNotes]
+          });
+          deck.initialize().then(() => {
+            syncFragmentsUI();
+            deck.on('slidechanged', (ev) => {
+              const jumpSel = document.getElementById('slide-jump-select');
+              if (jumpSel && typeof ev.indexh === 'number') jumpSel.value = String(ev.indexh);
+            });
+          });
         } else {
+          deck.configure({ fragments: fragOn });
           deck.sync();
           deck.slide(0);
+          syncFragmentsUI();
           if (window.hljs) {
             container.querySelectorAll('pre code').forEach((el) => {
               delete el.dataset.highlighted;
@@ -278,12 +644,56 @@
         }
       }
 
+      // Shift + Left / Right bypasses fragments and jumps directly to prev/next slide
+      document.addEventListener('keydown', (e) => {
+        if (!deck || !e.shiftKey) return;
+        const tag = (document.activeElement && document.activeElement.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          e.stopPropagation();
+          const idx = deck.getIndices();
+          deck.slide(idx.h + 1, 0);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          e.stopPropagation();
+          const idx = deck.getIndices();
+          deck.slide(Math.max(0, idx.h - 1), 0);
+        }
+      }, true);
+
       document.getElementById('slide-topic-select').addEventListener('change', (e) => {
         currentId = Number(e.target.value);
         const url = new URL(window.location.href);
         url.searchParams.set('topic', currentId);
         window.history.replaceState({}, '', url.toString());
         renderDeck();
+      });
+
+      document.getElementById('slide-jump-select').addEventListener('change', (e) => {
+        if (deck) deck.slide(Number(e.target.value), 0);
+      });
+
+      document.getElementById('btn-fragments').addEventListener('click', () => {
+        setFragmentsEnabled(!getFragmentsEnabled());
+        syncFragmentsUI();
+      });
+
+      document.getElementById('btn-overview').addEventListener('click', () => {
+        if (deck) deck.toggleOverview();
+      });
+
+      document.getElementById('btn-theme').addEventListener('click', () => {
+        window.DM_APP.toggleTheme();
+        syncThemeUI();
+      });
+
+      document.getElementById('btn-fullscreen').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
       });
 
       document.getElementById('btn-uz').addEventListener('click', () => { window.DM_APP.setLang('uz'); renderDeck(); });
