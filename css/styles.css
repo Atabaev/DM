@@ -536,9 +536,53 @@ a:hover {
   align-items: start;
 }
 
+.topic-layout > div {
+  min-width: 0;
+}
+
+.sidebar-wrap {
+  min-width: 0;
+}
+
+.sidebar-drawer-toggle {
+  display: none;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 0.78rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 @media (max-width: 900px) {
   .topic-layout {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .sidebar-drawer-toggle {
+    display: flex;
+  }
+  .sidebar-wrap .sidebar {
+    position: static;
+    max-height: 0;
+    padding: 0 0.85rem;
+    border-width: 0;
+    overflow: hidden;
+    margin-top: 0;
+    transition: max-height 0.25s ease, padding 0.2s ease;
+  }
+  .sidebar-wrap.open .sidebar {
+    max-height: 58vh;
+    padding: 0.85rem;
+    border-width: 1px;
+    margin-top: 0.55rem;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -675,12 +719,15 @@ table.data-table th {
   border-radius: 12px;
   overflow: hidden;
   margin: 1rem 0;
+  max-width: 100%;
 }
 
 .code-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   padding: 0.5rem 0.9rem;
   background: rgba(255, 255, 255, 0.04);
   border-bottom: 1px solid var(--border-color);
@@ -692,11 +739,14 @@ table.data-table th {
 .code-wrap pre {
   margin: 0;
   padding: 1rem;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   font-family: var(--font-mono);
   font-size: 0.84rem;
   line-height: 1.55;
   color: #e2e8f0;
+  white-space: pre;
 }
 
 /* Quiz Engine */
@@ -1100,5 +1150,63 @@ table.data-table th {
     margin: 0.35rem 0;
     padding: 0.5rem 0.7rem;
     font-size: 1rem;
+  }
+}
+
+/* Clean Lab & Lecture PDF Print Export */
+@media print {
+  header,
+  .site-header,
+  footer,
+  .site-footer,
+  .sidebar-wrap,
+  .sidebar-drawer-toggle,
+  .no-print,
+  .copy-lab-step,
+  .copy-step-btn,
+  .export-actions,
+  #toggle-complete-btn {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 11pt;
+  }
+  main,
+  .container,
+  .topic-layout,
+  .topic-layout > div {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .hero,
+  .lecture-card,
+  .lab-step,
+  .panel,
+  .callout,
+  .code-wrap {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .code-wrap pre {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow: visible !important;
+  }
+  .code-header {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+  }
+  h1, h2, h3, .lab-step-title {
+    color: #0f172a !important;
   }
 }

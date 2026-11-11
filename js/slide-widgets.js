@@ -135,12 +135,25 @@
       const tx = ((thr - 1) / 7.5) * 440 + 20;
 
       el.innerHTML = `<div style="${boxStyle()}">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;">
-          <span><strong>Split:</strong> X ≤ <span style="color:#fbbf24;">${thr.toFixed(1)}</span></span>
-          <input type="range" id="dt-thr" min="1.5" max="7.5" step="0.2" value="${thr}" style="flex:1;max-width:260px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+          <span><strong>Split:</strong> X ≤ <span id="dt-thr-val" style="color:#fbbf24;">${thr.toFixed(1)}</span></span>
+          <input type="range" id="dt-thr" min="1.5" max="7.5" step="0.2" value="${thr}" style="flex:1;max-width:260px;touch-action:none;">
         </div>
-        <svg viewBox="0 0 480 85" style="width:100%;max-width:520px;background:#080d18;border-radius:8px;display:block;margin-bottom:8px;">
-          <line x1="${tx}" y1="8" x2="${tx}" y2="75" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5,4"/>
+        <div id="dt-thr-out"></div>
+      </div>`;
+      const outEl = el.querySelector('#dt-thr-out');
+      const valEl = el.querySelector('#dt-thr-val');
+      function updateOut() {
+        const left = pts.filter((p) => p.x <= thr), right = pts.filter((p) => p.x > thr);
+        const l0 = left.filter((p) => p.c === 0).length, l1 = left.length - l0;
+        const r0 = right.filter((p) => p.c === 0).length, r1 = right.length - r0;
+        const gSplit = (left.length / pts.length) * gini(l0, l1) + (right.length / pts.length) * gini(r0, r1);
+        const eSplit = (left.length / pts.length) * ent(l0, l1) + (right.length / pts.length) * ent(r0, r1);
+        const ig = ent(5, 5) - eSplit;
+        const tpos = ((thr - 1) / 7.5) * 440 + 20;
+        valEl.textContent = thr.toFixed(1);
+        outEl.innerHTML = `<svg viewBox="0 0 480 85" style="width:100%;max-width:520px;background:#080d18;border-radius:8px;display:block;margin-bottom:8px;">
+          <line x1="${tpos}" y1="8" x2="${tpos}" y2="75" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5,4"/>
           ${pts.map((p) => {
             const cx = ((p.x - 1) / 7.5) * 440 + 20;
             const cy = p.c === 0 ? 30 : 58;
@@ -152,9 +165,10 @@
           <span>Right (${r0}B, ${r1}R)</span>
           <span style="color:#10b981;"><strong>IG = ${ig.toFixed(3)}</strong></span>
           <span style="color:#fbbf24;"><strong>Weighted Gini = ${gSplit.toFixed(3)}</strong></span>
-        </div>
-      </div>`;
-      el.querySelector('#dt-thr').oninput = (e) => { thr = Number(e.target.value); draw(); };
+        </div>`;
+      }
+      updateOut();
+      el.querySelector('#dt-thr').oninput = (e) => { thr = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -180,22 +194,30 @@
             ${[1, 3, 5, 7].map((kv) => `<button type="button" data-k="${kv}" style="${btnStyle(k === kv)}">k=${kv}</button>`).join('')}
           </div>
         </div>
-        <svg id="knn-svg" viewBox="0 0 280 175" style="width:100%;max-width:460px;background:#080d18;border-radius:8px;cursor:crosshair;display:block;">
+        <svg id="knn-svg" viewBox="0 0 280 175" style="width:100%;max-width:460px;background:#080d18;border-radius:8px;cursor:crosshair;display:block;touch-action:none;">
           <circle cx="${q.x}" cy="${q.y}" r="${rad}" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-dasharray="4,3"/>
           ${nn.map((p) => `<line x1="${q.x}" y1="${q.y}" x2="${p.x}" y2="${p.y}" stroke="#64748b" stroke-width="1.2"/>`).join('')}
           ${data.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="6" fill="${p.c === 0 ? '#3b82f6' : '#ef4444'}"/>`).join('')}
           <polygon points="${q.x},${q.y - 7} ${q.x + 7},${q.y + 6} ${q.x - 7},${q.y + 6}" fill="#fbbf24" stroke="#fff"/>
         </svg>
-        <div style="font-size:12px;color:#94a3b8;margin-top:5px;">${lang === 'uz' ? 'Sariq nuqtani ko\'chirish uchun grafik ustiga bosing!' : 'Click anywhere on the plot to move the query point!'}</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:5px;">${lang === 'uz' ? 'Sariq nuqtani ko\'chirish uchun grafik ustiga bosing!' : 'Tap/click anywhere on the plot to move the query point!'}</div>
       </div>`;
       el.querySelectorAll('[data-k]').forEach((b) => b.onclick = () => { k = Number(b.dataset.k); draw(); });
       const svg = el.querySelector('#knn-svg');
-      svg.onclick = (e) => {
+      const movePoint = (cx, cy) => {
         const r = svg.getBoundingClientRect();
-        q.x = Math.round(((e.clientX - r.left) / r.width) * 280);
-        q.y = Math.round(((e.clientY - r.top) / r.height) * 175);
+        if (!r.width || !r.height) return;
+        q.x = Math.max(8, Math.min(272, Math.round(((cx - r.left) / r.width) * 280)));
+        q.y = Math.max(8, Math.min(167, Math.round(((cy - r.top) / r.height) * 175)));
         draw();
       };
+      svg.onclick = (e) => { movePoint(e.clientX, e.clientY); };
+      svg.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches[0]) {
+          e.preventDefault();
+          movePoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }
+      }, { passive: false });
     }
     draw();
   }
@@ -219,24 +241,43 @@
       const fpr = fp + tn ? fp / (fp + tn) : 0;
       const f1 = prec + rec ? (2 * prec * rec) / (prec + rec) : 0;
       el.innerHTML = `<div style="${boxStyle()}">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span>Threshold = <strong style="color:#fbbf24;">${thr.toFixed(2)}</strong></span>
-          <input type="range" id="roc-thr" min="0.1" max="0.9" step="0.05" value="${thr}" style="flex:1;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+          <span>Threshold = <strong id="roc-thr-val" style="color:#fbbf24;">${thr.toFixed(2)}</strong></span>
+          <input type="range" id="roc-thr" min="0.1" max="0.9" step="0.05" value="${thr}" style="flex:1;touch-action:none;">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-bottom:8px;">
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TP: ${tp}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FP: ${fp}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FN: ${fn}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TN: ${tn}</strong></div>
+        <div id="roc-thr-out"></div>
+      </div>`;
+      const valEl = el.querySelector('#roc-thr-val');
+      const outEl = el.querySelector('#roc-thr-out');
+      function updateOut() {
+        let pTP = 0, pFP = 0, pFN = 0, pTN = 0;
+        scores.forEach((d) => {
+          const pred = d.s >= thr ? 1 : 0;
+          if (pred === 1 && d.y === 1) pTP++;
+          else if (pred === 1 && d.y === 0) pFP++;
+          else if (pred === 0 && d.y === 1) pFN++;
+          else pTN++;
+        });
+        const pPrec = pTP + pFP ? pTP / (pTP + pFP) : 0;
+        const pRec = pTP + pFN ? pTP / (pTP + pFN) : 0;
+        const pFpr = pFP + pTN ? pFP / (pFP + pTN) : 0;
+        const pF1 = pPrec + pRec ? (2 * pPrec * pRec) / (pPrec + pRec) : 0;
+        valEl.textContent = thr.toFixed(2);
+        outEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-bottom:8px;">
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TP: ${pTP}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FP: ${pFP}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>FN: ${pFN}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><strong>TN: ${pTN}</strong></div>
         </div>
         <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#fbbf24;">
-          <span>Precision: ${(prec * 100).toFixed(0)}%</span>
-          <span>Recall (TPR): ${(rec * 100).toFixed(0)}%</span>
-          <span>FPR: ${(fpr * 100).toFixed(0)}%</span>
-          <span>F1: ${(f1 * 100).toFixed(0)}%</span>
-        </div>
-      </div>`;
-      el.querySelector('#roc-thr').oninput = (e) => { thr = Number(e.target.value); draw(); };
+          <span>Precision: ${(pPrec * 100).toFixed(0)}%</span>
+          <span>Recall (TPR): ${(pRec * 100).toFixed(0)}%</span>
+          <span>FPR: ${(pFpr * 100).toFixed(0)}%</span>
+          <span>F1: ${(pF1 * 100).toFixed(0)}%</span>
+        </div>`;
+      }
+      updateOut();
+      el.querySelector('#roc-thr').oninput = (e) => { thr = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -254,18 +295,28 @@
       const kept = rules.filter((x) => x.sup >= minSup && x.conf >= minConf);
       el.innerHTML = `<div style="${boxStyle()}">
         <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;">
-          <label>min_sup: <strong>${(minSup * 100).toFixed(0)}%</strong> <input type="range" id="ap-sup" min="0.2" max="0.6" step="0.05" value="${minSup}"></label>
-          <label>min_conf: <strong>${(minConf * 100).toFixed(0)}%</strong> <input type="range" id="ap-conf" min="0.4" max="0.9" step="0.05" value="${minConf}"></label>
+          <label>min_sup: <strong id="ap-sup-val">${(minSup * 100).toFixed(0)}%</strong> <input type="range" id="ap-sup" min="0.2" max="0.6" step="0.05" value="${minSup}" style="touch-action:none;"></label>
+          <label>min_conf: <strong id="ap-conf-val">${(minConf * 100).toFixed(0)}%</strong> <input type="range" id="ap-conf" min="0.4" max="0.9" step="0.05" value="${minConf}" style="touch-action:none;"></label>
         </div>
-        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <div id="ap-out"></div>
+      </div>`;
+      const sVal = el.querySelector('#ap-sup-val');
+      const cVal = el.querySelector('#ap-conf-val');
+      const outEl = el.querySelector('#ap-out');
+      function updateOut() {
+        const list = rules.filter((x) => x.sup >= minSup && x.conf >= minConf);
+        sVal.textContent = (minSup * 100).toFixed(0) + '%';
+        cVal.textContent = (minConf * 100).toFixed(0) + '%';
+        outEl.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:13px;">
           <thead><tr style="color:#fbbf24;border-bottom:1px solid #334155;"><th>${lang === 'uz' ? 'Qoida' : 'Rule'}</th><th>Support</th><th>Confidence</th><th>Lift</th></tr></thead>
           <tbody>
-            ${kept.length ? kept.map((x) => `<tr style="border-bottom:1px solid #1e293b;"><td>${x.r}</td><td>${x.sup.toFixed(2)}</td><td>${x.conf.toFixed(2)}</td><td style="color:${x.lift > 1 ? '#10b981' : '#f87171'};">${x.lift.toFixed(2)}</td></tr>`).join('') : `<tr><td colspan="4" style="color:#94a3b8;">${lang === 'uz' ? 'Mos qoida yo\'q' : 'No rules pass thresholds'}</td></tr>`}
+            ${list.length ? list.map((x) => `<tr style="border-bottom:1px solid #1e293b;"><td>${x.r}</td><td>${x.sup.toFixed(2)}</td><td>${x.conf.toFixed(2)}</td><td style="color:${x.lift > 1 ? '#10b981' : '#f87171'};">${x.lift.toFixed(2)}</td></tr>`).join('') : `<tr><td colspan="4" style="color:#94a3b8;">${lang === 'uz' ? 'Mos qoida yo\'q' : 'No rules pass thresholds'}</td></tr>`}
           </tbody>
-        </table>
-      </div>`;
-      el.querySelector('#ap-sup').oninput = (e) => { minSup = Number(e.target.value); draw(); };
-      el.querySelector('#ap-conf').oninput = (e) => { minConf = Number(e.target.value); draw(); };
+        </table>`;
+      }
+      updateOut();
+      el.querySelector('#ap-sup').oninput = (e) => { minSup = Number(e.target.value); updateOut(); };
+      el.querySelector('#ap-conf').oninput = (e) => { minConf = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -350,17 +401,37 @@
       const col = { core: '#10b981', border: '#f59e0b', noise: '#ef4444' };
       el.innerHTML = `<div style="${boxStyle()}">
         <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:13px;">
-          <label>eps: <strong>${eps}</strong> <input type="range" id="db-eps" min="18" max="60" value="${eps}"></label>
-          <label>minPts: <strong>${minPts}</strong> <input type="range" id="db-min" min="2" max="5" value="${minPts}"></label>
+          <label>eps: <strong id="db-eps-val">${eps}</strong> <input type="range" id="db-eps" min="18" max="60" value="${eps}" style="touch-action:none;"></label>
+          <label>minPts: <strong id="db-min-val">${minPts}</strong> <input type="range" id="db-min" min="2" max="5" value="${minPts}" style="touch-action:none;"></label>
           <span><span style="color:#10b981;">● Core</span> · <span style="color:#f59e0b;">● Border</span> · <span style="color:#ef4444;">● Noise</span></span>
         </div>
-        <svg viewBox="0 0 280 170" style="width:100%;max-width:460px;background:#080d18;border-radius:8px;display:block;">
-          ${pts.map((p, i) => types[i] === 'core' ? `<circle cx="${p.x}" cy="${p.y}" r="${eps}" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.28)"/>` : '').join('')}
-          ${pts.map((p, i) => `<circle cx="${p.x}" cy="${p.y}" r="5.5" fill="${col[types[i]]}" stroke="#fff" stroke-width="1"/>`).join('')}
-        </svg>
+        <div id="db-out"></div>
       </div>`;
-      el.querySelector('#db-eps').oninput = (e) => { eps = Number(e.target.value); draw(); };
-      el.querySelector('#db-min').oninput = (e) => { minPts = Number(e.target.value); draw(); };
+      const epsVal = el.querySelector('#db-eps-val');
+      const minVal = el.querySelector('#db-min-val');
+      const outEl = el.querySelector('#db-out');
+      function updateOut() {
+        const curTypes = pts.map((p, i) => {
+          let cnt = 0;
+          pts.forEach((q) => { if (Math.hypot(p.x - q.x, p.y - q.y) <= eps) cnt++; });
+          return cnt >= minPts ? 'core' : 'unknown';
+        });
+        pts.forEach((p, i) => {
+          if (curTypes[i] === 'unknown') {
+            const nearCore = pts.some((q, j) => curTypes[j] === 'core' && Math.hypot(p.x - q.x, p.y - q.y) <= eps);
+            curTypes[i] = nearCore ? 'border' : 'noise';
+          }
+        });
+        epsVal.textContent = eps;
+        minVal.textContent = minPts;
+        outEl.innerHTML = `<svg viewBox="0 0 280 170" style="width:100%;max-width:460px;background:#080d18;border-radius:8px;display:block;">
+          ${pts.map((p, i) => curTypes[i] === 'core' ? `<circle cx="${p.x}" cy="${p.y}" r="${eps}" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.28)"/>` : '').join('')}
+          ${pts.map((p, i) => `<circle cx="${p.x}" cy="${p.y}" r="5.5" fill="${col[curTypes[i]]}" stroke="#fff" stroke-width="1"/>`).join('')}
+        </svg>`;
+      }
+      updateOut();
+      el.querySelector('#db-eps').oninput = (e) => { eps = Number(e.target.value); updateOut(); };
+      el.querySelector('#db-min').oninput = (e) => { minPts = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -400,17 +471,27 @@
       const rfErr = (0.09 + 0.15 / Math.sqrt(nTrees)).toFixed(3);
       const gbErr = Math.max(0.05, 0.22 - 0.008 * Math.min(nTrees, 20)).toFixed(3);
       el.innerHTML = `<div style="${boxStyle()}">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span>n_estimators = <strong style="color:#fbbf24;">${nTrees}</strong></span>
-          <input type="range" id="ens-n" min="1" max="50" value="${nTrees}" style="flex:1;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+          <span>n_estimators = <strong id="ens-n-val" style="color:#fbbf24;">${nTrees}</strong></span>
+          <input type="range" id="ens-n" min="1" max="50" value="${nTrees}" style="flex:1;touch-action:none;">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Single Tree</div><strong>Err: ${singleErr}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#10b981;">Random Forest</div><strong>Err: ${rfErr}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#fbbf24;">Grad. Boosting</div><strong>Err: ${gbErr}</strong></div>
-        </div>
+        <div id="ens-out"></div>
       </div>`;
-      el.querySelector('#ens-n').oninput = (e) => { nTrees = Number(e.target.value); draw(); };
+      const valEl = el.querySelector('#ens-n-val');
+      const outEl = el.querySelector('#ens-out');
+      function updateOut() {
+        const sErr = 0.24;
+        const rErr = (0.09 + 0.15 / Math.sqrt(nTrees)).toFixed(3);
+        const gErr = Math.max(0.05, 0.22 - 0.008 * Math.min(nTrees, 20)).toFixed(3);
+        valEl.textContent = nTrees;
+        outEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#94a3b8;">Single Tree</div><strong>Err: ${sErr}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#10b981;">Random Forest</div><strong>Err: ${rErr}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="font-size:12px;color:#fbbf24;">Grad. Boosting</div><strong>Err: ${gErr}</strong></div>
+        </div>`;
+      }
+      updateOut();
+      el.querySelector('#ens-n').oninput = (e) => { nTrees = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -497,18 +578,28 @@
       const mean = (latest.reduce((a, b) => a + b, 0) / latest.length).toFixed(1);
       el.innerHTML = `<div style="${boxStyle()}">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
-          <label>Window W=<strong>${winSize}</strong> <input type="range" id="st-w" min="2" max="10" value="${winSize}"></label>
+          <label>Window W=<strong id="st-w-val">${winSize}</strong> <input type="range" id="st-w" min="2" max="10" value="${winSize}" style="touch-action:none;"></label>
           <button type="button" id="st-drift" style="${btnStyle(drift)}">${drift ? 'Concept Drift ON' : 'Trigger Concept Drift'}</button>
-          <span style="color:#fbbf24;">Window Mean: <strong>${mean}</strong></span>
+          <span style="color:#fbbf24;">Window Mean: <strong id="st-mean-val">${mean}</strong></span>
         </div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-          ${vals.map((v, i) => {
-            const inW = i >= vals.length - winSize;
-            return `<span style="padding:4px 8px;border-radius:6px;font-family:monospace;background:${inW ? '#f59e0b' : '#1e293b'};color:${inW ? '#0b1120' : '#94a3b8'};font-weight:700;">${v}</span>`;
-          }).join('')}
-        </div>
+        <div id="st-out" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
       </div>`;
-      el.querySelector('#st-w').oninput = (e) => { winSize = Number(e.target.value); draw(); };
+      const wVal = el.querySelector('#st-w-val');
+      const mVal = el.querySelector('#st-mean-val');
+      const outEl = el.querySelector('#st-out');
+      function updateOut() {
+        const curVals = drift ? [49, 52, 48, 51, 50, 72, 75, 71, 74, 73] : [49, 52, 48, 51, 50, 53, 47, 50, 52, 49];
+        const curLatest = curVals.slice(-winSize);
+        const curMean = (curLatest.reduce((a, b) => a + b, 0) / curLatest.length).toFixed(1);
+        wVal.textContent = winSize;
+        mVal.textContent = curMean;
+        outEl.innerHTML = curVals.map((v, i) => {
+          const inW = i >= curVals.length - winSize;
+          return `<span style="padding:4px 8px;border-radius:6px;font-family:monospace;background:${inW ? '#f59e0b' : '#1e293b'};color:${inW ? '#0b1120' : '#94a3b8'};font-weight:700;">${v}</span>`;
+        }).join('');
+      }
+      updateOut();
+      el.querySelector('#st-w').oninput = (e) => { winSize = Number(e.target.value); updateOut(); };
       el.querySelector('#st-drift').onclick = () => { drift = !drift; draw(); };
     }
     draw();
@@ -625,17 +716,27 @@
       const gini = 1 - p * p - (1 - p) * (1 - p);
       const err = 1 - Math.max(p, 1 - p);
       el.innerHTML = `<div style="${boxStyle()}">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span>Class p = <strong style="color:#fbbf24;">${p.toFixed(2)}</strong></span>
-          <input type="range" id="fs-p" min="0" max="1" step="0.05" value="${p}" style="flex:1;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+          <span>Class p = <strong id="fs-p-val" style="color:#fbbf24;">${p.toFixed(2)}</strong></span>
+          <input type="range" id="fs-p" min="0" max="1" step="0.05" value="${p}" style="flex:1;touch-action:none;">
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:13px;">
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#3b82f6;">Entropy</div><strong>${ent.toFixed(3)}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#f59e0b;">Gini (max 0.5)</div><strong>${gini.toFixed(3)}</strong></div>
-          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#10b981;">Misclass. Error</div><strong>${err.toFixed(3)}</strong></div>
-        </div>
+        <div id="fs-out"></div>
       </div>`;
-      el.querySelector('#fs-p').oninput = (e) => { p = Number(e.target.value); draw(); };
+      const valEl = el.querySelector('#fs-p-val');
+      const outEl = el.querySelector('#fs-out');
+      function updateOut() {
+        const curEnt = (p > 0 && p < 1) ? (-p * Math.log2(p) - (1 - p) * Math.log2(1 - p)) : 0;
+        const curGini = 1 - p * p - (1 - p) * (1 - p);
+        const curErr = 1 - Math.max(p, 1 - p);
+        valEl.textContent = p.toFixed(2);
+        outEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:13px;">
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#3b82f6;">Entropy</div><strong>${curEnt.toFixed(3)}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#f59e0b;">Gini (max 0.5)</div><strong>${curGini.toFixed(3)}</strong></div>
+          <div style="background:var(--sw-sub, #162033);padding:8px;border-radius:8px;"><div style="color:#10b981;">Misclass. Error</div><strong>${curErr.toFixed(3)}</strong></div>
+        </div>`;
+      }
+      updateOut();
+      el.querySelector('#fs-p').oninput = (e) => { p = Number(e.target.value); updateOut(); };
     }
     draw();
   }
@@ -645,24 +746,51 @@
     let teaMilk = 180;
     function draw() {
       const n = 1000, tea = 200, milk = 900;
-      const sup = teaMilk / n;
       const conf = teaMilk / tea;
       const lift = conf / (milk / n);
       el.innerHTML = `<div style="${boxStyle()}">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;">
-          <span>count(Choy & Sut) = <strong>${teaMilk}</strong> / 200</span>
-          <input type="range" id="mb-tm" min="80" max="200" step="10" value="${teaMilk}" style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;flex-wrap:wrap;">
+          <span>count(Choy & Sut) = <strong id="mb-tm-val">${teaMilk}</strong> / 200</span>
+          <input type="range" id="mb-tm" min="80" max="200" step="10" value="${teaMilk}" style="flex:1;touch-action:none;">
         </div>
-        <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
-          <span>Sup(Sut)=0.90</span>
-          <span>Conf(Choy→Sut)=<strong>${(conf * 100).toFixed(0)}%</strong></span>
-          <span style="color:${lift > 1.05 ? '#10b981' : lift < 0.95 ? '#ef4444' : '#fbbf24'};"><strong>Lift = ${lift.toFixed(2)}</strong></span>
-        </div>
+        <div id="mb-out"></div>
       </div>`;
-      el.querySelector('#mb-tm').oninput = (e) => { teaMilk = Number(e.target.value); draw(); };
+      const valEl = el.querySelector('#mb-tm-val');
+      const outEl = el.querySelector('#mb-out');
+      function updateOut() {
+        const curConf = teaMilk / tea;
+        const curLift = curConf / (milk / n);
+        valEl.textContent = teaMilk;
+        outEl.innerHTML = `<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
+          <span>Sup(Sut)=0.90</span>
+          <span>Conf(Choy→Sut)=<strong>${(curConf * 100).toFixed(0)}%</strong></span>
+          <span style="color:${curLift > 1.05 ? '#10b981' : curLift < 0.95 ? '#ef4444' : '#fbbf24'};"><strong>Lift = ${curLift.toFixed(2)}</strong></span>
+        </div>`;
+      }
+      updateOut();
+      el.querySelector('#mb-tm').oninput = (e) => { teaMilk = Number(e.target.value); updateOut(); };
     }
     draw();
   }
 
-  window.DM_WIDGETS = { renderWidget };
+  function bindInteractiveSurface(el) {
+    if (!el || el.dataset.dmTouchBound) return;
+    el.dataset.dmTouchBound = '1';
+    el.setAttribute('data-prevent-swipe', '');
+    var stopTouch = function (e) {
+      if (e.target && e.target.closest('input, button, select, textarea, svg, a, label, [data-idx]')) {
+        e.stopPropagation();
+      }
+    };
+    el.addEventListener('touchstart', stopTouch, { passive: true });
+    el.addEventListener('touchmove', stopTouch, { passive: true });
+    el.addEventListener('pointerdown', stopTouch, { passive: true });
+  }
+
+  function safeRenderWidget(container, widgetId) {
+    bindInteractiveSurface(container);
+    renderWidget(container, widgetId);
+  }
+
+  window.DM_WIDGETS = { renderWidget: safeRenderWidget };
 })();

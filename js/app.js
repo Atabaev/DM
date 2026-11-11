@@ -185,6 +185,88 @@
     window.addEventListener('dm:langchange', draw);
   }
 
+  function toIpynbLines(text) {
+    const lines = String(text || '').replace(/\r\n/g, '\n').split('\n');
+    return lines.map((ln, idx) => (idx < lines.length - 1 ? ln + '\n' : ln));
+  }
+
+  function downloadLabIpynb(topic, lang) {
+    if (!topic || !topic.lab) return;
+    const lab = topic.lab;
+    const codeTag = topic.isBonus ? (topic.code || `B${topic.id - 15}`) : `L${topic.id}`;
+    const cells = [];
+
+    cells.push({
+      cell_type: 'markdown',
+      metadata: {},
+      source: toIpynbLines(
+        `# ${lab.title[lang]}\n\n` +
+        `**MITQ2506 · Data Mining (${codeTag})**\n\n` +
+        (lab.objective ? `**${lang === 'uz' ? 'Maqsad' : 'Objective'}:** ${lab.objective[lang]}\n` : '')
+      )
+    });
+
+    (lab.steps || []).forEach((st, idx) => {
+      cells.push({
+        cell_type: 'markdown',
+        metadata: {},
+        source: toIpynbLines(`## ${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${st.title[lang]}\n\n${st.desc[lang] || ''}`)
+      });
+      cells.push({
+        cell_type: 'code',
+        execution_count: null,
+        metadata: {},
+        outputs: [],
+        source: toIpynbLines(st.code || '')
+      });
+    });
+
+    if (lab.variants && lab.variants[lang]) {
+      cells.push({
+        cell_type: 'markdown',
+        metadata: {},
+        source: toIpynbLines(
+          `## ${lang === 'uz' ? 'Mustaqil topshiriq variantlari' : 'Student Variant Assignments'}\n\n` +
+          lab.variants[lang].map((v) => `- ${v}`).join('\n')
+        )
+      });
+    }
+
+    const nb = {
+      nbformat: 4,
+      nbformat_minor: 5,
+      metadata: {
+        kernelspec: { display_name: 'Python 3', language: 'python', name: 'python3' },
+        language_info: { name: 'python', version: '3.10.0' }
+      },
+      cells
+    };
+
+    const blob = new Blob([JSON.stringify(nb, null, 2)], { type: 'application/x-ipynb+json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${codeTag}_Data_Mining_Lab.ipynb`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+
+  function bindSidebarDrawer(root) {
+    const toggle = root.querySelector('.sidebar-drawer-toggle');
+    const wrap = root.querySelector('.sidebar-wrap');
+    if (!toggle || !wrap) return;
+    toggle.addEventListener('click', () => {
+      const open = wrap.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      const icon = toggle.querySelector('.drawer-chevron');
+      if (icon) icon.textContent = open ? '▲' : '▼';
+    });
+  }
+
   function renderSidebar(allTopics, completed, activeId, mode) {
     const { t, getLang } = window.DM_APP;
     const lang = getLang();
@@ -202,20 +284,36 @@
         </a>`;
     };
 
+    const labelText = mode === 'labs'
+      ? (lang === 'uz' ? `📋 Laboratoriyalar ro'yxati (L${activeId}/15)` : `📋 All Labs Menu (L${activeId}/15)`)
+      : (lang === 'uz' ? `📋 Barcha mavzular ro'yxati` : `📋 All Topics Menu`);
+
     if (mode === 'labs') {
       return `
-        <aside class="sidebar">
-          <div class="sidebar-title">${t('sidebarLabs')}</div>
-          ${mandatory.map(itemLink).join('')}
-        </aside>`;
+        <div class="sidebar-wrap">
+          <button type="button" class="sidebar-drawer-toggle no-print" aria-expanded="false">
+            <span>${labelText}</span>
+            <span class="drawer-chevron">▼</span>
+          </button>
+          <aside class="sidebar">
+            <div class="sidebar-title">${t('sidebarLabs')}</div>
+            ${mandatory.map(itemLink).join('')}
+          </aside>
+        </div>`;
     }
 
     return `
-      <aside class="sidebar">
-        <div class="sidebar-title">${t('sidebarTopics')}</div>
-        ${mandatory.map(itemLink).join('')}
-        ${bonus.length ? `<div class="sidebar-divider">${t('sidebarBonus')}</div>${bonus.map(itemLink).join('')}` : ''}
-      </aside>`;
+      <div class="sidebar-wrap">
+        <button type="button" class="sidebar-drawer-toggle no-print" aria-expanded="false">
+          <span>${labelText}</span>
+          <span class="drawer-chevron">▼</span>
+        </button>
+        <aside class="sidebar">
+          <div class="sidebar-title">${t('sidebarTopics')}</div>
+          ${mandatory.map(itemLink).join('')}
+          ${bonus.length ? `<div class="sidebar-divider">${t('sidebarBonus')}</div>${bonus.map(itemLink).join('')}` : ''}
+        </aside>
+      </div>`;
   }
 
   function initTopicPage() {
@@ -296,8 +394,14 @@
 
               ${topic.lab ? `
                 <section class="lecture-section">
-                  <h2>${t('labTitle')}</h2>
-                  <h3 style="margin-top:0.25rem;">${topic.lab.title[lang]}</h3>
+                  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <h2 style="margin:0;">${t('labTitle')}</h2>
+                    <div class="export-actions no-print" style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                      <button type="button" class="btn btn-secondary btn-sm" id="topic-export-ipynb">📓 ${lang === 'uz' ? 'Jupyter (.ipynb) yuklab olish' : 'Download .ipynb'}</button>
+                      <button type="button" class="btn btn-secondary btn-sm" id="topic-print-pdf">📄 ${lang === 'uz' ? 'PDF / Chop etish' : 'Print / PDF'}</button>
+                    </div>
+                  </div>
+                  <h3 style="margin-top:0.5rem;">${topic.lab.title[lang]}</h3>
                   ${topic.lab.objective ? `<div class="callout"><strong>🎯 ${lang === 'uz' ? 'Maqsad:' : 'Objective:'}</strong> ${topic.lab.objective[lang]}</div>` : ''}
                   ${topic.lab.steps ? topic.lab.steps.map((st, idx) => `
                     <div class="lab-step">
@@ -350,6 +454,12 @@
 
       const completeBtn = document.getElementById('toggle-complete-btn');
       if (completeBtn) completeBtn.addEventListener('click', () => { toggleTopicCompleted(topic.id); draw(); });
+
+      bindSidebarDrawer(root);
+      const topicIpynbBtn = document.getElementById('topic-export-ipynb');
+      if (topicIpynbBtn) topicIpynbBtn.addEventListener('click', () => downloadLabIpynb(topic, lang));
+      const topicPrintBtn = document.getElementById('topic-print-pdf');
+      if (topicPrintBtn) topicPrintBtn.addEventListener('click', () => window.print());
 
       if (window.DM_QUIZ) {
         window.DM_QUIZ.renderQuizWidget(document.getElementById('topic-quiz'), {
@@ -407,7 +517,11 @@
                 </div>
               </div>
               <h1 style="font-size:1.8rem; margin-bottom:0.4rem;">${lab ? lab.title[lang] : topic.title[lang]}</h1>
-              ${lab && lab.objective ? `<p style="margin:0; color:var(--text-secondary);">${lab.objective[lang]}</p>` : ''}
+              ${lab && lab.objective ? `<p style="margin:0 0 1rem; color:var(--text-secondary);">${lab.objective[lang]}</p>` : ''}
+              <div class="export-actions no-print" style="display:flex; gap:0.65rem; flex-wrap:wrap; margin-top:0.75rem;">
+                <button type="button" class="btn btn-primary btn-sm" id="lab-download-ipynb">📓 ${lang === 'uz' ? 'Jupyter Notebook (.ipynb) yuklab olish' : 'Download Jupyter Notebook (.ipynb)'}</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="lab-download-pdf">📄 ${lang === 'uz' ? 'Lab qo\'llanmasini yuklab olish (PDF / Print)' : 'Download Lab Guide (PDF / Print)'}</button>
+              </div>
             </div>
 
             <div class="lecture-card">
@@ -441,6 +555,12 @@
           </div>
         </div>
       `;
+
+      bindSidebarDrawer(root);
+      const dlIpynb = document.getElementById('lab-download-ipynb');
+      if (dlIpynb) dlIpynb.addEventListener('click', () => downloadLabIpynb(topic, lang));
+      const dlPdf = document.getElementById('lab-download-pdf');
+      if (dlPdf) dlPdf.addEventListener('click', () => window.print());
 
       root.querySelectorAll('.copy-lab-step').forEach((btn) => {
         btn.addEventListener('click', () => {
