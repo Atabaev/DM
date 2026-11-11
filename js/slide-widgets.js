@@ -9,10 +9,14 @@
     const lang = getLang();
     const builders = {
       'kdd-pipeline': buildKddWidget,
+      'data-types-sim': buildDataTypesWidget,
+      'cleaning-sim': buildCleaningWidget,
       'scaling-demo': buildScalingWidget,
       'dt-split': buildDtSplitWidget,
+      'feature-sel-sim': buildFeatureSelWidget,
       'knn-demo': buildKnnWidget,
       'roc-cm': buildRocCmWidget,
+      'market-basket-sim': buildMarketBasketWidget,
       'apriori-lattice': buildAprioriWidget,
       'kmeans-sim': buildKmeansWidget,
       'dbscan-sim': buildDbscanWidget,
@@ -556,6 +560,106 @@
         }).join('')}
       </div>`;
       el.querySelectorAll('[data-mt]').forEach((b) => b.onclick = () => { metric = b.dataset.mt; draw(); });
+    }
+    draw();
+  }
+
+  // 16. Data Types & Proximity Explorer (Tan Ch. 2)
+  function buildDataTypesWidget(el, lang) {
+    const scales = [
+      { id: 'nom', uz: 'Nominal', en: 'Nominal', ops: '= , ≠', stat: 'Mode / Entropy', exUz: 'ZIP kod, Rang, Jins', exEn: 'ZIP code, Eye color, Gender' },
+      { id: 'ord', uz: 'Ordinal', en: 'Ordinal', ops: '= , ≠ , < , >', stat: 'Median / Percentiles', exUz: 'Baholar (3,4,5), O\'lcham (S,M,L)', exEn: 'Grades, T-shirt sizes (S,M,L)' },
+      { id: 'int', uz: 'Interval', en: 'Interval', ops: '+ , - (farq ma\'noli)', stat: 'Mean, Std Dev', exUz: 'Harorat (°C, °F), Kalendar yili', exEn: 'Temperature (°C, °F), Calendar Year' },
+      { id: 'rat', uz: 'Ratio', en: 'Ratio', ops: '× , ÷ (haqiqiy 0 bor)', stat: 'Geometric Mean, CV', exUz: 'Yosh, Maosh, Masofa, Kelvin (°K)', exEn: 'Age, Salary, Distance, Kelvin (°K)' }
+    ];
+    let cur = 0;
+    function draw() {
+      const s = scales[cur];
+      el.innerHTML = `<div style="${boxStyle()}">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          ${scales.map((sc, i) => `<button type="button" data-sc="${i}" style="${btnStyle(i === cur)}">${sc[lang]}</button>`).join('')}
+        </div>
+        <div style="background:#162033;padding:10px 12px;border-radius:8px;font-size:13px;">
+          <div><strong>${lang === 'uz' ? 'Ruxsat etilgan amallar:' : 'Valid Operations:'}</strong> <span style="color:#fbbf24;">${s.ops}</span></div>
+          <div><strong>${lang === 'uz' ? 'Markaziy o\'lchov:' : 'Central Tendency:'}</strong> ${s.stat}</div>
+          <div><strong>${lang === 'uz' ? 'Misollar:' : 'Examples:'}</strong> ${lang === 'uz' ? s.exUz : s.exEn}</div>
+        </div>
+      </div>`;
+      el.querySelectorAll('[data-sc]').forEach((b) => b.onclick = () => { cur = Number(b.dataset.sc); draw(); });
+    }
+    draw();
+  }
+
+  // 17. Missing Data Imputation Explorer
+  function buildCleaningWidget(el, lang) {
+    let strat = 'median';
+    const raw = [22, 24, null, 26, 25, 95, null];
+    function draw() {
+      const valid = raw.filter((x) => x !== null);
+      const mean = (valid.reduce((a, b) => a + b, 0) / valid.length).toFixed(1);
+      const sorted = [...valid].sort((a, b) => a - b);
+      const med = sorted[Math.floor(sorted.length / 2)];
+      const fillVal = strat === 'mean' ? Number(mean) : med;
+      const filled = raw.map((x) => (x === null ? fillVal : x));
+      el.innerHTML = `<div style="${boxStyle()}">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <span>Raw: [22, 24, <strong style="color:#ef4444;">NaN</strong>, 26, 25, <strong style="color:#f59e0b;">95</strong>, <strong style="color:#ef4444;">NaN</strong>]</span>
+          <div style="display:flex;gap:6px;">
+            <button type="button" data-st="mean" style="${btnStyle(strat === 'mean')}">Mean (${mean})</button>
+            <button type="button" data-st="median" style="${btnStyle(strat === 'median')}">Median (${med})</button>
+          </div>
+        </div>
+        <div style="font-size:13px;">Filled: [${filled.join(', ')}]</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:4px;">${lang === 'uz' ? '95 outlier Mean ni 38.4 ga tortdi; Median (25) esa barqaror qoldi!' : 'Outlier 95 pulls Mean up to 38.4; Median (25) stays immune!'}</div>
+      </div>`;
+      el.querySelectorAll('[data-st]').forEach((b) => b.onclick = () => { strat = b.dataset.st; draw(); });
+    }
+    draw();
+  }
+
+  // 18. Impurity Curves (Entropy vs Gini vs Error, Tan Fig 3.12)
+  function buildFeatureSelWidget(el, lang) {
+    let p = 0.5;
+    function draw() {
+      const ent = (p > 0 && p < 1) ? (-p * Math.log2(p) - (1 - p) * Math.log2(1 - p)) : 0;
+      const gini = 1 - p * p - (1 - p) * (1 - p);
+      const err = 1 - Math.max(p, 1 - p);
+      el.innerHTML = `<div style="${boxStyle()}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span>Class p = <strong style="color:#fbbf24;">${p.toFixed(2)}</strong></span>
+          <input type="range" id="fs-p" min="0" max="1" step="0.05" value="${p}" style="flex:1;">
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:13px;">
+          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#3b82f6;">Entropy</div><strong>${ent.toFixed(3)}</strong></div>
+          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#f59e0b;">Gini (max 0.5)</div><strong>${gini.toFixed(3)}</strong></div>
+          <div style="background:#162033;padding:8px;border-radius:8px;"><div style="color:#10b981;">Misclass. Error</div><strong>${err.toFixed(3)}</strong></div>
+        </div>
+      </div>`;
+      el.querySelector('#fs-p').oninput = (e) => { p = Number(e.target.value); draw(); };
+    }
+    draw();
+  }
+
+  // 19. Confidence Trap & Lift Explorer
+  function buildMarketBasketWidget(el, lang) {
+    let teaMilk = 180;
+    function draw() {
+      const n = 1000, tea = 200, milk = 900;
+      const sup = teaMilk / n;
+      const conf = teaMilk / tea;
+      const lift = conf / (milk / n);
+      el.innerHTML = `<div style="${boxStyle()}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;">
+          <span>count(Choy & Sut) = <strong>${teaMilk}</strong> / 200</span>
+          <input type="range" id="mb-tm" min="80" max="200" step="10" value="${teaMilk}" style="flex:1;">
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;">
+          <span>Sup(Sut)=0.90</span>
+          <span>Conf(Choy→Sut)=<strong>${(conf * 100).toFixed(0)}%</strong></span>
+          <span style="color:${lift > 1.05 ? '#10b981' : lift < 0.95 ? '#ef4444' : '#fbbf24'};"><strong>Lift = ${lift.toFixed(2)}</strong></span>
+        </div>
+      </div>`;
+      el.querySelector('#mb-tm').oninput = (e) => { teaMilk = Number(e.target.value); draw(); };
     }
     draw();
   }

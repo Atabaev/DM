@@ -1,456 +1,435 @@
 window.DM_TOPICS = window.DM_TOPICS || [];
 
 window.DM_TOPICS.push(
-  // ==================== TOPIC 7 ====================
+  // ==================== M7 / L7 ====================
   {
     id: 7,
-    slug: '07-clustering-kmeans',
+    code: 'M7',
+    labCode: 'L7',
+    slug: '07-naive-bayes-knn',
     hours: 2,
     labs: 1,
-    keywords: ['Clustering', 'K-Means', 'K-Means++', 'WCSS', 'Inertia', 'Elbow Method', 'Silhouette Score'],
+    keywords: ['Naive Bayes', 'Bayes Theorem', 'Laplace Smoothing', 'k-NN', 'Euclidean', 'Manhattan', 'Lazy Learner', 'Tan Ch.4'],
     title: {
-      uz: "K-Means algoritmi yordamida klasterlash",
-      en: "Clustering with K-Means"
+      uz: "Ehtimollik va masofaga asoslangan tasniflash usullari",
+      en: "Probabilistic & Distance-Based Classification (Naive Bayes & k-NN)"
     },
     description: {
-      uz: "Nazorat qilinmaydigan o'rganish, Lloyd algoritmi, K-Means++ initsializatsiyasi, WCSS, Elbow va Silhouette ko'rsatkichi.",
-      en: "Unsupervised clustering, Lloyd's K-Means algorithm, K-Means++ initialization, WCSS, Elbow & Silhouette evaluation."
+      uz: "Bayes teoremasi, shartli mustaqillik, Laplace Smoothing (Tan 4-bob), Gaussian/Multinomial/Bernoulli NB hamda k-NN masofa metrikalari va scaling.",
+      en: "Bayes' Theorem, conditional independence, Laplace smoothing (Tan Ch. 4), NB variants, and k-NN distance metrics & tuning."
     },
     sections: [
       {
-        heading: { uz: "7.1. Nazorat qilinmaydigan o'rganish va Klasterlash", en: "7.1. Unsupervised Learning & Clustering Goals" },
+        heading: { uz: "7.1. Bayes Teoremasi va Naive Bayes (Tan, 4.4-bo'lim)", en: "7.1. Bayes' Theorem & Naive Bayes (Tan Ch. 4.4)" },
         bodyHtml: {
-          uz: "<p><strong>Klasterlash (Clustering)</strong> — oldindan hech qanday sinf yorlig'i (label) berilmagan obyektlarni shunday guruhlarga ajratishki, <strong>klaster ichidagi o'xshashlik maksimal</strong>, <strong>klasterlararo o'xshashlik esa minimal</strong> bo'lsin.</p><ul><li><strong>Marketing:</strong> RFM (Recency, Frequency, Monetary) bo'yicha mijozlarni VIP, o'rta va uyqudagi guruhlarga bo'lish.</li><li><strong>Biologiya / Tibbiyot:</strong> gen ekspressiyasi yoki bemor simptomlari profillarini guruhlash.</li><li><strong>Tasvirlarni siqish:</strong> K ta asosiy rangga kvantlash (Color Quantization).</li></ul>",
-          en: "<p><strong>Clustering</strong> partitions unlabeled data so intra-cluster similarity is high and inter-cluster similarity is low (e.g., RFM customer segmentation, genomics, color quantization).</p>"
-        }
-      },
-      {
-        heading: { uz: "7.2. Lloyd (K-Means) algoritmi va WCSS maqsad funksiyasi", en: "7.2. Lloyd's K-Means Algorithm & WCSS Objective" },
-        bodyHtml: {
-          uz: "<p><strong>K-Means</strong> klasterlar ichidagi kvadratik xatolar yig'indisini (<strong>WCSS / Inertia</strong>) minimallashga intiladi. Algoritmning 4 ta qadami:</p><ol><li>$K$ ta boshlang'ich markaz (centroid) $\\mu_1, \\dots, \\mu_K$ ni tanlash.</li><li><strong>Assignment (Biriktirish):</strong> Har bir $x_i$ nuqtani Evklid masofasi eng yaqin $\\mu_k$ ga biriktirish (Voronoy hududlari).</li><li><strong>Update (Yangilash):</strong> Har klaster uchun barcha nuqtalarning arifmetik o'rtachasini yangi $\\mu_k$ qilib hisoblash.</li><li>Markazlar o'zgarmay qolguncha ($\\Delta \\mu < \\epsilon$) 2–3-bosqichlarni takrorlash.</li></ol>",
-          en: "<p><strong>K-Means</strong> minimizes Within-Cluster Sum of Squares (<strong>WCSS / Inertia</strong>) by alternating Assignment (nearest centroid) and Update (recompute centroid means) until convergence in $O(n \\cdot K \\cdot d \\cdot I)$ time.</p>"
+          uz: "<p><strong>Naive Bayes</strong> — obyektni eng katta posterior ehtimolga ega sinfga ajratuvchi (MAP — Maximum A Posteriori) ehtimoliy tasniflagich. \"Naive\" (soddadil) deyilishining sababi: barcha $x_i$ belgilar $C_k$ sinf berilganda o'zaro <strong>shartli mustaqil</strong> deb faraz qilinadi.</p><p>Agar biror so'z o'quv to'plamidagi biror sinfda 0 marta uchragan bo'lsa, butun ko'paytma nolga aylanadi (Zero-Frequency muammosi). Buni <strong>Laplace (Add-One, $\\alpha=1$) Smoothing</strong> bartaraf etadi.</p>",
+          en: "<p><strong>Naive Bayes</strong> classifies via MAP assuming conditional independence across features. <strong>Laplace Smoothing</strong> ($\\alpha=1$) prevents unseen features from zeroing out the product.</p>"
         },
-        latex: "\\text{WCSS} = \\sum_{k=1}^{K} \\sum_{x \\in C_k} \\| x - \\mu_k \\|_2^2, \\qquad \\mu_k = \\frac{1}{|C_k|} \\sum_{x \\in C_k} x",
-        widget: 'kmeans-sim'
+        latex: "P(C_k\\mid X)\\propto P(C_k)\\prod_{i=1}^n P(x_i\\mid C_k), \\qquad P(x_i\\mid C_k)=\\frac{\\text{count}(x_i,C_k)+\\alpha}{N_{C_k}+\\alpha|V|}"
       },
       {
-        heading: { uz: "7.3. Tasodifiy markaz muammosi va K-Means++", en: "7.3. Initialization Trap & K-Means++" },
-        bodyHtml: {
-          uz: "<p>K-Means faqat <strong>lokal minimumga</strong> tushadi! Agar boshlang'ich markazlar tasodifan bir klaster ichiga tushib qolsa, yomon bo'linish yuz beradi. <strong>K-Means++</strong> (Arthur &amp; Vassilvitskii, 2007) markazlarni bir-biridan uzoqroq masofaga $D(x)^2$ ehtimolligi bilan tarqatib tanlaydi (Scikit-Learn da default).</p>",
-          en: "<p>Random initialization can trap K-Means in poor local minima. <strong>K-Means++</strong> spreads initial centroids apart proportional to squared distance $D(x)^2$ from existing centers.</p>"
-        }
-      },
-      {
-        heading: { uz: "7.4. Optimal K ni aniqlash: Elbow va Silhouette", en: "7.4. Selecting Optimal K: Elbow & Silhouette" },
-        bodyHtml: {
-          uz: "<p>WCSS $K$ oshgan sari doim kamayadi ($K=N$ da $WCSS=0$!). Shuning uchun WCSS grafigida pasayish sekinlashgan <strong>\"Tirsak\" (Elbow)</strong> nuqtasi qidiriladi. Yanada aniqroq matematik mezon — <strong>Silhouette ko'rsatkichi $s(i) \\in [-1, 1]$</strong>:</p>",
-          en: "<p>Since WCSS always shrinks as $K$ increases, look for the <strong>Elbow</strong> bend or maximize the <strong>Silhouette Score</strong> $s(i) \\in [-1, 1]$:</p>"
-        },
-        latex: "s(i) = \\frac{b(i) - a(i)}{\\max\\{a(i),\\, b(i)\\}}"
-      },
-      {
-        heading: { uz: "7.5. K-Means ning cheklovlari va MiniBatch K-Means", en: "7.5. Limitations & MiniBatch K-Means" },
-        bodyHtml: {
-          uz: "<p>K-Means uchta holatda qiynaladi: 1) sferik bo'lmagan (yarim oy, halqa) klasterlarda; 2) o'lchami yoki zichligi keskin farq qiluvchi klasterlarda; 3) kuchli outlierlar borligida (buning uchun <strong>K-Medoids / PAM</strong> qo'llaniladi). Millionlab satrlarda tezlik uchun <code>MiniBatchKMeans</code> ishlatiladi.</p>",
-          en: "<p>K-Means struggles with non-spherical shapes, varying cluster densities/sizes, and extreme outliers (where <strong>K-Medoids</strong> helps). For huge datasets, use <code>MiniBatchKMeans</code>.</p>"
-        }
-      }
-    ],
-    slides: [
-      { title: { uz: "7-mavzu: K-Means klasterlash", en: "Topic 7: K-Means Clustering" }, subtitle: { uz: "Lloyd algoritmi · K-Means++ · Elbow · Silhouette (80 daqiqa)", en: "Unsupervised Partitioning & Cluster Validation (80 min)" }, points: { uz: ["Klasterlash maqsadi va amaliy sohalari", "K-Means 4 bosqichi va WCSS formulasi", "K-Means++ nima uchun kerak?", "Optimal K: Elbow va Silhouette ko'rsatkichi", "Cheklovlar (sferik shakl, outlier) va Lab 7"], en: ["Clustering goals & RFM segmentation", "Lloyd's 4 steps & WCSS objective", "K-Means++ smart initialization", "Elbow & Silhouette evaluation", "Limitations & Lab 7"] } },
-      { title: { uz: "Tasniflash vs Klasterlash", en: "Classification vs Clustering" }, table: { headers: { uz: ["Mezon", "Tasniflash", "Klasterlash"], en: ["Criteria", "Classification", "Clustering"] }, rows: { uz: [["Turi", "Supervised (yorliqli)", "Unsupervised (yorliqsiz)"], ["Maqsad", "Yangi nuqta sinfini topish", "Ichki guruh tuzilmasini ochish"], ["Baholash", "Accuracy, F1, AUC", "WCSS, Silhouette, Davies-Bouldin"]], en: [["Type", "Supervised (labeled)", "Unsupervised (unlabeled)"], ["Goal", "Predict known class", "Discover latent groups"], ["Metrics", "Accuracy, F1, AUC", "WCSS, Silhouette Score"]] } } },
-      { title: { uz: "K-Means (Lloyd) Algoritmi Bosqichlari", en: "Lloyd's K-Means Steps" }, points: { uz: ["1. K ta markaz (centroid) ni initsializatsiya qilish", "2. Assignment: har nuqtani eng yaqin markazga biriktirish", "3. Update: har klaster nuqtalarining o'rtachasini yangi markaz qilish", "4. Markazlar siljimay qolguncha 2–3 ni takrorlash", "Murakkabligi: O(n · K · d · iteratsiya) — juda tez!"], en: ["1. Initialize K centroids", "2. Assign every point to its nearest centroid", "3. Recompute each centroid as cluster mean", "4. Repeat until centroids stabilize", "Linear time complexity O(n · K · d · I)"] } },
-      { title: { uz: "WCSS (Inertia) Maqsad Funksiyasi", en: "Objective Function: WCSS" }, latex: "\\text{WCSS} = \\sum_{k=1}^{K} \\sum_{x \\in C_k} \\| x - \\mu_k \\|_2^2", points: { uz: ["Har bir klasterdagi nuqtalarning o'z markazigacha kvadratik masofalar yig'indisi", "Har qadamda WCSS kamayib boradi va chekli qadamda konvergensiyaga yetadi"], en: ["Sum of squared distances from points to assigned centroids", "Monotonically decreases each iteration until local convergence"] } },
-      { title: { uz: "Interaktiv K-Means Simulyatori (Qadam-ba-qadam!)", en: "Interactive Step-by-Step K-Means Simulator" }, widget: 'kmeans-sim' },
-      { title: { uz: "Qo'lda trace: 1D nuqtalar [2, 4, 10, 12, 3, 20, 30, 11, 25]", en: "Hand Trace: 1 Iteration (K=2)" }, points: { uz: ["Boshlang'ich markazlar: m₁ = 3, m₂ = 20 (o'rta chegarasi 11.5)", "C₁ (< 11.5): [2, 4, 10, 3, 11] → yangi m₁ = 30/5 = 6.0", "C₂ (> 11.5): [12, 20, 30, 25] → yangi m₂ = 87/4 = 21.75", "Keyingi qadam chegarasi (6+21.75)/2 = 13.875 → 12 endi C₁ ga o'tadi!"], en: ["Init: m₁=3, m₂=20 (midpoint 11.5)", "C₁: [2,4,10,3,11] → m₁ = 6.0", "C₂: [12,20,30,25] → m₂ = 21.75", "Next midpoint 13.875 shifts point 12 into C₁!"] } },
-      { title: { uz: "K-Means++ Initsializatsiyasi", en: "Why K-Means++ Matters" }, points: { uz: ["Oddiy tasodifiy tanlov 2 ta markazni bir joyga qo'yib, yomon lokal minimumga tushishi mumkin", "K-Means++: 1-markaz tasodifiy; keyingilari oldingi markazlardan D(x)² uzoqlik ehtimoli bilan tanlanadi", "Natija: tezroq konvergensiya va ancha barqaror WCSS"], en: ["Random seeds can cluster in one corner → suboptimal local minimum", "K-Means++ samples subsequent seeds proportional to squared distance D(x)²", "Default init='k-means++' in Scikit-Learn"] } },
-      { title: { uz: "Optimal K: Elbow (Tirsak) Usuli", en: "Choosing K: The Elbow Method" }, points: { uz: ["K=1 dan K=10 gacha WCSS ni hisoblab grafik chizamiz", "K oshgan sari WCSS doim pasayadi (K=N da WCSS=0!)", "Pasayish sur'ati keskin sekinlashgan 'tirsak' nuqtasi optimal K bo'ladi"], en: ["Plot WCSS for K=1..10", "WCSS strictly decreases as K grows (reaches 0 at K=N)", "Choose K at the inflection 'elbow' point"] } },
-      { title: { uz: "Silhouette Ko'rsatkichi s(i)", en: "Silhouette Coefficient s(i)" }, latex: "s(i) = \\frac{b(i) - a(i)}{\\max(a(i),\\, b(i))} \\in [-1,\\; 1]", points: { uz: ["a(i): nuqtaning o'z klasteridagi barcha nuqtalargacha o'rtacha masofasi (Cohesion)", "b(i): eng yaqin boshqa klastergacha o'rtacha masofa (Separation)", "s ≈ +1: mukammal; s ≈ 0: chegarada; s < 0: noto'g'ri klasterda!"], en: ["a(i): mean intra-cluster distance (cohesion)", "b(i): mean distance to nearest neighboring cluster (separation)", "+1 = well clustered, 0 = overlapping boundary, <0 = misassigned"] } },
-      { title: { uz: "Talabalarga savol (K-Means Cheklovlari)", en: "Class Discussion: Failure Modes" }, discussion: { q: { uz: "Ikkita konsentrik halqa (bir-birining ichidagi aylanalar) shaklidagi ma'lumotga K-Means(K=2) qo'llasak nima sodir bo'ladi?", en: "What happens if we run K-Means(K=2) on two concentric rings?" }, a: { uz: "K-Means har doim chiziqli Voronoy chegarasi chizadi va ikkala halqani ham yarmidan kesib, ikkita yarim-oyga bo'lib qo'yadi! Bunday hollarda <strong>DBSCAN</strong> yoki Spectral Clustering kerak.", en: "K-Means draws a straight Voronoi bisector slicing both rings in half! Use <strong>DBSCAN</strong> or Spectral Clustering instead." } } },
-      { title: { uz: "K-Means Kamchiliklari va Yechimlar", en: "K-Means Limitations & Remedies" }, table: { headers: { uz: ["Muammo", "Sabab", "Yechim"], en: ["Limitation", "Cause", "Remedy"] }, rows: { uz: [["Masshtabga sezgir", "Evklid masofasi", "StandardScaler qo'llash"], ["Outlierlar buzadi", "Mean (o'rtacha) ishlatiladi", "K-Medoids (Mediana markaz)"], ["Faqat sferik shakl", "Markazgacha radius", "DBSCAN / GMM"], ["Koldindan beriladi", "Giperparametr", "Elbow + Silhouette"]], en: [["Scale sensitive", "Euclidean distance", "Apply StandardScaler"], ["Outlier skew", "Arithmetic mean", "Use K-Medoids (PAM)"], ["Spherical assumption", "Voronoi cells", "Use DBSCAN or GMM"], ["Must specify K", "Hyperparameter", "Elbow & Silhouette sweep"]] } } }
-    ],
-    lab: {
-      title: { uz: "L7: RFM / Mijoz Segmentatsiyasida K-Means, Elbow va Silhouette", en: "L7: K-Means Clustering, Elbow & Silhouette Analysis" },
-      objective: { uz: "StandardScaler bilan ma'lumotni tayyorlash, K=2..10 uchun Elbow/Silhouette chizish va klaster profillarini tahlil qilish.", en: "Scale features, evaluate K=2..10 via Elbow & Silhouette, and profile resulting clusters." },
-      steps: [
-        {
-          title: { uz: "Ma'lumot tayyorlash va Normallashtirish", en: "Generate & Standardize Customer Features" },
-          desc: { uz: "5 ta klasterli sun'iy ma'lumotni Z-score bilan normallashtiring.", en: "Create multi-feature blobs and apply StandardScaler." },
-          code: `from sklearn.datasets import make_blobs
-from sklearn.preprocessing import StandardScaler
-
-X_raw, _ = make_blobs(n_samples=400, centers=5, cluster_std=0.85, random_state=42)
-X = StandardScaler().fit_transform(X_raw)
-print("Scaled shape:", X.shape, "| mean:", X.mean(axis=0).round(2))`
-        },
-        {
-          title: { uz: "Elbow (WCSS) va Silhouette tahlili (K=2..9)", en: "Sweep K=2..9 for Elbow & Silhouette" },
-          desc: { uz: "Har K uchun inertia_ va silhouette_score hisoblang.", en: "Record inertia_ and silhouette_score across K=2..9." },
-          code: `from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-
-for k in range(2, 10):
-    km = KMeans(n_clusters=k, init='k-means++', n_init=10, random_state=42).fit(X)
-    sil = silhouette_score(X, km.labels_)
-    print(f"K={k} | WCSS={km.inertia_:7.2f} | Silhouette={sil:.3f}")`
-        },
-        {
-          title: { uz: "Optimal K=5 Klasterlarni Vizuallashtirish", en: "Plot Optimal Clusters & Centroids" },
-          desc: { uz: "K=5 markazlari bilan scatter grafik saqlang.", en: "Visualize the 5 clusters and star centroids." },
-          code: `import matplotlib.pyplot as plt
-best = KMeans(n_clusters=5, n_init=10, random_state=42).fit(X)
-plt.figure(figsize=(7, 5))
-plt.scatter(X[:, 0], X[:, 1], c=best.labels_, cmap='tab10', alpha=0.7)
-plt.scatter(best.cluster_centers_[:, 0], best.cluster_centers_[:, 1], c='black', marker='*', s=220)
-plt.title(f"K-Means (K=5, Sil={silhouette_score(X, best.labels_):.3f})")
-plt.savefig("l7_kmeans.png", dpi=150)`
-        }
-      ],
-      variants: {
-        uz: [
-          "1-variant: Iris datasetidan yorliqlarni olib tashlab K=3 K-Means qiling va haqiqiy sinflar bilan mosligini (ARI) tekshiring.",
-          "2-variant: init='random' va init='k-means++' larni n_init=1 bilan solishtirib WCSS farqini ko'rsating.",
-          "3-variant: MiniBatchKMeans(n_clusters=5) bilan ishlash vaqtini oddiy KMeans bilan taqqoslang."
-        ],
-        en: [
-          "Variant 1: Cluster unlabeled Iris features with K=3 and evaluate Adjusted Rand Index.",
-          "Variant 2: Compare init='random' vs 'k-means++' with n_init=1.",
-          "Variant 3: Benchmark MiniBatchKMeans speed vs standard KMeans."
-        ]
-      }
-    },
-    glossary: [
-      { uz: "Centroid", en: "Centroid", defUz: "Klaster nuqtalarining o'rtacha koordinata markazi", defEn: "Arithmetic mean center of cluster points" },
-      { uz: "WCSS (Inertia)", en: "WCSS (Inertia)", defUz: "Klaster ichidagi kvadratik og'ishlar yig'indisi", defEn: "Within-Cluster Sum of Squares" },
-      { uz: "K-Means++", en: "K-Means++", defUz: "Markazlarni tarqatib tanlovchi aqlli initsializatsiya", defEn: "Distance-weighted smart centroid seeding" },
-      { uz: "Silhouette Score", en: "Silhouette Score", defUz: "Klaster ichki zichligi va tashqi ajralishini baholovchi metrika [-1,1]", defEn: "Cohesion vs separation index in [-1, 1]" }
-    ],
-    quiz: [
-      { q: { uz: "K-Means algoritmining asosiy oldindan beriladigan parametri nima?", en: "What key parameter must be chosen before running K-Means?" }, options: [{ label: 'A', uz: "eps radiusi", en: "eps radius" }, { label: 'B', uz: "Klasterlar soni K", en: "Number of clusters K" }, { label: 'C', uz: "Minimum support", en: "Min support" }, { label: 'D', uz: "Daraxt chuqurligi", en: "Tree depth" }], answer: 'B', explanation: { uz: "K-Means boshlashdan avval K berilishi shart.", en: "K must be specified upfront." } },
-      { q: { uz: "Silhouette s(i) = 0.85 nimani bildiradi?", en: "What does Silhouette Score = 0.85 indicate?" }, options: [{ label: 'A', uz: "Yomon klasterlash", en: "Poor clustering" }, { label: 'B', uz: "Zich va bir-biridan yaxshi ajralgan klasterlar", en: "Dense, well-separated clusters" }, { label: 'C', uz: "Noto'g'ri sinf", en: "Misassigned points" }, { label: 'D', uz: "Shovqin", en: "Noise" }], answer: 'B', explanation: { uz: "s(i) 1 ga yaqinlashgan sari ajralish mukammal bo'ladi.", en: "Values near +1 mean strong cohesion and separation." } },
-      { q: { uz: "K-Means++ oddiy tasodifiy tanlashdan nimasi bilan ustun?", en: "Why does K-Means++ outperform random initialization?" }, options: [{ label: 'A', uz: "K ni o'zi topadi", en: "Finds K automatically" }, { label: 'B', uz: "Markazlarni bir-biridan uzoqroq tarqatib yomon lokal minimumdan saqlaydi", en: "Spreads initial centroids apart, avoiding bad local minima" }, { label: 'C', uz: "Outlierlarni o'chiradi", en: "Deletes outliers" }, { label: 'D', uz: "Halqa shakllarni topadi", en: "Finds rings" }], answer: 'B', explanation: { uz: "D(x)² ehtimollik bilan boshlang'ich markazlar yaxshi joylashadi.", en: "D(x)² seeding gives faster convergence and lower WCSS." } },
-      { q: { uz: "Elbow usulida \"tirsak\" nuqtasi nimani ko'rsatadi?", en: "What does the Elbow bend show?" }, options: [{ label: 'A', uz: "Minimal Silhouette", en: "Minimum Silhouette" }, { label: 'B', uz: "WCSS kamayishi sekinlashgan optimal K", en: "Optimal K where WCSS drops level off" }, { label: 'C', uz: "Maksimal iteratsiya", en: "Max iterations" }, { label: 'D', uz: "Outlierlar soni", en: "Outliers" }], answer: 'B', explanation: { uz: "Tirsakdan keyin ortiqcha klaster qo'shish foyda bermaydi.", en: "Beyond the elbow, extra clusters yield diminishing returns." } },
-      { q: { uz: "K-Means outlierlardan qanday ta'sirlanadi?", en: "How do outliers affect K-Means?" }, options: [{ label: 'A', uz: "Ta'sirlanmaydi", en: "No effect" }, { label: 'B', uz: "Outlierlar markazlarni (mean) o'z tomon tortadi", en: "Outliers pull centroids away from cluster cores" }, { label: 'C', uz: "Avtomatik -1 ga ajratadi", en: "Flags as -1" }, { label: 'D', uz: "K ni oshiradi", en: "Increases K" }], answer: 'B', explanation: { uz: "Arifmetik o'rtacha ekstremal qiymatlarga juda sezgir.", en: "Means are sensitive to extreme outliers." } }
-    ]
-  },
-
-  // ==================== TOPIC 8 ====================
-  {
-    id: 8,
-    slug: '08-clustering-advanced',
-    hours: 2,
-    labs: 1,
-    keywords: ['Hierarchical', 'Agglomerative', 'Dendrogram', 'Linkage', 'Ward', 'DBSCAN', 'Core Point'],
-    title: {
-      uz: "Iyerarxik va DBSCAN klasterlash",
-      en: "Hierarchical & DBSCAN Clustering"
-    },
-    description: {
-      uz: "Agglomerative vs Divisive iyerarxik klasterlash, Single/Complete/Average/Ward linkage, Dendrogrammani kesish, DBSCAN (eps, min_samples) va Reachability.",
-      en: "Agglomerative vs Divisive, linkage criteria, cutting dendrograms, DBSCAN core/border/noise density reachability, and k-distance elbow."
-    },
-    sections: [
-      {
-        heading: { uz: "8.1. Iyerarxik klasterlash: Agglomerative vs Divisive", en: "8.1. Hierarchical Clustering: Bottom-Up vs Top-Down" },
-        bodyHtml: {
-          uz: "<p><strong>Iyerarxik klasterlash</strong> bitta qat'iy $K$ ni talab qilmaydi — u butun klasterlar daraxtini (<strong>Dendrogramma</strong>) quradi. Ikki yondashuv mavjud:</p><ul><li><strong>Agglomerative (Pastdan yuqoriga, $O(n^2)$–$O(n^3)$):</strong> $N$ ta yakka nuqtadan boshlanadi va har qadamda eng yaqin ikkita klaster birlashtiriladi.</li><li><strong>Divisive (Yuqoridan pastga):</strong> Hammasi 1 klasterdan boshlanib ketma-ket bo'linadi.</li></ul>",
-          en: "<p><strong>Hierarchical clustering</strong> builds a nested cluster tree (<strong>Dendrogram</strong>) without pre-fixing $K$: <strong>Agglomerative</strong> merges $N$ singletons bottom-up; <strong>Divisive</strong> splits one root top-down.</p>"
-        }
-      },
-      {
-        heading: { uz: "8.2. Klasterlararo masofa (Linkage Usullari)", en: "8.2. Linkage Criteria Between Clusters" },
+        heading: { uz: "7.2. Naive Bayes Turlari", en: "7.2. Three Variants of Naive Bayes" },
         table: {
-          headers: { uz: ["Linkage turi", "Formula / Ta'rif", "Xususiyat va Xavf"], en: ["Linkage", "Definition", "Behavior & Trade-off"] },
+          headers: { uz: ["Tur", "Ma'lumot turi", "Qo'llanilishi"], en: ["Variant", "Data Type", "Application"] },
           rows: {
             uz: [
-              ["Single (Min)", "$\\min_{a\\in A, b\\in B} d(a,b)$", "Zanjir effekti (chaining): uzun/egri klasterlar quradi, shovqinga sezgir"],
-              ["Complete (Max)", "$\\max_{a\\in A, b\\in B} d(a,b)$", "Kompakt diametrli klasterlar, lekin katta klasterlarni bo'lib yuborishi mumkin"],
-              ["Average (UPGMA)", "$\\frac{1}{|A||B|}\\sum d(a,b)$", "Single va Complete orasidagi muvozanatli yechim"],
-              ["Ward's Method", "$\\Delta \\text{WCSS}$ minimizatsiya", "Eng ko'p qo'llaniladi; teng o'lchamli kompakt klasterlar beradi"]
+              ["Gaussian NB", "Uzluksiz normal taqsimlangan raqamlar", "Tibbiy ko'rsatkichlar, Wine/Iris"],
+              ["Multinomial NB", "Butun hisoblar / TF-IDF chastotalari", "Matn tasniflash, Spam filtri"],
+              ["Bernoulli NB", "Ikkilik (0/1) atributlar", "Qisqa SMS va bayroq belgilari"]
             ],
             en: [
-              ["Single (Min)", "$\\min_{a\\in A, b\\in B} d(a,b)$", "Handles non-elliptical shapes, suffers from chaining across noise"],
-              ["Complete (Max)", "$\\max_{a\\in A, b\\in B} d(a,b)$", "Compact spherical clusters; sensitive to outliers"],
-              ["Average", "Mean pairwise distance", "Balanced compromise between Single and Complete"],
-              ["Ward's Method", "Minimizes $\\Delta\\text{WCSS}$", "Most popular default; yields compact equal-sized clusters"]
+              ["Gaussian NB", "Continuous normal features", "Biomarkers, Wine/Iris"],
+              ["Multinomial NB", "Term counts / TF-IDF", "Text & Spam filtering"],
+              ["Bernoulli NB", "Binary 0/1 flags", "Short texts, binary features"]
             ]
           }
         }
       },
       {
-        heading: { uz: "8.3. DBSCAN — Zichlikka Asoslangan Klasterlash", en: "8.3. Density-Based DBSCAN Algorithm" },
+        heading: { uz: "7.3. k-NN (k-Eng Yaqin Qo'shni) Algoritmi (Tan, 4.3-bo'lim)", en: "7.3. k-Nearest Neighbors (Tan Ch. 4.3)" },
         bodyHtml: {
-          uz: "<p><strong>DBSCAN</strong> (Ester et al., 1996) klasterlarni <em>\"bo'shliqlar bilan ajratilgan yuqori zichlikdagi hududlar\"</em> deb ta'riflaydi. Ikkita parametr:</p><ul><li><code>eps (ε)</code> — qo'shnilik radiusi;</li><li><code>min_samples (MinPts)</code> — yadro bo'lish uchun $\\varepsilon$-shar ichidagi minimal nuqtalar soni (odatda $\\ge 2 \\times d$).</li></ul><p>Har bir nuqta 3 roldan birini oladi: <strong>Core Point</strong> ($|N_\\varepsilon(p)| \\ge \\text{MinPts}$), <strong>Border Point</strong> (yadro qo'shnisi, lekin o'zida yetarli qo'shni yo'q), <strong>Noise (-1)</strong> (hech qaysi yadroga yetmaydi).</p>",
-          en: "<p><strong>DBSCAN</strong> defines clusters as dense regions separated by sparse noise, using radius <code>eps (ε)</code> and <code>min_samples</code>. Points become <strong>Core</strong> ($|N_\\varepsilon(p)| \\ge \\text{MinPts}$), <strong>Border</strong>, or <strong>Noise (-1)</strong>.</p>"
+          uz: "<p><strong>k-NN</strong> — <strong>Lazy Learner</strong> (o'qitish bosqichisiz faqat bashorat paytida hisoblaydi). Yangi obyektga eng yaqin $k$ ta qo'shni masofa (Evklid $p=2$ yoki Manhattan $p=1$) orqali topilib, ko'pchilik ovozi beriladi. <strong>k=1</strong> shovqinga sezgir (Overfitting), juda katta $k$ esa chegarani bulaniqlashtiradi (Underfitting). Katta diapazonli ustunlar masofani bosib ketmasligi uchun <strong>normallashtirish majburiy</strong>! Kamchiligi: katta datasetda bashorat vaqti $O(n\\cdot d)$ sekin.</p>",
+          en: "<p><strong>k-NN</strong> is a <strong>Lazy Learner</strong> computing Euclidean ($L_2$) or Manhattan ($L_1$) distances at query time ($O(n\\cdot d)$ slow on big data). Small $k=1$ risks overfitting; large $k$ risks underfitting. Feature scaling is mandatory!</p>"
         },
-        widget: 'dbscan-sim'
-      },
-      {
-        heading: { uz: "8.4. eps ni qanday tanlash kerak? (k-Distance Grafi)", en: "8.4. Tuning eps via k-Distance Plot" },
-        bodyHtml: {
-          uz: "<p><code>eps</code> ni taxmin bilan tanlash qiyin: juda kichik bo'lsa hamma nuqta Noise (-1) ga aylanadi; juda katta bo'lsa hamma klasterlar bittaga qo'shilib ketadi. Amaliy usul: har nuqtaning <code>k = min_samples</code>-eng yaqin qo'shnisigacha masofasini saralab grafik chizing va keskin sakrash (\"knee\") nuqtasini <code>eps</code> qilib oling!</p><p><strong>Cheklovi:</strong> Zichligi keskin farq qiluvchi klasterlarda (biri juda zich, biri siyrak) bitta global <code>eps</code> ishlamaydi — bunday hollarda <strong>HDBSCAN</strong> ishlatiladi.</p>",
-          en: "<p>Choose <code>eps</code> by plotting sorted distances to each point's $k$-th nearest neighbor ($k=\\text{MinPts}$) and picking the sharp knee. Note: for varying densities, prefer <strong>HDBSCAN</strong>.</p>"
-        }
+        latex: "d_{\\text{Euclidean}}=\\sqrt{\\sum(x_i-y_i)^2}, \\qquad d_{\\text{Manhattan}}=\\sum|x_i-y_i|",
+        widget: 'knn-demo'
       }
     ],
     slides: [
-      { title: { uz: "8-mavzu: Iyerarxik va DBSCAN", en: "Topic 8: Hierarchical & DBSCAN" }, subtitle: { uz: "Dendrogrammalar · Linkage · Zichlikka asoslangan klasterlash (80 daqiqa)", en: "Dendrograms · Linkage Criteria · Density Clustering (80 min)" }, points: { uz: ["Agglomerative vs Divisive iyerarxiya", "Linkage usullari: Single, Complete, Average, Ward", "Dendrogramma o'qish va kesish", "DBSCAN: Core, Border, Noise va Reachability", "k-distance grafigi, HDBSCAN va Lab 8"], en: ["Agglomerative vs Divisive hierarchies", "Linkage methods: Single, Complete, Average, Ward", "Reading & cutting dendrograms", "DBSCAN Core/Border/Noise & density reachability", "Choosing eps, HDBSCAN & Lab 8"] } },
-      { title: { uz: "Nega Iyerarxik Klasterlash?", en: "Why Hierarchical Clustering?" }, points: { uz: ["K ni oldindan taxmin qilish shart emas", "Turli aniqlik darajalarida (granularlik) klasterlarni ko'rish mumkin", "Taksonomiya, biologiya (filogenetik daraxtlar) va hujjat iyerarxiyasi uchun ideal"], en: ["No need to pick K upfront", "Inspect multi-level granularity at once", "Ideal for biology phylogenies & document taxonomies"] } },
-      { title: { uz: "Agglomerative Algoritm Bosqichlari", en: "Agglomerative (Bottom-Up) Steps" }, points: { uz: ["1. N ta nuqtaning har birini alohida klaster deb oling (N ta klaster)", "2. N×N masofalar matritsasini hisoblang", "3. Eng yaqin ikkita klasterni birlashtiring", "4. Yangi masofalar matritsasini yangilang (Linkage)", "5. Bitta umumiy klaster qolguncha 3–4 ni takrorlang"], en: ["1. Start with N singleton clusters", "2. Compute N×N pairwise proximity matrix", "3. Merge the two closest clusters", "4. Update proximity matrix via chosen linkage", "5. Repeat until 1 root cluster remains"] } },
-      { title: { uz: "4 ta Linkage Usuli", en: "Comparing Linkage Methods" }, table: { headers: { uz: ["Linkage", "Masofa qoidasi", "Xususiyat"], en: ["Linkage", "Rule", "Behavior"] }, rows: { uz: [["Single", "Eng yaqin juft", "Chaining (uzun zanjir)"], ["Complete", "Eng uzoq juft", "Kompakt sharlar"], ["Average", "Juftlar o'rtachasi", "Muvozanatli"], ["Ward", "ΔWCSS min", "Eng barqaror (default)"]], en: [["Single", "Min pair", "Chaining across noise"], ["Complete", "Max pair", "Tight diameters"], ["Average", "Mean pair", "Balanced"], ["Ward", "Min ΔWCSS", "Most stable default"]] } } },
-      { title: { uz: "Dendrogrammani O'qish va Kesish", en: "Reading & Cutting a Dendrogram" }, points: { uz: ["X o'qi: obyektlar; Y o'qi: birlashish masofasi (balandlik)", "Eng uzun vertikal shoxlarni kesuvchi gorizontal chiziq optimal K ni beradi!", "Hisoblash murakkabligi O(n²) xotira — 50,000+ satrda sekinlashadi"], en: ["X-axis = samples; Y-axis = merge dissimilarity", "Cut horizontally across the longest vertical gap without mergers", "Memory cost O(n²) limits naive scaling past ~50k rows"] } },
-      { title: { uz: "DBSCAN Asosiy G'oyasi", en: "DBSCAN: Density-Based Clustering" }, points: { uz: ["K-Means dan farqli, sharsimon shakl talab qilmaydi", "Klaster — zich joylashgan nuqtalar zanjiri", "Parametrlar: eps (ε radius) va min_samples (MinPts)"], en: ["Discovers arbitrary shapes (moons, rings, streets)", "Clusters are dense neighborhoods separated by sparse voids", "Hyperparameters: eps (radius) and min_samples"] } },
-      { title: { uz: "DBSCAN Nuqtalar Turlari", en: "Core, Border & Noise Points" }, points: { uz: ["Core Point (Yadro): ε radius ichida ≥ min_samples nuqta bor", "Border Point (Chegara): o'zi yadro emas, lekin biror Core nuqtaga ε masofada", "Noise (-1, Shovqin): na yadro, na chegaraviy — outlier!"], en: ["Core Point: ≥ min_samples within radius ε", "Border Point: < min_samples itself, but within ε of a Core point", "Noise (-1): neither core nor border → isolated outlier!"] } },
-      { title: { uz: "Interaktiv DBSCAN Simulyatori (eps va minPts ni o'zgartiring!)", en: "Interactive DBSCAN Simulator" }, widget: 'dbscan-sim' },
-      { title: { uz: "eps Parametrini Tanlash (k-Distance Elbow)", en: "How to Choose eps: k-Distance Plot" }, points: { uz: ["MinPts ni tanlang (odatda 2 × o'lchamlar soni, min ≥ 4)", "Har nuqta uchun MinPts-chi qo'shnisigacha masofani toping", "Masofalarni o'sish tartibida chizing → keskin ko'tarilish ('tizza') nuqtasi = eps!"], en: ["Rule of thumb: min_samples ≥ 2 × dimensions", "Compute distance to each point's k-th nearest neighbor", "Sort & plot → sharp upward knee marks ideal eps!"] } },
-      { title: { uz: "Talabalarga savol (DBSCAN eps ta'siri)", en: "Class Discussion: Tuning eps" }, discussion: { q: { uz: "DBSCAN da barcha nuqtalarning 85% i Noise (-1) bo'lib qoldi. Qaysi parametrni qaysi tomonga o'zgartirish kerak?", en: "In DBSCAN, 85% of points get labeled Noise (-1). Which hyperparameter should you adjust and in what direction?" }, a: { uz: "<code>eps</code> juda kichik tanlangan (yoki <code>min_samples</code> juda katta). <strong>eps ni oshiring</strong> (yoki min_samples ni kamaytiring) va albatta StandardScaler qo'llanganini tekshiring!", en: "<code>eps</code> is too small (or <code>min_samples</code> too high). <strong>Increase eps</strong> and verify features were standardized first!" } } },
-      { title: { uz: "K-Means vs Hierarchical vs DBSCAN", en: "3-Way Clustering Comparison" }, table: { headers: { uz: ["Xususiyat", "K-Means", "Hierarchical", "DBSCAN"], en: ["Feature", "K-Means", "Hierarchical", "DBSCAN"] }, rows: { uz: [["K kerakmi?", "Ha", "Kesish orqali", "Yo'q"], ["Shakl", "Sferik", "Linkage ga bog'liq", "Ixtiyoriy"], ["Shovqin", "Markazni buzadi", "Biriktirib yuboradi", "Noise (-1) ajratadi"], ["Katta data", "Juda tez", "Sekin O(n²)", "O'rtacha O(n log n)"]], en: [["Needs K?", "Yes", "Post-cut", "No"], ["Shapes", "Spherical", "Depends on linkage", "Arbitrary"], ["Outliers", "Distorts means", "Forced into clusters", "Flags Noise (-1)"], ["Scalability", "Very fast", "Slow O(n²)", "O(n log n) with index"]] } } },
-      { title: { uz: "Zichlik farqi muammosi va HDBSCAN", en: "Varying Densities & HDBSCAN" }, points: { uz: ["DBSCAN ning asosiy kamchiligi: bitta global eps zichligi har xil klasterlarni ajrata olmaydi", "HDBSCAN iyerarxik zichlik daraxtini qurib eps parametrini yo'qotadi"], en: ["Single global eps fails when one cluster is dense and another is sparse", "HDBSCAN extracts variable-density clusters hierarchically without eps"] } }
+      { title: { uz: "M7: Naive Bayes va k-NN algoritmlari", en: "M7: Naive Bayes & k-NN" }, subtitle: { uz: "Tan Darsligi 4-bob · MITQ2506 · 80 daqiqa", en: "Tan Textbook Ch. 4 · MITQ2506 · 80 min" }, points: { uz: ["Bayes teoremasi va MAP qaror qoidasi", "Shartli mustaqillik va Laplace Smoothing", "Gaussian, Multinomial, Bernoulli NB", "k-NN Lazy Learning, Evklid & Manhattan", "k tanlash, Scaling va Lab 7"], en: ["Bayes' Theorem & MAP rule", "Conditional independence & Laplace smoothing", "3 Naive Bayes variants", "k-NN Lazy Learning & Distance Metrics", "Tuning k, Scaling & Lab 7"] } },
+      { title: { uz: "Bayes Teoremasi: Prior, Likelihood, Posterior", en: "Bayes' Theorem" }, latex: "P(C_k \\mid X) = \\frac{P(X \\mid C_k)\\,P(C_k)}{P(X)}", points: { uz: ["Prior P(C_k): sinfning boshlang'ich ulushi", "Likelihood P(X|C_k): shu sinfda X uchrash ehtimoli", "Posterior P(C_k|X): yakuniy izlanayotgan ehtimol"], en: ["Prior, Likelihood, and Posterior probabilities"] } },
+      { title: { uz: "Shartli Mustaqillik va Laplace Smoothing", en: "Conditional Independence & Laplace Smoothing" }, latex: "P(w\\mid C) = \\frac{\\text{count}(w,C)+\\alpha}{N_C + \\alpha |V|}", points: { uz: ["'Naive' taxmin: atributlar sinf ichida mustaqil", "Zero-Frequency: o'quvda yo'q so'z ko'paytmani 0 ga aylantiradi", "Laplace (α=1) qo'shish nol ehtimoldan saqlaydi"], en: ["Independence assumption enables O(nd) speed", "Laplace add-1 smoothing prevents zero probability collapse"] } },
+      { title: { uz: "Qo'lda Spam Misoli", en: "Worked Spam Filter Example" }, points: { uz: ["P(Spam)=0.3, P(Ham)=0.7", "P('bepul'|Spam)=0.70, P('sovg\\'a'|Spam)=0.50 → Score = 0.3×0.7×0.5 = 0.105", "P('bepul'|Ham)=0.10, P('sovg\\'a'|Ham)=0.10 → Score = 0.7×0.1×0.1 = 0.007 → SPAM!"], en: ["Spam posterior score 0.105 >> Ham 0.007 → SPAM"] } },
+      { title: { uz: "Naive Bayes Turlari", en: "3 Naive Bayes Variants" }, table: { headers: { uz: ["Tur", "Ma'lumot", "Misol"], en: ["Variant", "Input", "Use Case"] }, rows: { uz: [["Gaussian NB", "Normal raqamli", "Tibbiy ma'lumot"], ["Multinomial NB", "So'z hisobi / TF-IDF", "Spam / Matn"], ["Bernoulli NB", "0 / 1 ikkilik", "Qisqa matn"]], en: [["Gaussian NB", "Continuous", "Medical"], ["Multinomial NB", "Counts/TF-IDF", "Text/Spam"], ["Bernoulli NB", "Binary 0/1", "Short text"]] } } },
+      { title: { uz: "k-NN (k-Eng Yaqin Qo'shni) va Lazy Learning", en: "k-NN & Lazy Learning (Tan 4.3)" }, points: { uz: ["Eager Learner (Decision Tree) model quradi; Lazy Learner (k-NN) shunchaki saqlab turadi", "So'rov paytida barcha o'quv nuqtalarigacha masofa hisoblanadi — O(n·d)", "Eng yaqin k ta qo'shni ovoz beradi (yoki 1/d vaznli ovoz)"], en: ["Lazy learner defers work until prediction O(n·d)", "Majority vote among k closest neighbors"] } },
+      { title: { uz: "Evklid (L2) vs Manhattan (L1) Masofalari", en: "Euclidean vs Manhattan Distances" }, latex: "d_2 = \\sqrt{\\sum (x_i-y_i)^2}, \\qquad d_1 = \\sum |x_i-y_i|", points: { uz: ["Evklid: to'g'ri chiziq masofasi", "Manhattan: koordinata o'qlari bo'ylab masofa (yuqori o'lchamda chidamliroq)"], en: ["Euclidean = straight-line L2; Manhattan = grid L1"] } },
+      { title: { uz: "Interaktiv k-NN Demo (Grafikni bosing!)", en: "Interactive k-NN Visualizer" }, widget: 'knn-demo' },
+      { title: { uz: "k qiymatini Tanlash va Normallashtirish", en: "Choosing k & Mandatory Scaling" }, points: { uz: ["k=1: shovqinga sezgir (Overfitting)", "Juda katta k: chegarani xiralashtiradi (Underfitting)", "Normallashtirish (StandardScaler) bo'lmasa katta diapazonli ustun masofani egallab oladi!"], en: ["k=1 overfits noise; large k underfits; scaling is mandatory"] } },
+      { title: { uz: "Talabalarga savol (k-NN Scaling)", en: "Class Discussion: Unscaled Features" }, discussion: { q: { uz: "k-NN da k=1 bo'lganda o'quv (train) to'plamidagi aniqlik necha foiz chiqadi va nega bu aldamchi?", en: "What is the training accuracy of 1-NN (k=1) and why is it misleading?" }, a: { uz: "O'quv to'plamidagi har nuqtaning eng yaqin qo'shnisi — O'ZI (masofa 0), shu bois Train aniqlik <strong>100%</strong> chiqadi! Ammo testda shovqinga urilib Overfitting qiladi.", en: "Every training point is its own nearest neighbor (distance 0), yielding <strong>100% train accuracy</strong> despite severe overfitting on test noise!" } } }
     ],
     lab: {
-      title: { uz: "L8: Make Moons da Dendrogramma, Ward va DBSCAN", en: "L8: Dendrograms, Ward Linkage & DBSCAN Tuning" },
-      objective: { uz: "K-Means ning chiziqsiz shaklda yutqazishini ko'rish, Ward dendrogramma qurish va k-distance bilan DBSCAN eps tanlash.", en: "Contrast K-Means vs Ward vs DBSCAN on crescent moons and tune eps via k-distance." },
+      title: { uz: "L7: Naive Bayes va k-NN algoritmlari yordamida tasniflash", en: "L7: Classification with Naive Bayes & k-NN" },
+      objective: { uz: "GaussianNB va k-NN modellarini Wine datasetida solishtirish, normallashtirish ta'sirini o'lchash va Cross-Validation bilan k tanlash.", en: "Compare GaussianNB and k-NN on Wine, prove scaling impact, and tune k with 5-fold CV." },
       steps: [
         {
-          title: { uz: "K-Means vs Agglomerative (Yarim oy ma'lumotida)", en: "K-Means Failure vs Agglomerative Single/Ward" },
-          desc: { uz: "200 ta yarim oy nuqtalarida K-Means va Agglomerative ni taqqoslang.", en: "Test K-Means and Agglomerative on make_moons." },
-          code: `from sklearn.datasets import make_moons
+          title: { uz: "Normallashtirishsiz vs Normallashtirilgan k-NN", en: "Unscaled vs Scaled k-NN on Wine" },
+          desc: { uz: "StandardScaler qo'llash aniqlikni qanchaga oshirishini ko'ring.", en: "Measure accuracy jump after StandardScaler." },
+          code: `from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans, AgglomerativeClustering
 
-X_raw, _ = make_moons(n_samples=200, noise=0.08, random_state=42)
-X = StandardScaler().fit_transform(X_raw)
-km_lbl = KMeans(2, n_init=10, random_state=42).fit_predict(X)
-agg_single = AgglomerativeClustering(2, linkage='single').fit_predict(X)
-print("Unique labels:", set(km_lbl), set(agg_single))`
+wine = load_wine()
+X_tr, X_te, y_tr, y_te = train_test_split(wine.data, wine.target, test_size=0.3, stratify=wine.target, random_state=42)
+raw_acc = KNeighborsClassifier(5).fit(X_tr, y_tr).score(X_te, y_te)
+sc = StandardScaler()
+sc_acc = KNeighborsClassifier(5).fit(sc.fit_transform(X_tr), y_tr).score(sc.transform(X_te), y_te)
+print(f"Unscaled k-NN: {raw_acc:.3f} -> Scaled k-NN: {sc_acc:.3f}")`
         },
         {
-          title: { uz: "SciPy Dendrogramma (Ward Linkage)", en: "Plot Ward Linkage Dendrogram" },
-          desc: { uz: "Dastlabki 30 ta namuna uchun dendrogramma chizing.", en: "Generate a dendrogram on 30 samples using SciPy." },
-          code: `from scipy.cluster.hierarchy import dendrogram, linkage
-import matplotlib.pyplot as plt
-
-Z = linkage(X[:30], method='ward')
-plt.figure(figsize=(10, 4))
-dendrogram(Z)
-plt.title("Ward Dendrogram (30 samples)")
-plt.ylabel("Merge Distance")
-plt.savefig("l8_dendrogram.png", dpi=150)`
-        },
-        {
-          title: { uz: "k-Distance va DBSCAN (eps=0.35, min_samples=5)", en: "DBSCAN Clustering & Noise Inspection" },
-          desc: { uz: "NearestNeighbors bilan optimal eps ni ko'rib DBSCAN qo'llang.", en: "Check 5-NN distances and run DBSCAN." },
-          code: `from sklearn.cluster import DBSCAN
-from sklearn.neighbors import NearestNeighbors
+          title: { uz: "GaussianNB vs Optimal k-NN (Pipeline + CV)", en: "GaussianNB vs Cross-Validated k-NN" },
+          desc: { uz: "k=1..21 toq qiymatlarda 5-fold CV bilan eng yaxshi k ni toping.", en: "Sweep odd k=1..21 inside Pipeline." },
+          code: `from sklearn.naive_bayes import GaussianNB
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import cross_val_score
 import numpy as np
 
-dists, _ = NearestNeighbors(n_neighbors=5).fit(X).kneighbors(X)
-print("90th percentile 5-NN dist:", round(np.percentile(dists[:, -1], 90), 3))
-
-db = DBSCAN(eps=0.35, min_samples=5).fit_predict(X)
-n_cl = len(set(db)) - (1 if -1 in db else 0)
-print(f"DBSCAN clusters: {n_cl} | Noise points: {list(db).count(-1)}")`
+nb_cv = cross_val_score(GaussianNB(), X_tr, y_tr, cv=5).mean()
+ks = list(range(1, 22, 2))
+scores = [cross_val_score(make_pipeline(StandardScaler(), KNeighborsClassifier(k)), X_tr, y_tr, cv=5).mean() for k in ks]
+best_k = ks[int(np.argmax(scores))]
+print(f"GaussianNB CV: {nb_cv:.3f} | Best k={best_k} CV: {max(scores):.3f}")`
+        },
+        {
+          title: { uz: "Evklid (p=2) vs Manhattan (p=1)", en: "Euclidean vs Manhattan & Distance Weights" },
+          desc: { uz: "Masofa metrikalari va weights='distance' ni sinang.", en: "Compare L1 vs L2 metrics." },
+          code: `for p, lbl in [(1, 'Manhattan'), (2, 'Euclidean')]:
+    m = make_pipeline(StandardScaler(), KNeighborsClassifier(best_k, p=p, weights='distance')).fit(X_tr, y_tr)
+    print(f"{lbl:10s} Test Score: {m.score(X_te, y_te):.3f}")`
         }
       ],
       variants: {
         uz: [
-          "1-variant: make_circles(n_samples=300, factor=0.4, noise=0.05) datasetida DBSCAN va K-Means ni solishtiring.",
-          "2-variant: eps=[0.15, 0.30, 0.60, 1.2] uchun klaster va shovqin sonini jadval qiling.",
-          "3-variant: Single, Complete, Average va Ward linkage larni make_blobs da taqqoslang."
+          "1-variant: Breast Cancer datasetida k=1..25 grafigini chizing.",
+          "2-variant: MultinomialNB(alpha=0.1, 1.0, 5.0) ni kichik matn to'plamida solishtiring.",
+          "3-variant: weights='uniform' vs weights='distance' natijalarini jadval qiling."
         ],
         en: [
-          "Variant 1: Compare DBSCAN vs K-Means on make_circles(factor=0.4, noise=0.05).",
-          "Variant 2: Sweep eps across [0.15, 0.30, 0.60, 1.2] and log cluster/noise counts.",
-          "Variant 3: Compare Single, Complete, Average, and Ward linkages on make_blobs."
+          "Variant 1: Plot CV accuracy for k=1..25 on Breast Cancer.",
+          "Variant 2: Compare Laplace alpha=[0.1, 1.0, 5.0] on MultinomialNB.",
+          "Variant 3: Compare uniform vs distance-weighted voting."
         ]
       }
     },
     glossary: [
-      { uz: "Dendrogramma", en: "Dendrogram", defUz: "Klasterlarning ketma-ket birlashish masofasini ko'rsatuvchi daraxt", defEn: "Tree diagram encoding hierarchical cluster merges" },
-      { uz: "Ward's Linkage", en: "Ward's Linkage", defUz: "Birlashishda WCSS o'sishini minimallovchi mezon", defEn: "Linkage minimizing within-cluster variance increase" },
-      { uz: "Core Point", en: "Core Point", defUz: "eps radiusida kamida min_samples qo'shnisi bor yadro nuqta", defEn: "Point with ≥ min_samples neighbors inside radius eps" },
-      { uz: "Noise (-1)", en: "Noise (-1)", defUz: "Hech qaysi klasterga kirmagan past zichlikdagi outlier", defEn: "Isolated low-density point not reachable from any core" }
+      { uz: "Prior / Posterior", en: "Prior / Posterior", defUz: "Kuzatuvdan oldingi P(C) va keyingi P(C|X) ehtimollar", defEn: "Class probabilities before and after observing X" },
+      { uz: "Laplace Smoothing", en: "Laplace Smoothing", defUz: "Nol ehtimolni yo'qotish uchun +α qo'shish usuli", defEn: "Add-alpha smoothing avoiding zero probabilities" },
+      { uz: "Lazy Learner", en: "Lazy Learner", defUz: "Model qurmay, bashorat paytida qo'shnilarni qidiruvchi algoritm", defEn: "Algorithm deferring computation to query time" },
+      { uz: "Manhattan masofasi", en: "Manhattan Distance", defUz: "Koordinata farqlari modullari yig'indisi (L1)", defEn: "Sum of absolute coordinate differences" }
     ],
     quiz: [
-      { q: { uz: "Dendrogrammada Y o'qi nimani ifodalaydi?", en: "What does the Y-axis represent in a dendrogram?" }, options: [{ label: 'A', uz: "Klasterlar soni", en: "Cluster count" }, { label: 'B', uz: "Klasterlar birlashtirilgan masofa", en: "Dissimilarity/distance at merge" }, { label: 'C', uz: "Iteratsiyalar", en: "Iterations" }, { label: 'D', uz: "Outlierlar", en: "Outliers" }], answer: 'B', explanation: { uz: "Balandlik birlashayotgan tarmoqlar orasidagi masofani bildiradi.", en: "Height corresponds to linkage distance between merged branches." } },
-      { q: { uz: "DBSCAN da \"shovqin nuqta\" (-1) qaysi?", en: "What is a Noise (-1) point in DBSCAN?" }, options: [{ label: 'A', uz: "Core point", en: "Core point" }, { label: 'B', uz: "Border point", en: "Border point" }, { label: 'C', uz: "Na Core, na Core ga yetadigan Border nuqta", en: "Neither a core point nor reachable from any core point" }, { label: 'D', uz: "Markaz", en: "Centroid" }], answer: 'C', explanation: { uz: "Siyrak hududdagi yakka nuqtalar -1 deb belgilanadi.", en: "Points outside any core neighborhood are labeled -1." } },
-      { q: { uz: "DBSCAN ning K-Means dan eng katta ustunligi nima?", en: "What is DBSCAN's main advantage over K-Means?" }, options: [{ label: 'A', uz: "Tezroq", en: "Always faster" }, { label: 'B', uz: "K siz ixtiyoriy shakldagi klasterlar va shovqinni topadi", en: "Finds arbitrary shapes & noise without specifying K" }, { label: 'C', uz: "Parametrsiz", en: "Zero parameters" }, { label: 'D', uz: "Zichlik farqiga befarq", en: "Handles all densities" }], answer: 'B', explanation: { uz: "Zichlik zanjirlari sferik bo'lmagan shakllarni ajratadi.", en: "Density reachability discovers non-convex shapes naturally." } },
-      { q: { uz: "Agglomerative klasterlash qanday boshlanadi?", en: "How does Agglomerative clustering start?" }, options: [{ label: 'A', uz: "1 ta klasterdan", en: "1 big cluster" }, { label: 'B', uz: "Har bir obyekt alohida klasterdan (N ta)", en: "Each point starts as its own singleton cluster" }, { label: 'C', uz: "K ta markazdan", en: "K centroids" }, { label: 'D', uz: "Shovqinni o'chirib", en: "Deleting noise" }], answer: 'B', explanation: { uz: "Bottom-up usul N ta yakka nuqtadan 1 tagacha birlashtiradi.", en: "Bottom-up merging starts with N singletons." } },
-      { q: { uz: "Ward's linkage usuli nimani minimallaydi?", en: "What does Ward's linkage minimize?" }, options: [{ label: 'A', uz: "Eng yaqin nuqta masofasi", en: "Minimum distance" }, { label: 'B', uz: "Klaster ichidagi dispersiya (WCSS) o'sishi", en: "Increase in within-cluster variance (WCSS)" }, { label: 'C', uz: "Eng uzoq masofa", en: "Max distance" }, { label: 'D', uz: "Klaster soni", en: "Cluster count" }], answer: 'B', explanation: { uz: "Ward eng kam kvadratik xato ortishini beradigan juftni birlashtiradi.", en: "Ward merges pairs causing minimum WCSS increase." } }
+      { q: { uz: "Naive Bayesda \"naive\" so'zi nimani anglatadi?", en: "Why is Naive Bayes called 'naive'?" }, options: [{ label: 'A', uz: "Atributlar sinf berilganda o'zaro mustaqil deb taxmin qilinadi", en: "Assumes conditional independence between attributes" }, { label: 'B', uz: "Sodda kod", en: "Simple code" }, { label: 'C', uz: "Faqat ikkilik", en: "Binary only" }, { label: 'D', uz: "O'qitish yo'q", en: "No training" }], answer: 'A', explanation: { uz: "Nazariyada keltirilganidek, x_i belgilar sinf ichida shartli mustaqil olinadi.", en: "Features are assumed conditionally independent given class." } },
+      { q: { uz: "O'quvda uchramagan so'z ehtimolni 0 ga tushirib qo'ymasligi uchun nima qo'llaniladi?", en: "What prevents unseen words from zeroing out Naive Bayes probabilities?" }, options: [{ label: 'A', uz: "Laplace Smoothing (+α)", en: "Laplace Smoothing (+α)" }, { label: 'B', uz: "Min-Max", en: "Min-Max" }, { label: 'C', uz: "PCA", en: "PCA" }, { label: 'D', uz: "Pruning", en: "Pruning" }], answer: 'A', explanation: { uz: "Laplace Smoothing suratga α va maxrajga α|V| qo'shadi.", en: "Add-alpha smoothing avoids zero probabilities." } },
+      { q: { uz: "k-NN da k=1 bo'lsa qanday muammo kelib chiqadi?", en: "What happens when k=1 in k-NN?" }, options: [{ label: 'A', uz: "Underfitting", en: "Underfitting" }, { label: 'B', uz: "Shovqinga sezgirlik va Overfitting", en: "Sensitivity to noise & Overfitting" }, { label: 'C', uz: "Normallashtirish kerak emas", en: "No scaling" }, { label: 'D', uz: "Tez bo'ladi", en: "Faster" }], answer: 'B', explanation: { uz: "1-NN bitta shovqin nuqtaga qarab qaror qiladi.", en: "Single noisy neighbor dictates prediction." } },
+      { q: { uz: "k-NN da normallashtirish nima uchun majburiy?", en: "Why is feature scaling mandatory in k-NN?" }, options: [{ label: 'A', uz: "Katta diapazonli ustunlar masofani bosib ketmasligi uchun", en: "So large-range features don't dominate distance" }, { label: 'B', uz: "Prior topish", en: "Find priors" }, { label: 'C', uz: "Daraxtni kesish", en: "Prune tree" }, { label: 'D', uz: "Kodlash", en: "Encoding" }], answer: 'A', explanation: { uz: "Evklid va Manhattan masofalari shkalaga sezgir.", en: "Distance metrics are overwhelmed by large-magnitude columns." } },
+      { q: { uz: "Gaussian Naive Bayes qachon ishlatiladi?", en: "When is Gaussian Naive Bayes used?" }, options: [{ label: 'A', uz: "Uzluksiz normal taqsimlangan raqamli ma'lumotlarda", en: "Continuous normally distributed numeric features" }, { label: 'B', uz: "Faqat matn", en: "Text only" }, { label: 'C', uz: "Ikkilik 0/1", en: "Binary 0/1" }, { label: 'D', uz: "Savat tahlili", en: "Baskets" }], answer: 'A', explanation: { uz: "Gaussian NB har bir uzluksiz belgini normal taqsimot bilan modellashtiradi.", en: "Models continuous numeric features using Gaussian mean and variance." } }
+    ],
+    matching: [
+      { left: { uz: "Gaussian NB", en: "Gaussian NB" }, right: { uz: "Uzluksiz normal raqamli atributlar", en: "Continuous numeric features" } },
+      { left: { uz: "Multinomial NB", en: "Multinomial NB" }, right: { uz: "Matndagi so'z chastotalari / TF-IDF", en: "Word counts / TF-IDF frequencies" } },
+      { left: { uz: "Laplace Smoothing", en: "Laplace Smoothing" }, right: { uz: "Zero-Frequency muammosini +α bilan hal qiladi", en: "Fixes zero-frequency with +α" } },
+      { left: { uz: "k-NN (Lazy Learner)", en: "k-NN (Lazy Learner)" }, right: { uz: "Bashoratda eng yaqin k qo'shnini izlaydi", en: "Finds k nearest neighbors at query time" } }
+    ],
+    fillGap: [
+      { text: { uz: "k-NN o'qitish bosqichisiz bashoratda hisoblagani uchun ___ Learner deyiladi.", en: "Because k-NN defers computation until prediction, it is called a ___ learner." }, answer: "Lazy" },
+      { text: { uz: "Sum(|x_i - y_i|) formulasi ___ masofasini ifodalaydi.", en: "The formula Sum(|x_i - y_i|) defines the ___ distance." }, answer: "Manhattan" },
+      { text: { uz: "Laplace Smoothing da odatda α = ___ qiymat olinadi (Add-One).", en: "In Add-One Laplace Smoothing, α is set to ___." }, answer: "1" }
     ]
   },
 
-  // ==================== TOPIC 9 ====================
+  // ==================== M8 / L8 ====================
   {
-    id: 9,
-    slug: '09-anomaly-detection',
+    id: 8,
+    code: 'M8',
+    labCode: 'L8',
+    slug: '08-evaluation-metrics',
     hours: 2,
     labs: 1,
-    keywords: ['Anomaly Detection', 'Outlier', 'Point', 'Contextual', 'Collective', 'IQR', 'Z-Score', 'MAD', 'LOF', 'Isolation Forest'],
+    keywords: ['Confusion Matrix', 'Precision', 'Recall', 'F1-score', 'ROC', 'AUC', 'PR-AUC', 'Cross-Validation', 'Tan Ch.3'],
     title: {
-      uz: "Anomaliyalarni aniqlash",
-      en: "Anomaly & Outlier Detection"
+      uz: "Tasniflash modellarining aniqligini baholash va metrikalar",
+      en: "Evaluating Classification Models & Metrics"
     },
     description: {
-      uz: "Point/Contextual/Collective anomaliyalar, Z-Score & Modified Z-Score (MAD), LOF matematikasi (k-distance, LRD) va Isolation Forest path length formulasi.",
-      en: "Point/Contextual/Collective anomalies, Robust MAD Z-Score, LOF math (reachability & LRD), and Isolation Forest path length."
+      uz: "Accuracy paradoksi (Tan 3.6 & 4), Confusion Matrix, Type I/II xatolar, Precision/Recall/F1/F-beta, ROC-AUC vs PR-AUC va Stratified K-Fold CV.",
+      en: "Accuracy paradox (Tan Ch. 3.6 & 4), Confusion Matrix, Precision/Recall/F1/F-beta, ROC-AUC vs PR-AUC, and Stratified K-Fold CV."
     },
     sections: [
       {
-        heading: { uz: "9.1. Anomaliya nima va Nega Oddiy Tasniflash Yetmaydi?", en: "9.1. What is an Anomaly & Why Standard Classification Fails?" },
+        heading: { uz: "8.1. Accuracy Paradoksi va Xatolik Matritsasi (Confusion Matrix)", en: "8.1. Accuracy Paradox & Confusion Matrix" },
         bodyHtml: {
-          uz: "<p><strong>Anomaliya (Outlier)</strong> — ma'lumotlarning asosiy generativ jarayonidan keskin farq qiluvchi kuzatuv (Hawkins ta'rifi). Shovqindan (Noise — tasodifiy xato) farqli o'laroq, anomaliya ko'pincha <strong>eng qimmatli hodisadir</strong>: bank kartasi o'g'irligi, DDoS hujum, samolyot dvigateli nosozligi, saraton hujayrasi.</p><p>Nega oddiy Classification yetmaydi? Chunki anomaliyalar <strong>o'ta kamyob (&lt;0.1%)</strong> va har safar yangi, ilgari ko'rilmagan hujum ko'rinishida keladi — shu sabab unsupervised/one-class modellar zarur!</p>",
-          en: "<p>Unlike random <em>noise</em>, an <strong>anomaly</strong> reflects a genuinely different underlying mechanism (fraud, intrusion, turbine fault). Standard supervised classifiers struggle because anomalies are ultra-rare (&lt;0.1%) and constantly evolve into unseen forms.</p>"
-        }
-      },
-      {
-        heading: { uz: "9.2. Anomaliyalarning 3 Asosiy Turi", en: "9.2. Three Fundamental Types of Anomalies" },
+          uz: "<p>Noteng sinflarda (masalan, 99% normal, 1% firibgar) hammani \"normal\" deydigan foydasiz model ham <strong>99% Accuracy</strong> oladi! Shu sabab <strong>Confusion Matrix</strong> yordamida 4 ta katak alohida tekshiriladi: <strong>TP</strong>, <strong>TN</strong>, <strong>FP (1-tur xato)</strong> va <strong>FN (2-tur xato)</strong>.</p>",
+          en: "<p>With 99% normal vs 1% fraud, predicting \"normal\" scores <strong>99% Accuracy</strong> while catching 0 fraud! Inspect all 4 cells of the <strong>Confusion Matrix</strong>: TP, TN, FP (Type I), FN (Type II).</p>"
+        },
         table: {
-          headers: { uz: ["Tur", "Ta'rif", "Real Misol", "Qanday aniqlanadi?"], en: ["Type", "Definition", "Real Example", "Detection Approach"] },
+          headers: { uz: ["", "Bashorat: Musbat (1)", "Bashorat: Manfiy (0)"], en: ["", "Predicted: 1", "Predicted: 0"] },
           rows: {
             uz: [
-              ["Point Anomaly", "Bitta yakka nuqta butun to'plamdan uzoq", "Oylik maoshi 4 mln bo'lgan kartadan 120 mln yechilishi", "IQR, Z-score, Isolation Forest"],
-              ["Contextual Anomaly", "Qiymat normal, lekin vaqt/joy kontekstida g'alati", "Qishda Toshkentda +38°C; soat 03:30 da ofisga kirish", "Vaqtli qator / kontekstual shartlar"],
-              ["Collective Anomaly", "Har bir nuqta alohida normal, lekin ketma-ketligi g'alati", "EKG yurak urishidagi g'alati pauza; 10 sek da 500 ta login urinish", "Sequence / Window / Graph tahlil"]
+              ["Haqiqiy: Musbat (1)", "TP (To'g'ri musbat ✓)", "FN (2-tur xato: o'tkazib yuborildi ✗)"],
+              ["Haqiqiy: Manfiy (0)", "FP (1-tur xato: yolg'on signal ✗)", "TN (To'g'ri manfiy ✓)"]
             ],
             en: [
-              ["Point Anomaly", "Single instance far from rest", "\$15,000 swipe on a \$400/mo card", "IQR, Z-score, Isolation Forest"],
-              ["Contextual Anomaly", "Abnormal only within context", "38°C in January; 3 AM badge swipe", "Time-series / conditional models"],
-              ["Collective Anomaly", "Individual points normal, group sequence abnormal", "Flatline ECG segment; 500 logins in 10s", "Sequence / Sliding Window / Graphs"]
+              ["Actual: 1", "TP (True Positive ✓)", "FN (Type II Error ✗)"],
+              ["Actual: 0", "FP (Type I Error ✗)", "TN (True Negative ✓)"]
             ]
           }
         }
       },
       {
-        heading: { uz: "9.3. Statistik Usullar: Z-Score, Masking va Modified Z-Score (MAD)", en: "9.3. Statistical Methods: Z-Score, Masking & Robust MAD" },
+        heading: { uz: "8.2. Precision, Recall, Specificity, F1 va F-beta Score", en: "8.2. Precision, Recall, F1 & F-beta Score" },
         bodyHtml: {
-          uz: "<p>Oddiy Z-score ($z = (x-\\mu)/\\sigma$) katta xatoga ega: <strong>Masking Effekti!</strong> Agar ma'lumotda bitta ulkan outlier ($x=1000$) bo'lsa, u $\\mu$ va $\\sigma$ ni shu qadar oshiradiki, ikkinchi outlier ($x=50$) uchun $|z| < 3$ chiqib yashirinib qoladi.</p><p><strong>Yechim — Modified Z-Score (MAD):</strong> O'rtacha o'rniga Mediana, $\\sigma$ o'rniga <strong>MAD (Median Absolute Deviation)</strong> ishlatiladi ($|M_i| > 3.5$ bo'lsa outlier):</p>",
-          en: "<p>Standard Z-score suffers from <strong>masking</strong>: one extreme outlier inflates $\\mu$ and $\\sigma$, hiding moderate outliers. <strong>Modified Z-score</strong> replaces mean/std with Median and <strong>MAD</strong> (flagging $|M_i| > 3.5$):</p>"
+          uz: "<ul><li><strong>Precision:</strong> Spam filtrida muhim (FP — yaxshi xatni spamga tashlamaslik).</li><li><strong>Recall (Sensitivity):</strong> Tibbiy diagnostikada muhim (FN — kasal bemorni o'tkazib yubormaslik).</li><li><strong>F1-score:</strong> Precision va Recall ning garmonik o'rtachasi.</li></ul>",
+          en: "<ul><li><strong>Precision:</strong> crucial in Spam Filtering (avoiding FP).</li><li><strong>Recall:</strong> crucial in Cancer Screening (avoiding FN).</li><li><strong>F1-score:</strong> harmonic mean of Precision and Recall.</li></ul>"
         },
-        latex: "MAD = \\text{median}(|x_i - \\tilde{x}|), \\qquad M_i = \\frac{0.6745\\,(x_i - \\tilde{x})}{MAD}"
+        latex: "P=\\frac{TP}{TP+FP}, \\quad R=\\frac{TP}{TP+FN}, \\quad F_1=\\frac{2PR}{P+R}, \\quad F_\\beta=(1+\\beta^2)\\frac{P\\cdot R}{\\beta^2 P+R}",
+        widget: 'roc-cm'
       },
       {
-        heading: { uz: "9.4. LOF (Local Outlier Factor) Matematikasi", en: "9.4. Local Outlier Factor (LOF) Math" },
+        heading: { uz: "8.3. ROC-AUC vs PR-AUC va Stratified K-Fold CV", en: "8.3. ROC-AUC vs PR-AUC & Stratified CV" },
         bodyHtml: {
-          uz: "<p>Global usullar zichligi turlicha bo'lgan ikki klasterdan (biri juda zich, biri siyrak) siyrak klaster yaqinidagi normal nuqtani xato ravishda anomaliya deb oladi. <strong>LOF</strong> (Breunig et al., 2000) nuqta zichligini <strong>faqat o'z $k$ ta qo'shnisi zichligi</strong> bilan solishtiradi:</p><ol><li><strong>$k$-distance($p$):</strong> $p$ dan $k$-eng yaqin qo'shnisigacha masofa.</li><li><strong>Reachability Distance:</strong> $\\text{reach-dist}_k(p, o) = \\max\\{k\\text{-dist}(o),\\, d(p, o)\\}$ (tebranishlarni silliqlaydi).</li><li><strong>LRD (Local Reachability Density):</strong> qo'shnilargacha o'rtacha reachability masofasining teskari qiymati.</li><li><strong>LOF($p$):</strong> qo'shnilar LRD larining $p$ ning LRD siga nisbati. $\\text{LOF} \\approx 1$ (normal), $\\text{LOF} \\gg 1$ (anomaliya).</li></ol>",
-          en: "<p>Global thresholds misclassify sparse-cluster points as outliers. <strong>LOF</strong> compares a point's Local Reachability Density (LRD) to its $k$ neighbors' LRDs: $\\text{LOF} \\approx 1$ means normal; $\\text{LOF} \\gg 1$ signals a local outlier.</p>"
-        },
-        latex: "\\text{LRD}_k(p) = \\left(\\frac{\\sum_{o \\in N_k(p)} \\text{reach-dist}_k(p,o)}{|N_k(p)|}\\right)^{-1}, \\qquad \\text{LOF}_k(p) = \\frac{\\sum_{o \\in N_k(p)} \\frac{\\text{LRD}_k(o)}{\\text{LRD}_k(p)}}{|N_k(p)|}"
-      },
-      {
-        heading: { uz: "9.5. Isolation Forest (iForest) — Tez va Masshtablanuvchi", en: "9.5. Isolation Forest Algorithm & Anomaly Score" },
-        bodyHtml: {
-          uz: "<p><strong>Isolation Forest</strong> (Liu et al., 2008) masofa yoki zichlik hisoblamaydi! Asosiy g'oya: <em>\"Anomaliyalar kam sonli va boshqalardan uzoq bo'lgani uchun tasodifiy kesishlar orqali juda kam qadamda (qisqa daraxt yo'lida) izolyatsiya qilinadi.\"</em></p><p>100 ta tasodifiy <strong>iTree</strong> quriladi (har biriga 256 ta subsample). Nuqtaning o'rtacha yo'l uzunligi $E(h(x))$ va $n$ ta nuqta uchun kutilayotgan o'rtacha uzunlik $c(n)$ orqali <strong>Anomaly Score $s(x, n) \\in (0, 1)$</strong> hisoblanadi: $s \\to 1$ (anomaliya), $s < 0.5$ (normal).</p>",
-          en: "<p><strong>Isolation Forest</strong> avoids expensive distance matrices: anomalies are few and different, so random axis-aligned splits isolate them near the root (short path $h(x)$). Anomaly score $s(x,n) \\to 1$ indicates anomaly; $s < 0.5$ is normal.</p>"
-        },
-        latex: "s(x, n) = 2^{-\\frac{E(h(x))}{c(n)}}, \\qquad c(n) = 2H(n-1) - \\frac{2(n-1)}{n}",
-        widget: 'anomaly-sim'
-      },
-      {
-        heading: { uz: "9.6. Algoritmlarni Taqqoslash va Amaliy Qo'llash", en: "9.6. Comparing Anomaly Detectors" },
-        table: {
-          headers: { uz: ["Usul", "O'lcham / Murakkablik", "Kuchli tomoni", "Kamchiligi"], en: ["Method", "Complexity", "Strength", "Weakness"] },
-          rows: {
-            uz: [
-              ["IQR / MAD", "1D, $O(n\\log n)$", "Oddiy, tushunarli, tez", "Ko'p o'lchovli korrelyatsiyani ko'rmaydi"],
-              ["LOF", "Ko'p D, $O(n^2)$", "Turli zichlikdagi lokal outlierlarni topadi", "Katta n da sekin, yangi nuqta uchun novelty=True kerak"],
-              ["Isolation Forest", "Ko'p D, $O(t \\cdot \\psi \\log \\psi)$", "Chiziqli tezlik, xotira tejamkor, katta data uchun eng yaxshi", "O'qlarga parallel kesgani uchun lokal zichlikda LOF dan kuchsizroq"],
-              ["One-Class SVM", "Ko'p D, $O(n^2)$–$O(n^3)$", "Chiziqsiz chegara (RBF kernel)", "Katta datada sekin, giperparametrlarga sezgir"]
-            ],
-            en: [
-              ["IQR / MAD", "1D, $O(n\\log n)$", "Simple, fast, interpretable", "Ignores multivariate correlations"],
-              ["LOF", "Multi-D, $O(n^2)$", "Handles varying local densities", "Slow on large n; needs novelty=True for test"],
-              ["Isolation Forest", "Multi-D, linear in subsamples", "Ultra-fast, low RAM, scales to millions", "Axis-aligned splits can miss subtle local pockets"],
-              ["One-Class SVM", "Multi-D, $O(n^2)$–$O(n^3)$", "Non-linear RBF boundary", "Scales poorly to big datasets"]
-            ]
-          }
+          uz: "<p><strong>ROC egri chizig'i</strong> barcha ehtimollik thresholdlari uchun $TPR = Recall$ va $FPR = FP/(FP+TN)$ ni chizadi: <strong>AUC = 1.0</strong> mukammal model, <strong>AUC = 0.5</strong> tasodifiy model. Kuchli sinf disbalansida (1:1000) ulkan TN soni FPR ni sun'iy kichik qilib ko'rsatgani uchun <strong>PR-AUC (Precision-Recall)</strong> afzal! Barqaror baho uchun <strong>Stratified K-Fold CV</strong> ($k=5$ yoki $10$) har qatlamda sinf nisbatini saqlaydi.</p>",
+          en: "<p><strong>ROC</strong> plots $TPR$ vs $FPR$ across thresholds (AUC=1.0 perfect, 0.5 random). Under extreme 1:1000 imbalance, prefer <strong>PR-AUC</strong>. Always validate via <strong>Stratified K-Fold CV</strong> ($k=5$ or $10$).</p>"
         }
       }
     ],
     slides: [
-      { title: { uz: "9-mavzu: Anomaliyalarni aniqlash", en: "Topic 9: Anomaly & Outlier Detection" }, subtitle: { uz: "Statistik (MAD) · LOF · Isolation Forest · One-Class SVM (80 daqiqa)", en: "Statistical, Density & Tree-Based Detection (80 min)" }, points: { uz: ["Anomaliya vs Shovqin va Nega tasniflash yetmaydi?", "3 xil anomaliya: Point, Contextual, Collective", "IQR, Z-score Masking va Robust MAD Z-score", "LOF matematikasi: k-distance, Reachability, LRD", "Isolation Forest path length s(x,n) va Lab 9"], en: ["Anomaly vs Noise & rare-event challenge", "Point, Contextual & Collective anomalies", "Z-score Masking & Robust MAD", "LOF math: reachability & local density", "Isolation Forest s(x,n) & Lab 9"] } },
-      { title: { uz: "Anomaliya vs Shovqin (Noise)", en: "Anomaly vs Random Noise" }, points: { uz: ["Shovqin: o'lchov xatosi yoki tasodifiy tebranish (uni tozalab tashlaymiz)", "Anomaliya: butunlay boshqa mexanizmdan chiqqan haqiqiy signal!", "Misollar: Bank firibgarligi, Kiberhujum, Sanoat sensori buzilishi", "Ma'lumotning <0.1% bo'lgani uchun ko'pincha unsupervised qidiriladi"], en: ["Noise: random sensor error we want to clean away", "Anomaly: real rare event from a different process (fraud, cyberattack)", "Usually <0.1% of data and constantly mutates → unsupervised detection"] } },
-      { title: { uz: "Anomaliyalarning 3 Asosiy Turi", en: "3 Types of Anomalies" }, table: { headers: { uz: ["Tur", "Tavsif", "Misol"], en: ["Type", "Meaning", "Example"] }, rows: { uz: [["Point", "Yakka ekstremal nuqta", "100 mln so'mlik kutilmagan xarid"], ["Contextual", "Kontekstda g'ayritabiiy", "Qishda +35°C, tungi 03:00 login"], ["Collective", "Guruh / ketma-ketlik g'alati", "10 sek da 1000 so'rov (DDoS)"]], en: [["Point", "Single extreme point", "\$20,000 unexpected charge"], ["Contextual", "Weird in context", "35°C in January"], ["Collective", "Abnormal sequence", "DDoS burst / flatline ECG"]] } } },
-      { title: { uz: "Talabalarga savol (Anomaliya turi)", en: "Class Discussion: Identify Anomaly Type" }, discussion: { q: { uz: "Talaba semestr davomida har kuni tizimga 2–3 marta kiradi. Imtihon kuni esa 1 daqiqa ichida tizimga 400 ta so'rov yuborildi (har bir so'rov oddiy 'sahifani ochish'). Bu qaysi turdagi anomaliya?", en: "A student normally logs in 2–3 times/day. Today 400 normal-looking page requests arrive within 60 seconds. Which anomaly type is this?" }, a: { uz: "<strong>Collective (Jamoaviy) anomaliya!</strong> Har bir yakka HTTP so'rov normal ko'rinadi, lekin ularning 1 daqiqa ichidagi to'plami DDoS yoki skript hujumini ko'rsatadi.", en: "<strong>Collective anomaly!</strong> Individual requests look normal, but the burst sequence signals an automated bot/attack." } } },
-      { title: { uz: "Statistik Usullar: IQR va Z-Score", en: "Statistical Bounds: IQR & Z-Score" }, latex: "[Q_1 - 1.5\\,IQR,\\; Q_3 + 1.5\\,IQR] \\qquad z = \\frac{x - \\mu}{\\sigma},\\; |z| > 3", points: { uz: ["Z-score normal taqsimot (Bell curve) ga tayanadi: 99.7% qiymat ±3σ ichida", "IQR taqsimot shakliga bog'liq emas (Boxplot 'mo'ylovlari')"], en: ["Z-score assumes Gaussian bell curve (99.7% within ±3σ)", "IQR is distribution-free (Boxplot fences)"] } },
-      { title: { uz: "Z-Score Masking Effekti va MAD Yechimi", en: "Masking Effect & Robust MAD Z-Score" }, latex: "MAD = \\text{median}(|x_i - \\tilde{x}|), \\qquad M_i = \\frac{0.6745\\,(x_i - \\tilde{x})}{MAD}", points: { uz: ["Masking: ma'lumotdagi bitta 1,000,000 qiymat μ va σ ni oshirib, 5000 kabi outlierni yashiradi!", "Modified Z-score (MAD) mediana ishlatgani uchun Masking ga tushmaydi", "Chegara: |M_i| > 3.5 bo'lsa outlier!"], en: ["Masking: one huge outlier inflates μ and σ, hiding medium outliers!", "Modified Z-Score uses Median & MAD (50% breakdown point)", "Threshold: flag |M_i| > 3.5"] } },
-      { title: { uz: "Global vs Lokal Anomaliya Muammosi", en: "Why Global Rules Fail: Local Density" }, points: { uz: ["Tasavvur qiling: C1 klaster juda zich (masofa 0.1), C2 klaster siyrak (masofa 2.0)", "C1 ning yonida 0.8 masofada turgan nuqta — C1 ga nisbatan ANOMALIYA!", "Lekin C2 dagi nuqtalar orasida masofa 2.0 bo'lgani uchun global usullar C1 yonidagi outlierni ko'rmaydi"], en: ["Cluster C1 is dense (spacing 0.1); C2 is sparse (spacing 2.0)", "A point 0.8 units from C1 is a clear local anomaly!", "Global distance methods miss it because 0.8 < 2.0 in C2"] } },
-      { title: { uz: "LOF (Local Outlier Factor) Qadamlari", en: "LOF Algorithm Step-by-Step" }, latex: "\\text{reach-dist}_k(p,o)=\\max(k\\text{-dist}(o), d(p,o)), \\qquad \\text{LOF}_k(p)=\\frac{\\sum \\text{LRD}(o)/\\text{LRD}(p)}{k}", points: { uz: ["1. k-eng yaqin qo'shnilarni topish", "2. Reachability masofa bilan tebranishni silliqlash", "3. LRD (Local Reachability Density) — lokal zichlikni hisoblash", "4. LOF ≈ 1 (normal) | LOF >> 1 (masalan >1.5 — lokal anomaliya!)"], en: ["1. Find k nearest neighbors", "2. Compute reachability distance (stabilizes variance)", "3. Compute LRD = inverse average reachability", "4. Compare neighbors' LRD to yours: LOF >> 1 → outlier!"] } },
-      { title: { uz: "LOF Amaliy Eslatma: novelty=True", en: "LOF in Production: novelty=True" }, points: { uz: ["Oddiy LocalOutlierFactor() faqat o'quv to'plamida fit_predict() qiladi", "Yangi kelgan test tranzaksiyasini tekshirish uchun LocalOutlierFactor(novelty=True) qo'ying!"], en: ["Standard LOF only runs fit_predict() transductively", "Pass novelty=True to score unseen test transactions via predict()"] } },
-      { title: { uz: "Isolation Forest: Asosiy G'oya", en: "Isolation Forest: Core Intuition" }, points: { uz: ["Boshqa algoritmlar avval 'norma'ni modellashtiradi, Isolation Forest esa to'g'ridan-to'g'ri anomaliyani AJALATADI (isolate)!", "Tasodifiy atribut va tasodifiy kesish nuqtasi tanlanadi", "Normal nuqta zich to'da ichida → ajratish uchun 10–15 ta kesish kerak", "Anomaliya chetda yolg'iz → 1–3 ta kesishda darhol ajraladi!"], en: ["Instead of profiling normal data, iForest directly isolates anomalies!", "Pick random feature + random split value recursively", "Dense inliers need deep paths; isolated outliers sit near the root!"] } },
-      { title: { uz: "Isolation Forest Anomaly Score Formulasi", en: "Isolation Forest Scoring Math" }, latex: "s(x, n) = 2^{-\\frac{E(h(x))}{c(n)}}", points: { uz: ["E(h(x)) — 100 ta daraxt bo'yicha o'rtacha yo'l uzunligi", "Agar E(h(x)) → 0 (juda qisqa) → s → 1.0 (Anomaliya!)", "Agar E(h(x)) ≈ c(n) → s ≈ 0.5 (Chegara)", "Agar E(h(x)) >> c(n) → s < 0.5 (Normal!)"], en: ["E(h(x)) = mean path depth across ensemble of iTrees", "Short path E(h(x)) → 0 yields score s → 1.0 (Anomaly)", "Average path gives s ≈ 0.5; deep path gives s < 0.5 (Normal)"] } },
-      { title: { uz: "Interaktiv Demo: Isolation Forest vs Z-Score!", en: "Interactive Visualizer: Isolation Cuts vs Z-Score" }, widget: 'anomaly-sim' },
-      { title: { uz: "Isolation Forest Giperparametrlari", en: "Key Hyperparameters of Isolation Forest" }, points: { uz: ["n_estimators=100..200: tasodifiy daraxtlar soni", "max_samples=256 (ψ): har daraxtga olinadigan kichik namuna (swamping/masking oldini oladi!)", "contamination='auto' yoki 0.05: kutilayotgan anomaliya ulushi"], en: ["n_estimators=100..200 trees", "max_samples=256 subsampling prevents masking & keeps training O(1) per tree!", "contamination sets the decision_function threshold"] } },
-      { title: { uz: "Talabalarga savol (contamination)", en: "Class Discussion: contamination" }, discussion: { q: { uz: "Datasetda aslida 1% firibgarlik bor, lekin siz IsolationForest(contamination=0.20) qo'ydingiz. Nima sodir bo'ladi?", en: "True fraud rate is 1%, but you set IsolationForest(contamination=0.20). What happens to Precision & Recall?" }, a: { uz: "Model ma'lumotning eng shubhali 20% qismini anomaliya deb belgilaydi: <strong>Recall yuqori</strong> bo'ladi, lekin 19% normal mijozlar bloklanib <strong>Precision keskin tushadi (FP ko'p)</strong>!", en: "The model flags the top 20% scores as anomalies: <strong>Recall rises</strong>, but 19% legitimate users get flagged causing <strong>awful Precision</strong>!" } } },
-      { title: { uz: "Anomaliya Modellarini Baholash (Yorliqsiz va Yorliqli)", en: "Evaluating Anomaly Detectors" }, points: { uz: ["Test to'plamida yorliqlar bo'lsa: Accuracy EMAS, PR-AUC, F1 va Recall@K ishlatiladi!", "Yorliqlar umuman bo'lmasa: eng yuqori anomaly score li Top-20 nuqtani ekspert bilan tekshirish"], en: ["With ground-truth test labels: use PR-AUC, F1, Recall@K (never Accuracy!)", "Without labels: manually audit top-K highest anomaly scores with domain experts"] } }
+      { title: { uz: "M8: Tasniflash Modellarini Baholash", en: "M8: Model Evaluation Metrics" }, subtitle: { uz: "Tan Darsligi 3.6 & 4-bob · MITQ2506 · 80 daqiqa", en: "Tan Ch. 3.6 & 4 · MITQ2506 · 80 min" }, points: { uz: ["Accuracy Paradoksi", "Confusion Matrix: TP, FP, FN, TN", "Precision, Recall, F1 va F-beta", "ROC-AUC vs PR-AUC", "Holdout vs Stratified K-Fold CV va Lab 8"], en: ["Accuracy Paradox", "Confusion Matrix & Type I/II errors", "Precision, Recall, F1 & F-beta", "ROC-AUC vs PR-AUC", "Stratified K-Fold CV & Lab 8"] } },
+      { title: { uz: "Accuracy Tuzog'i (99% = Foydasiz!)", en: "The Accuracy Paradox" }, points: { uz: ["99 ta oddiy + 1 ta firibgar: 'Hammasi oddiy' deydigan model = 99% Accuracy!", "Lekin firibgarlik bo'yicha Recall = 0% — biznesga 0 foyda"], en: ["Dummy majority classifier gets 99% Accuracy with 0% Fraud Recall"] } },
+      { title: { uz: "Confusion Matrix va Xato Turlari", en: "Confusion Matrix" }, table: { headers: { uz: ["", "Pred 1", "Pred 0"], en: ["", "Pred 1", "Pred 0"] }, rows: { uz: [["True 1", "TP ✓", "FN (2-tur xato)"], ["True 0", "FP (1-tur xato)", "TN ✓"]], en: [["True 1", "TP ✓", "FN (Type II)"], ["True 0", "FP (Type I)", "TN ✓"]] } } },
+      { title: { uz: "Precision, Recall va F1-Score", en: "Precision, Recall & F1" }, latex: "P = \\frac{TP}{TP+FP}, \\qquad R = \\frac{TP}{TP+FN}, \\qquad F_1 = \\frac{2PR}{P+R}", points: { uz: ["Spam filtri → Precision muhim (FP zararli)", "Kasallik aniqlash → Recall muhim (FN xavfli)", "Garmonik o'rtacha F1 ikkalasining muvozanati"], en: ["Spam → Precision; Medical → Recall; Balanced → F1"] } },
+      { title: { uz: "Interaktiv Threshold va Confusion Matrix", en: "Interactive Threshold Explorer" }, widget: 'roc-cm' },
+      { title: { uz: "Qo'lda Hisoblash Misoli", en: "Worked Example" }, points: { uz: ["TP=40, FP=10, FN=20, TN=930 (N=1000)", "Accuracy = 970/1000 = 97.0%", "Precision = 40/50 = 80.0% | Recall = 40/60 = 66.7%", "F1 = 2×0.80×0.667 / 1.467 ≈ 72.7%"], en: ["TP=40, FP=10, FN=20, TN=930 → Acc=97%, P=80%, R=66.7%, F1=72.7%"] } },
+      { title: { uz: "ROC Egri Chizig'i va AUC", en: "ROC Curve & AUC" }, points: { uz: ["TPR (y) vs FPR (x) barcha thresholdlarda", "AUC = 1.0: mukammal ajratish | AUC = 0.5: tasodifiy model"], en: ["TPR vs FPR across thresholds; AUC=1.0 ideal, 0.5 random"] } },
+      { title: { uz: "Kuchli Disbalansda PR-AUC Afzalligi", en: "PR-AUC for Extreme Imbalance" }, points: { uz: ["TN katta bo'lganda FPR kichik ko'rinib ROC aldaydi", "PR-AUC (Precision-Recall) esa False Positive larni darhol ko'rsatadi"], en: ["PR-AUC ignores TN and exposes False Positives"] } },
+      { title: { uz: "Stratified K-Fold Cross-Validation", en: "Stratified K-Fold CV" }, points: { uz: ["Ma'lumotni k=5 yoki 10 qismga bo'lib har birini 1 martadan test qilish", "Stratified har qatlamda sinflar nisbatini saqlaydi"], en: ["k=5 or 10 rotating folds preserving class proportions"] } },
+      { title: { uz: "Talabalarga savol (Metrika tanlash)", en: "Class Discussion: Choosing a Metric" }, discussion: { q: { uz: "100,000 kredit kartadan 100 tasida firibgarlik bor. Qaysi baholash metrikasi ENG YOMON tanlov va qaysilari eng to'g'ri?", en: "Out of 100,000 cards, 100 are fraud. Which metric is the WORST choice and which are best?" }, a: { uz: "<strong>Accuracy eng yomon tanlov</strong> (99.9% chiqib aldaydi). Eng to'g'risi: <strong>PR-AUC, Recall va F1/F2-score</strong>!", en: "<strong>Accuracy is worst</strong> (99.9% trivial floor). Best: <strong>PR-AUC, Recall, and F1/F2</strong>!" } } }
     ],
     lab: {
-      title: { uz: "L9: MAD, LOF va Isolation Forest (Kredit Firibgarligi Simulyatsiyasi)", en: "L9: MAD Z-Score, LOF & Isolation Forest Benchmark" },
-      objective: { uz: "Har xil zichlikdagi klasterlarda Z-Score/MAD, LOF va Isolation Forest modellarini sinash va Precision/Recall bilan baholash.", en: "Benchmark MAD, LOF, and Isolation Forest on mixed-density data with ground-truth PR evaluation." },
+      title: { uz: "L8: Confusion Matrix, Precision, Recall, F1 va ROC-AUC baholash", en: "L8: Evaluation Metrics, Thresholds & ROC-AUC" },
+      objective: { uz: "Breast Cancer datasetida Confusion Matrix, Precision/Recall/F1, threshold tuning, ROC-AUC va StratifiedKFold CV bajarish.", en: "Compute Confusion Matrix, tune thresholds, plot ROC/PR-AUC, and run StratifiedKFold CV." },
       steps: [
         {
-          title: { uz: "Turli zichlikdagi normal klasterlar va anomaliyalar yaratish", en: "Generate Multi-Density Normal Data + Outliers" },
-          desc: { uz: "Zich klaster + siyrak klaster + 25 ta anomaliya tuzing.", en: "Combine a dense blob, a sparse blob, and 25 uniform outliers." },
-          code: `import numpy as np
-np.random.seed(42)
-X_dense = np.random.normal(0, 0.4, (180, 2))
-X_sparse = np.random.normal(6, 1.5, (100, 2))
-X_anom = np.random.uniform(-4, 11, (20, 2))
-X = np.vstack([X_dense, X_sparse, X_anom])
-y_true = np.hstack([np.ones(280), -np.ones(20)])
-print("Dataset shape:", X.shape, "| Outliers:", (y_true == -1).sum())`
-        },
-        {
-          title: { uz: "Robust MAD Z-Score (1D Masking Test)", en: "Compare Z-Score vs Robust MAD on 1D" },
-          desc: { uz: "1000 qiymatli ekstremal outlier Z-Score ni buzishini, MAD esa chidamli ekanini ko'ring.", en: "Show how Z-Score misses moderate outliers under masking while MAD catches them." },
-          code: `arr = np.array([10, 12, 11, 13, 12, 14, 11, 65, 1000])
-z = np.abs((arr - arr.mean()) / arr.std())
-med = np.median(arr)
-mad = np.median(np.abs(arr - med))
-mod_z = np.abs(0.6745 * (arr - med) / mad)
-print("Standard Z (>3):", arr[z > 3])
-print("MAD Mod-Z (>3.5):", arr[mod_z > 3.5])`
-        },
-        {
-          title: { uz: "Isolation Forest vs LOF Taqqoslash", en: "Benchmark Isolation Forest vs LOF" },
-          desc: { uz: "Ikkala modelning F1 va Recall ko'rsatkichlarini hisoblang.", en: "Evaluate Precision, Recall, and F1 for anomaly class (-1)." },
-          code: `from sklearn.ensemble import IsolationForest
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.metrics import classification_report
+          title: { uz: "Confusion Matrix va Classification Report", en: "Confusion Matrix & Report" },
+          desc: { uz: "TP, FP, FN, TN va barcha metrikalarni hisoblang.", en: "Extract matrix cells and print classification_report." },
+          code: `from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import confusion_matrix, classification_report
 
-iso = IsolationForest(contamination=20/300, random_state=42).fit_predict(X)
-lof = LocalOutlierFactor(n_neighbors=20, contamination=20/300).fit_predict(X)
-print("=== Isolation Forest ===")
-print(classification_report(y_true == -1, iso == -1, target_names=['Normal', 'Anomaly']))
-print("=== LOF ===")
-print(classification_report(y_true == -1, lof == -1, target_names=['Normal', 'Anomaly']))`
+data = load_breast_cancer()
+X_tr, X_te, y_tr, y_te = train_test_split(data.data, data.target, test_size=0.3, stratify=data.target, random_state=42)
+clf = DecisionTreeClassifier(max_depth=4, random_state=42).fit(X_tr, y_tr)
+y_pred = clf.predict(X_te)
+print(confusion_matrix(y_te, y_pred))
+print(classification_report(y_te, y_pred, target_names=data.target_names))`
+        },
+        {
+          title: { uz: "Threshold Tuning (0.3 vs 0.5 vs 0.7)", en: "Probability Threshold Tuning" },
+          desc: { uz: "Chegarani o'zgartirib Precision va Recall savdosini ko'ring.", en: "Observe Precision vs Recall trade-off." },
+          code: `from sklearn.metrics import precision_score, recall_score, f1_score
+probs = clf.predict_proba(X_te)[:, 1]
+for thr in [0.3, 0.5, 0.7]:
+    p = (probs >= thr).astype(int)
+    print(f"thr={thr} | P={precision_score(y_te, p):.3f} | R={recall_score(y_te, p):.3f} | F1={f1_score(y_te, p):.3f}")`
+        },
+        {
+          title: { uz: "ROC-AUC, PR-AUC va 5-Fold Stratified CV", en: "ROC-AUC, PR-AUC & 5-Fold Stratified CV" },
+          desc: { uz: "Model barqarorligini o'rtacha ± std bilan chiqaring.", en: "Report AUC and 5-fold mean ± std." },
+          code: `from sklearn.metrics import roc_auc_score, average_precision_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+print("ROC-AUC:", round(roc_auc_score(y_te, probs), 3), "| PR-AUC:", round(average_precision_score(y_te, probs), 3))
+cv = cross_val_score(clf, data.data, data.target, cv=StratifiedKFold(5, shuffle=True, random_state=42), scoring='f1')
+print(f"5-Fold CV F1: {cv.mean():.3f} ± {cv.std():.3f}")`
         }
       ],
       variants: {
         uz: [
-          "1-variant: LocalOutlierFactor(n_neighbors=5, 20, 50) uchun F1-score o'zgarishini solishtiring.",
-          "2-variant: IsolationForest ning decision_function(X) qiymatlaridan eng shubhali Top-5 nuqtani chop eting.",
-          "3-variant: OneClassSVM(nu=0.07, gamma='scale') ni ham qo'shib 3 ta modelni jadvalda taqqoslang."
+          "1-variant: LogisticRegression va DecisionTree ROC egri chiziqlarini bitta grafikda solishtiring.",
+          "2-variant: fbeta_score(y_te, y_pred, beta=2) ni hisoblang.",
+          "3-variant: Wine datasetida macro vs weighted F1 farqini tahlil qiling."
         ],
         en: [
-          "Variant 1: Sweep LOF n_neighbors across [5, 20, 50] and compare anomaly F1.",
-          "Variant 2: Rank points by IsolationForest.decision_function(X) and print the top 5 most anomalous.",
-          "Variant 3: Add OneClassSVM(nu=0.07) to the benchmark table."
+          "Variant 1: Plot ROC curves of DecisionTree vs LogisticRegression together.",
+          "Variant 2: Compute F2-score with beta=2.",
+          "Variant 3: Compare macro vs weighted F1 on 3-class Wine."
         ]
       }
     },
     glossary: [
-      { uz: "Masking effekti", en: "Masking Effect", defUz: "Katta outlierlar μ va σ ni oshirib boshqa outlierlarni yashirib qo'yishi", defEn: "Extreme outliers inflating mean/std and hiding moderate outliers" },
-      { uz: "MAD", en: "MAD", defUz: "Medianadan absolyut og'ishlar medianasi (chidamli tarqalish)", defEn: "Median Absolute Deviation, robust spread estimator" },
-      { uz: "LOF", en: "LOF", defUz: "Nuqta zichligini qo'shnilariga nisbatlovchi lokal anomaliya indeksi", defEn: "Local Outlier Factor comparing point LRD to neighbors" },
-      { uz: "Isolation Forest", en: "Isolation Forest", defUz: "Tasodifiy bo'linish yo'li uzunligi bilan anomaliyalarni ajratuvchi ansambl", defEn: "Tree ensemble scoring anomalies by short isolation path lengths" }
+      { uz: "Precision", en: "Precision", defUz: "TP / (TP + FP) — yolg'on signal kamligi", defEn: "TP / (TP + FP)" },
+      { uz: "Recall", en: "Recall", defUz: "TP / (TP + FN) — haqiqiy musbatlarni qamrab olish", defEn: "TP / (TP + FN)" },
+      { uz: "F1-Score", en: "F1-Score", defUz: "Precision va Recall garmonik o'rtachasi", defEn: "Harmonic mean of P and R" },
+      { uz: "ROC-AUC", en: "ROC-AUC", defUz: "TPR vs FPR egri chizig'i ostidagi maydon", defEn: "Area under ROC curve" }
     ],
     quiz: [
-      { q: { uz: "Isolation Forest anomaliyalarni qanday aniqlaydi?", en: "How does Isolation Forest detect anomalies?" }, options: [{ label: 'A', uz: "O'rtacha va sigma bilan", en: "Mean & std" }, { label: 'B', uz: "Anomaliyalar tasodifiy daraxtda ildizga yaqin kam kesishda izolyatsiya bo'ladi", en: "Anomalies isolate in shorter random split paths near the root" }, { label: 'C', uz: "K-Means bilan", en: "K-Means" }, { label: 'D', uz: "Apriori bilan", en: "Apriori" }], answer: 'B', explanation: { uz: "Qisqa o'rtacha yo'l uzunligi E(h(x)) yuqori anomaly score s(x,n)→1 beradi.", en: "Short average path lengths yield anomaly scores approaching 1." } },
-      { q: { uz: "LOF >> 1 nimani anglatadi?", en: "What does LOF >> 1 indicate?" }, options: [{ label: 'A', uz: "Normal nuqta", en: "Normal point" }, { label: 'B', uz: "Qo'shnilaridan ancha past zichlikdagi lokal anomaliya", en: "Local outlier with much lower density than neighbors" }, { label: 'C', uz: "Klaster markazi", en: "Centroid" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "Qo'shnilarning LRD si nuqtanikidan katta bo'lganda LOF >> 1 chiqadi.", en: "Neighbors are denser than the target point." } },
-      { q: { uz: "\"Contextual anomaly\" misoli qaysi?", en: "Which is a Contextual Anomaly?" }, options: [{ label: 'A', uz: "Qishda 35°C harorat", en: "35°C in winter" }, { label: 'B', uz: "Katta xato", en: "Single huge spike" }, { label: 'C', uz: "1000 ta klik", en: "1000 clicks" }, { label: 'D', uz: "NaN", en: "NaN" }], answer: 'A', explanation: { uz: "35°C yozda normal, qish kontekstida anomaliyadir.", en: "Normal value overall, anomalous inside the winter context." } },
-      { q: { uz: "Z-score dagi Masking muammosini qaysi statistika hal qiladi?", en: "Which robust statistic resolves Z-score Masking?" }, options: [{ label: 'A', uz: "Modified Z-score (Mediana va MAD)", en: "Modified Z-score (Median & MAD)" }, { label: 'B', uz: "Min-Max", en: "Min-Max" }, { label: 'C', uz: "Accuracy", en: "Accuracy" }, { label: 'D', uz: "Support", en: "Support" }], answer: 'A', explanation: { uz: "Mediana va MAD 50% gacha buzilgan nuqtalarga chidamli.", en: "Median & MAD resist extreme outlier distortion." } },
-      { q: { uz: "Isolation Forest da `contamination` parametri nimani belgilaydi?", en: "What does `contamination` control in Isolation Forest?" }, options: [{ label: 'A', uz: "Daraxtlar soni", en: "Tree count" }, { label: 'B', uz: "Datasetdagi kutilayotgan anomaliyalar ulushi", en: "Expected proportion of outliers" }, { label: 'C', uz: "Chuqurlik", en: "Depth" }, { label: 'D', uz: "Radius", en: "Radius" }], answer: 'B', explanation: { uz: "Score chegarasini (threshold) avtomatik sozlash uchun ishlatiladi.", en: "Sets the score cutoff for predicting -1 vs +1." } }
+      { q: { uz: "Tibbiy diagnostikada (kasallikni o'tkazib yubormaslik) qaysi metrika muhimroq?", en: "Which metric is critical in medical disease screening?" }, options: [{ label: 'A', uz: "Precision", en: "Precision" }, { label: 'B', uz: "Recall", en: "Recall" }, { label: 'C', uz: "Accuracy", en: "Accuracy" }, { label: 'D', uz: "Support", en: "Support" }], answer: 'B', explanation: { uz: "FN (kasalni sog'lom deyish) xavfli bo'lgani uchun Recall ustun.", en: "Minimizing False Negatives requires high Recall." } },
+      { q: { uz: "AUC = 0.5 nimani anglatadi?", en: "What does AUC = 0.5 indicate?" }, options: [{ label: 'A', uz: "Mukammal model", en: "Perfect model" }, { label: 'B', uz: "Tasodifiy model", en: "Random guessing model" }, { label: 'C', uz: "Overfitting", en: "Overfitting" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "AUC=0.5 ROC grafigida diagonal chiziqqa to'g'ri keladi.", en: "AUC=0.5 corresponds to random guessing." } },
+      { q: { uz: "Spam filtri uchun qaysi ko'rsatkich muhimroq?", en: "Which metric is prioritized for a spam filter?" }, options: [{ label: 'A', uz: "Recall", en: "Recall" }, { label: 'B', uz: "Precision", en: "Precision" }, { label: 'C', uz: "WCSS", en: "WCSS" }, { label: 'D', uz: "Lift", en: "Lift" }], answer: 'B', explanation: { uz: "Muhim xatni spamga tashlamaslik (FP kamligi) uchun Precision muhim.", en: "Avoids false positives on important emails." } },
+      { q: { uz: "Confusion matrisada FN (False Negative) nima?", en: "What is False Negative (FN)?" }, options: [{ label: 'A', uz: "Haqiqiy musbatni manfiy deb o'tkazib yuborish (2-tur xato)", en: "Predicting negative when actual is positive (Type II)" }, { label: 'B', uz: "1-tur xato", en: "Type I error" }, { label: 'C', uz: "TP", en: "TP" }, { label: 'D', uz: "TN", en: "TN" }], answer: 'A', explanation: { uz: "FN — haqiqiy musbat holatni topa olmaslik (2-tur xato).", en: "Type II error missing an actual positive." } },
+      { q: { uz: "Kuchli disbalansli ma'lumotlarda (1:1000) ROC o'rniga qaysi egri chiziq afzal?", en: "For 1:1000 imbalanced data, which curve is preferred over ROC?" }, options: [{ label: 'A', uz: "PR-AUC (Precision-Recall)", en: "PR-AUC (Precision-Recall)" }, { label: 'B', uz: "Elbow", en: "Elbow" }, { label: 'C', uz: "Dendrogramma", en: "Dendrogram" }, { label: 'D', uz: "Scree", en: "Scree" }], answer: 'A', explanation: { uz: "PR-AUC ulkan TN ga bog'liq bo'lmaydi.", en: "PR-AUC ignores TN and exposes False Positives." } }
+    ],
+    matching: [
+      { left: { uz: "TP / (TP + FP)", en: "TP / (TP + FP)" }, right: { uz: "Precision (Spam filtri uchun muhim)", en: "Precision (key for Spam filter)" } },
+      { left: { uz: "TP / (TP + FN)", en: "TP / (TP + FN)" }, right: { uz: "Recall (Tibbiyot uchun muhim)", en: "Recall (key for Medical screening)" } },
+      { left: { uz: "AUC = 1.0", en: "AUC = 1.0" }, right: { uz: "Mukammal tasniflagich", en: "Perfect classifier" } },
+      { left: { uz: "Stratified K-Fold CV", en: "Stratified K-Fold CV" }, right: { uz: "Har qatlamda sinf nisbatini saqlaydi", en: "Preserves class balance in every fold" } }
+    ],
+    fillGap: [
+      { text: { uz: "Precision va Recall ning garmonik o'rtachasi ___ deb ataladi.", en: "The harmonic mean of Precision and Recall is called the ___ score." }, answer: ["F1", "F1-score"] },
+      { text: { uz: "99% normal va 1% firibgar ma'lumotda Accuracy=99% chiqishi ___ paradoksi deyiladi.", en: "Getting 99% accuracy on 99:1 imbalanced data is the ___ paradox." }, answer: "Accuracy" },
+      { text: { uz: "ROC grafigida tasodifiy modelning AUC qiymati ___ ga teng.", en: "A random classifier has an ROC-AUC of ___." }, answer: "0.5" }
+    ]
+  },
+
+  // ==================== M9 / L9 ====================
+  {
+    id: 9,
+    code: 'M9',
+    labCode: 'L9',
+    slug: '09-market-basket',
+    hours: 2,
+    labs: 1,
+    keywords: ['Association Rules', 'Market Basket', 'Support', 'Confidence', 'Lift', 'Conviction', 'Simpsons Paradox', 'Tan Ch.5'],
+    title: {
+      uz: "Assotsiativ qoidalar va xaridor savatchasi tahlili",
+      en: "Association Rules & Market Basket Analysis"
+    },
+    description: {
+      uz: "Tranzaksiya matritsasi (Tan 5.1), mumkin bo'lgan qoidalar soni (3^d - 2^(d+1) + 1), Support, Confidence, Lift, Conviction, Confidence tuzog'i va Simpson paradoksi.",
+      en: "Binary basket matrix (Tan Ch. 5.1), rule search space, Support, Confidence, Lift, Conviction, Confidence Trap & Simpson's Paradox."
+    },
+    sections: [
+      {
+        heading: { uz: "9.1. Xaridor Savatchasi Tahlili va Qoida Shakli (Tan, 5.1-bo'lim)", en: "9.1. Market Basket Representation (Tan Ch. 5.1)" },
+        bodyHtml: {
+          uz: "<p><strong>Assotsiativ qoidalar</strong> (Agrawal et al., 1993) — supermarket cheklari, veb-kliklar yoki elektron tibbiy kartalardan <code>X → Y</code> (Bu yerda $X \\cap Y = \\emptyset$) ko'rinishidagi birga uchrash qonuniyatlarini topadi. Har bir chek ikkilik (0/1) asimetrik jadval sifatida tasvirlanadi.</p><p>Agar do'konda $d$ ta mahsulot bo'lsa, mumkin bo'lgan barcha assotsiativ qoidalar soni:</p><p>$R = 3^d - 2^{d+1} + 1$. Masalan, atigi $d=6$ ta mahsulot uchun $R = 602$ ta qoida; $d=100$ uchun esa astronomik son! Shu bois Support va Confidence chegaralari zarur.</p>",
+          en: "<p><strong>Association Rules</strong> ($X \\to Y$, $X \\cap Y = \\emptyset$) uncover co-occurrence patterns in asymmetric binary transaction tables. With $d$ items, $R = 3^d - 2^{d+1} + 1$ candidate rules exist—necessitating minimum thresholds.</p>"
+        }
+      },
+      {
+        heading: { uz: "9.2. Asosiy Baholash Mezonlari: Support, Confidence, Lift, Conviction", en: "9.2. Evaluation Metrics: Support, Confidence, Lift & Conviction" },
+        bodyHtml: {
+          uz: "<p><strong>Confidence Tuzog'i!</strong> Agar do'kon mijozlarining 90% i <em>Non</em> olsa, <code>{Kofe} → {Non}</code> qoidasining Confidence qiymati 90% chiqaveradi, garchi ular mutlaqo mustaqil bo'lsa ham! Buni <strong>Lift</strong> (Tan da <em>Interest Factor</em>) fosh qiladi: <strong>Lift &gt; 1</strong> (ijobiy), <strong>Lift = 1</strong> (mustaqil), <strong>Lift &lt; 1</strong> (salbiy).</p>",
+          en: "<p><strong>The Confidence Trap:</strong> high baseline Support(Y) inflates Confidence(X→Y) even when X and Y are independent! <strong>Lift</strong> detects true dependence (>1 positive, =1 independent, <1 negative).</p>"
+        },
+        latex: "\\text{Sup}(X\\cup Y)=\\frac{c(X\\cup Y)}{N}, \\quad \\text{Conf}(X\\to Y)=\\frac{\\text{Sup}(X\\cup Y)}{\\text{Sup}(X)}, \\quad \\text{Lift}=\\frac{\\text{Conf}(X\\to Y)}{\\text{Sup}(Y)}",
+        widget: 'market-basket-sim'
+      },
+      {
+        heading: { uz: "9.3. Qo'lda Hisoblash Misoli va Simpson Paradoksi (Tan, 5.7-bo'lim)", en: "9.3. Worked Calculation & Simpson's Paradox (Tan Ch. 5.7)" },
+        bodyHtml: {
+          uz: "<p><strong>Misol:</strong> 1000 ta chekdan 400 tasida <em>Choy</em>, 300 tasida <em>Shakar</em>, 240 tasida ikkalasi bor. Unda: $\\text{Sup}=240/1000=0.24$, $\\text{Conf}(\\text{Choy}\\to\\text{Shakar})=240/400=0.60$, $\\text{Lift}=0.60/0.30=2.0$ (kuchli ijobiy bog'liqlik!).</p><p><strong>Simpson Paradoksi:</strong> Umumiylashtirilgan jadvalda qoida ijobiy chiqib, yashirin o'zgaruvchi (masalan, Mijoz guruhi: Talabalar vs Ishchilar) bo'yicha ajratilganda qoida teskarisiga o'zgarib qolishi mumkin — shu sabab stratifikatsiya muhim!</p>",
+          en: "<p><strong>Example:</strong> 1000 receipts (400 Tea, 300 Sugar, 240 both) → $\\text{Sup}=0.24$, $\\text{Conf}=0.60$, $\\text{Lift}=2.0$. Beware <strong>Simpson's Paradox</strong> (Tan Ch. 5.7), where pooling hidden subgroups reverses rule direction!</p>"
+        }
+      },
+      {
+        heading: { uz: "9.4. Amaliy Qo'llanilishi", en: "9.4. Practical Applications" },
+        bodyHtml: {
+          uz: "<ul><li><strong>Chakana savdo:</strong> do'kon javonlarini joylashtirish, chegirmali juftliklar (bundles).</li><li><strong>E-commerce:</strong> \"Mijozlar ko'pincha birga xarid qiladi\" tavsiyalari.</li><li><strong>Kiberxavfsizlik &amp; Tibbiyot:</strong> birga uchraydigan tarmoq signallari yoki dorilarning nojo'ya ta'siri.</li></ul>",
+          en: "<ul><li><strong>Retail:</strong> shelf placement &amp; cross-selling bundles.</li><li><strong>E-commerce:</strong> \"Frequently bought together\" widgets.</li><li><strong>Healthcare:</strong> adverse drug-interaction patterns.</li></ul>"
+        }
+      }
+    ],
+    slides: [
+      { title: { uz: "M9: Assotsiativ qoidalar va Savat tahlili", en: "M9: Association Rules & Market Basket" }, subtitle: { uz: "Tan Darsligi 5.1 & 5.7 · MITQ2506 · 80 daqiqa", en: "Tan Ch. 5.1 & 5.7 · MITQ2506 · 80 min" }, points: { uz: ["Savat tahlili va Ikkilik matritsa", "Qoidalar fazosining kattaligi: 3^d - 2^(d+1) + 1", "Support, Confidence, Lift, Conviction", "Confidence Tuzog'i va Simpson Paradoksi", "Amaliy qo'llanilishi va Lab 9"], en: ["Market Basket binary representation", "Exponential rule space 3^d - 2^(d+1) + 1", "Support, Confidence, Lift & Conviction", "Confidence Trap & Simpson's Paradox", "Business applications & Lab 9"] } },
+      { title: { uz: "Xaridor Savatchasi Tahlili Nima?", en: "What is Market Basket Analysis?" }, points: { uz: ["Har bir chek (tranzaksiya) — savatdagi mahsulotlar to'plami", "Maqsad: {Antecedent X} → {Consequent Y} bog'liqligini topish (X ∩ Y = ∅)", "Muhim: X → Y sababiyat (causality) emas, birga uchrash (co-occurrence)!"], en: ["Uncovers {X} → {Y} co-occurrence patterns in transaction logs", "Disjoint itemsets (X ∩ Y = ∅); measures correlation, not causality"] } },
+      { title: { uz: "Nega Brute-Force Imkonsiz? (Tan 5.1)", en: "Exponential Rule Search Space" }, latex: "R = 3^d - 2^{d+1} + 1", points: { uz: ["d = 6 ta mahsulot uchun ham allaqachon R = 602 ta qoida mavjud!", "d = 1000 mahsulotli supermarketda kombinatsiyalar koinotdagi atomlardan ko'p", "Yechim: min_support va min_confidence bilan kesish"], en: ["Even d=6 items produce 602 candidate rules!", "Requires pruning via min_support & min_confidence"] } },
+      { title: { uz: "Support va Confidence Formulalari", en: "Support & Confidence" }, latex: "\\text{Sup}(X\\cup Y)=\\frac{\\text{count}(X\\cup Y)}{N}, \\qquad \\text{Conf}(X\\to Y)=\\frac{\\text{Sup}(X\\cup Y)}{\\text{Sup}(X)}", points: { uz: ["Support: ikkala to'plam jami cheklarning necha foizida birga keladi", "Confidence: X olinganda Y ham olinish shartli ehtimoli P(Y|X)"], en: ["Support = overall joint frequency; Confidence = P(Y|X)"] } },
+      { title: { uz: "Lift (Ko'tarish) va Conviction", en: "Lift (Interest) & Conviction" }, latex: "\\text{Lift}(X\\to Y)=\\frac{\\text{Conf}(X\\to Y)}{\\text{Sup}(Y)}, \\qquad \\text{Conviction}=\\frac{1-\\text{Sup}(Y)}{1-\\text{Conf}(X\\to Y)}", points: { uz: ["Lift > 1: ijobiy bog'liqlik (birga olish ehtimoli yuqori)", "Lift = 1: X va Y mutlaqo mustaqil", "Lift < 1: salbiy bog'liqlik (birini olsa ikkinchisini olmaydi)"], en: ["Lift > 1 positive; = 1 independent; < 1 negative association"] } },
+      { title: { uz: "Interaktiv Confidence Tuzog'i va Lift Demo", en: "Interactive Confidence Trap & Lift Explorer" }, widget: 'market-basket-sim' },
+      { title: { uz: "Talabalarga savol (Confidence Tuzog'i)", en: "Class Discussion: Confidence Trap" }, discussion: { q: { uz: "Do'konda 90% mijoz Non oladi. {Kofe}→{Non} qoidasining Confidence = 90% chiqdi. Bu qoida asosida Kofe yoniga Non qo'yish foydalimi?", en: "90% of shoppers buy Bread. Confidence(Coffee→Bread) = 90%. Does Coffee actually drive Bread purchases?" }, a: { uz: "YO'Q! <code>Lift = 0.90 / 0.90 = 1.0</code>. Kofe ichmaydiganlar ham baribir 90% holatda Non olyapti — ular mustaqil!", en: "NO! <code>Lift = 0.90 / 0.90 = 1.0</code> — Coffee and Bread are statistically independent!" } } },
+      { title: { uz: "Qo'lda Hisoblash Misoli (N = 1000)", en: "Worked Example (N = 1000)" }, points: { uz: ["Choy = 400, Shakar = 300, Choy va Shakar = 240", "Support = 240 / 1000 = 0.24 (24%)", "Confidence(Choy → Shakar) = 240 / 400 = 0.60 (60%)", "Lift = 0.60 / (300/1000) = 0.60 / 0.30 = 2.0 (kuchli ijobiy!)"], en: ["Sup=0.24, Conf=0.60, Sup(Sugar)=0.30 → Lift = 2.0"] } },
+      { title: { uz: "Simpson Paradoksi (Tan 5.7)", en: "Simpson's Paradox in Association Rules" }, points: { uz: ["Yashirin o'zgaruvchi (masalan, Yosh guruhi yoki Filial) e'tibordan chetda qolsa, umumiy jadvalda Lift > 1 chiqqan qoida har bir alohida guruhda Lift < 1 chiqishi mumkin!", "Yechim: Segmentlar (guruhlar) kesimida alohida tekshirish"], en: ["A positive association in pooled data can reverse within every stratified subgroup!"] } },
+      { title: { uz: "Savat Tahlili Biznes Strategiyalari", en: "Business Actionability" }, points: { uz: ["Yuqori Lift juftliklar: ularni yonma-yon qo'ying yoki birga chegirma (Bundle) bering", "Yoki aksincha: do'konning ikki chetiga qo'yib xaridorni hamma javonlardan o'tkazing!"], en: ["Cross-sell bundles OR strategic opposite-aisle placement to boost store traffic"] } }
+    ],
+    lab: {
+      title: { uz: "L9: Xaridor savatchasi ma'lumotlarida assotsiativ qoidalarni aniqlash", en: "L9: Market Basket Encoding & Association Metrics" },
+      objective: { uz: "Cheklar ro'yxatini TransactionEncoder bilan jadvalga o'tkazish, Support/Confidence/Lift/Conviction hisoblash va Confidence tuzog'ini amalda ko'rish.", en: "Encode retail baskets, compute Support/Confidence/Lift/Conviction, and filter spurious rules." },
+      steps: [
+        {
+          title: { uz: "Cheklar jadvalini One-Hot Matritsaga o'tkazish", en: "Encode Retail Baskets" },
+          desc: { uz: "12 ta chekdan boolean matritsa tuzing va har bir tovar Support ini chiqaring.", en: "Convert baskets to boolean matrix and inspect item supports." },
+          code: `import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+
+baskets = [
+    ['Non','Sut','Tuxum'], ['Non','Sut'], ['Non','Tuxum'], ['Sut','Tuxum'],
+    ['Non','Sut','Tuxum'], ['Non','Sut','Kofe'], ['Non','Kofe'], ['Non','Choy','Shakar'],
+    ['Choy','Shakar','Non'], ['Choy','Shakar'], ['Non','Meva'], ['Non','Sut','Meva']
+]
+te = TransactionEncoder()
+df = pd.DataFrame(te.fit_transform(baskets), columns=te.columns_)
+print("Individual Item Support:\\n", df.mean().sort_values(ascending=False).round(3))`
+        },
+        {
+          title: { uz: "Support, Confidence va Lift ni Qo'lda Tekshirish", en: "Verify Support, Confidence & Lift" },
+          desc: { uz: "{Choy}→{Shakar} va {Kofe}→{Non} qoidalarini hisoblang.", en: "Compare {Tea}→{Sugar} vs {Coffee}→{Bread}." },
+          code: `def rule_metrics(a, b):
+    sup_a = df[a].mean()
+    sup_b = df[b].mean()
+    sup_ab = (df[a] & df[b]).mean()
+    conf = sup_ab / sup_a
+    lift = conf / sup_b
+    print(f"{{{a}}} -> {{{b}}}: Sup={sup_ab:.2f}, Conf={conf:.2f}, Lift={lift:.2f}")
+
+rule_metrics('Choy', 'Shakar')
+rule_metrics('Kofe', 'Non')`
+        },
+        {
+          title: { uz: "Jaccard va Cosine Qoida Metrikalari", en: "Rank All Item Pairs by Lift" },
+          desc: { uz: "mlxtend orqali barcha juft qoidalarni Lift bo'yicha tartiblang.", en: "Generate rules and rank by Lift descending." },
+          code: `from mlxtend.frequent_patterns import apriori, association_rules
+freq = apriori(df, min_support=0.15, use_colnames=True)
+rules = association_rules(freq, metric="confidence", min_threshold=0.5)
+print(rules[['antecedents','consequents','support','confidence','lift','conviction']].sort_values('lift', ascending=False).head(6))`
+        }
+      ],
+      variants: {
+        uz: [
+          "1-variant: Non ni deyarli hamma olgani uchun {Kofe}→{Non} da Lift nechaga teng chiqishini izohlang.",
+          "2-variant: Lift > 1.2 va Support ≥ 0.15 shartiga mos qoidalarni filtrlang.",
+          "3-variant: O'zingiz 10 ta restoran buyurtmasi tuzib Support/Confidence/Lift hisoblang."
+        ],
+        en: [
+          "Variant 1: Explain why {Kofe}→{Non} has high Confidence yet Lift ≈ 1.",
+          "Variant 2: Filter rules satisfying Lift > 1.2 and Support ≥ 0.15.",
+          "Variant 3: Create 10 restaurant orders and compute top Lift rules."
+        ]
+      }
+    },
+    glossary: [
+      { uz: "Support", en: "Support", defUz: "To'plamning jami tranzaksiyalardagi ulushi", defEn: "Proportion of baskets containing itemset" },
+      { uz: "Confidence", en: "Confidence", defUz: "X bor cheklarda Y ham uchrash ehtimoli P(Y|X)", defEn: "Conditional probability P(Y|X)" },
+      { uz: "Lift", en: "Lift", defUz: "Conf(X→Y)/Sup(Y): >1 ijobiy, =1 mustaqil, <1 salbiy", defEn: "Ratio measuring true statistical lift above independence" },
+      { uz: "Simpson paradoksi", en: "Simpson's Paradox", defUz: "Umumiy guruhdagi bog'liqlik quyi guruhlarda teskari bo'lishi", defEn: "Trend reversal when data is stratified by a confounder" }
+    ],
+    quiz: [
+      { q: { uz: "Confidence(A → B) = 0.8 nimani anglatadi?", en: "What does Confidence(A → B) = 0.8 mean?" }, options: [{ label: 'A', uz: "A mavjud cheklarning 80% da B ham bor", en: "80% of baskets with A also contain B" }, { label: 'B', uz: "B ning 80% da A bor", en: "80% of B contain A" }, { label: 'C', uz: "Jami 80%", en: "80% overall" }, { label: 'D', uz: "Lift 0.8", en: "Lift 0.8" }], answer: 'A', explanation: { uz: "Confidence = P(B|A) shartli ehtimoldir.", en: "Confidence equals P(B|A)." } },
+      { q: { uz: "Lift = 1 bo'lsa bu nimani bildiradi?", en: "What does Lift = 1 signify?" }, options: [{ label: 'A', uz: "Kuchli qoida", en: "Strong rule" }, { label: 'B', uz: "A va B statistik mustaqil (tasodifiy)", en: "A and B are statistically independent" }, { label: 'C', uz: "Salbiy bog'liqlik", en: "Negative correlation" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "Lift=1 bo'lganda Conf(A→B) = Sup(B), ya'ni bog'liqlik yo'q.", en: "Lift=1 indicates zero statistical dependence." } },
+      { q: { uz: "1000 chekda Choy=400, Shakar=300, Ikkalasi=240 bo'lsa, Lift(Choy→Shakar) qancha?", en: "With N=1000, Tea=400, Sugar=300, Both=240, what is Lift(Tea→Sugar)?" }, options: [{ label: 'A', uz: "2.0", en: "2.0" }, { label: 'B', uz: "0.6", en: "0.6" }, { label: 'C', uz: "0.24", en: "0.24" }, { label: 'D', uz: "1.0", en: "1.0" }], answer: 'A', explanation: { uz: "Conf = 240/400 = 0.60; Sup(Shakar) = 0.30; Lift = 0.60/0.30 = 2.0.", en: "0.60 / 0.30 = 2.0." } },
+      { q: { uz: "Umumiy jadvalda ijobiy chiqqan qoida segmentlarga ajratilganda teskarisiga o'zgarishi nima deyiladi?", en: "When a pooled association reverses inside stratified subgroups, it is called?" }, options: [{ label: 'A', uz: "Simpson paradoksi", en: "Simpson's Paradox" }, { label: 'B', uz: "Overfitting", en: "Overfitting" }, { label: 'C', uz: "Masking", en: "Masking" }, { label: 'D', uz: "Concept Drift", en: "Concept Drift" }], answer: 'A', explanation: { uz: "Tan 5.7-bo'lim: yashirin o'zgaruvchi tufayli yo'nalish teskarilanadi.", en: "Simpson's Paradox from confounding variables." } },
+      { q: { uz: "d ta mahsulot uchun mumkin bo'lgan jami qoidalar soni qaysi formula bilan topiladi?", en: "How many candidate rules exist for d unique items?" }, options: [{ label: 'A', uz: "3^d - 2^(d+1) + 1", en: "3^d - 2^(d+1) + 1" }, { label: 'B', uz: "d²", en: "d²" }, { label: 'C', uz: "2d", en: "2d" }, { label: 'D', uz: "log₂(d)", en: "log₂(d)" }], answer: 'A', explanation: { uz: "Har mahsulot chapda, o'ngda yoki yo'q bo'lishi mumkin — jami 3^d - 2^(d+1) + 1.", en: "Each item can be in X, Y, or neither." } }
+    ],
+    matching: [
+      { left: { uz: "Lift > 1", en: "Lift > 1" }, right: { uz: "Ijobiy bog'liqlik (birga ko'p olinadi)", en: "Positive correlation beyond chance" } },
+      { left: { uz: "Lift = 1", en: "Lift = 1" }, right: { uz: "Elementlar mustaqil (Confidence tuzog'i)", en: "Independent items (Confidence trap)" } },
+      { left: { uz: "Lift < 1", en: "Lift < 1" }, right: { uz: "Salbiy bog'liqlik (o'rinbosar tovarlar)", en: "Negative correlation (substitutes)" } },
+      { left: { uz: "Simpson paradoksi", en: "Simpson's Paradox" }, right: { uz: "Yashirin guruh qoida yo'nalishini teskari qiladi", en: "Hidden variable reverses rule sign" } }
+    ],
+    fillGap: [
+      { text: { uz: "Confidence(X→Y) = Support(X∪Y) / Support(___).", en: "Confidence(X→Y) equals Support(X∪Y) / Support(___)." }, answer: "X" },
+      { text: { uz: "Assotsiativ qoidada chap va o'ng to'plamlar kesishmasligi kerak (X ∩ Y = ___).", en: "In X → Y, antecedent and consequent must be disjoint (X ∩ Y = ___)." }, answer: ["∅", "bo'sh", "empty"] },
+      { text: { uz: "Lift qiymati ___ dan katta bo'lsa, A va B birga uchrashi tasodifiy emas.", en: "When Lift is greater than ___, A and B occur together more often than by chance." }, answer: "1" }
     ]
   }
 );

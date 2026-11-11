@@ -1,427 +1,445 @@
 window.DM_TOPICS = window.DM_TOPICS || [];
 
 window.DM_TOPICS.push(
-  // ==================== TOPIC 4 ====================
+  // ==================== M4 / L4 ====================
   {
     id: 4,
-    slug: '04-classification-bayes',
+    code: 'M4',
+    labCode: 'L4',
+    slug: '04-transformation-pca',
     hours: 2,
     labs: 1,
-    keywords: ['Naive Bayes', 'Bayes Theorem', 'Laplace Smoothing', 'k-NN', 'Euclidean', 'Manhattan', 'Minkowski'],
+    keywords: ['Normalization', 'Min-Max', 'Z-Score', 'RobustScaler', 'Discretization', 'One-Hot', 'PCA', 'Tan Ch.2'],
     title: {
-      uz: "Naive Bayes va k-NN algoritmlari",
-      en: "Naive Bayes & k-Nearest Neighbors"
+      uz: "Ma'lumotlarni shakllantirish, normallashtirish va o'lchamini qisqartirish",
+      en: "Data Transformation, Normalization & Dimensionality Reduction"
     },
     description: {
-      uz: "Bayes teoremasi, shartli mustaqillik, Laplace smoothing, Gaussian/Multinomial/Bernoulli NB, k-NN masofa metrikalari va Curse of Dimensionality.",
-      en: "Bayes' Theorem, conditional independence, Laplace smoothing, NB variants, k-NN distance metrics, and k-tuning."
+      uz: "Min-Max, Z-Score, Robust va Decimal Scaling; Equal-Width/Frequency diskretizatsiya; Label vs One-Hot kodlash va PCA asoslari (Tan 2.3).",
+      en: "Min-Max, Z-Score, Robust & Decimal scaling; Equal-Width/Frequency discretization; encoding; and PCA dimensionality reduction."
     },
     sections: [
       {
-        heading: { uz: "4.1. Bayes teoremasi va Ehtimoliy Tasniflash", en: "4.1. Bayes' Theorem & Probabilistic Classification" },
+        heading: { uz: "4.1. Ma'lumotlarni Normallashtirish Usullari", en: "4.1. Feature Scaling & Normalization Methods" },
         bodyHtml: {
-          uz: "<p><strong>Naive Bayes</strong> — har bir obyektning sinflarga tegishlilik ehtimolini hisoblaydigan generativ model. Bayes teoremasiga ko'ra, $X = (x_1, x_2, \\dots, x_n)$ xususiyatlar berilganda $C_k$ sinfning posterior ehtimoli:</p><p>Bu yerda $P(C_k)$ — <strong>Prior</strong> (sinfning boshlang'ich ulushi), $P(X|C_k)$ — <strong>Likelihood</strong>, $P(C_k|X)$ — <strong>Posterior</strong>. Maxraj $P(X)$ barcha sinflar uchun bir xil bo'lgani uchun faqat suratni maksimallashtirish (MAP — Maximum A Posteriori) yetarli.</p>",
-          en: "<p><strong>Naive Bayes</strong> computes class membership probabilities via Bayes' Theorem. Since $P(X)$ is constant across classes, classification selects the class maximizing $P(C_k)\\prod_i P(x_i|C_k)$ (MAP rule).</p>"
+          uz: "<p>Masofaga asoslangan algoritmlar (<strong>k-NN, K-Means, SVM</strong>) va gradient tushishi (Neyron tarmoqlar) uchun barcha atributlar bir xil masshtabda bo'lishi shart. Agar Daromad [10⁶..10⁸] va Yosh [18..65] bo'lsa, katta diapazonli ustun masofani bosib ketadi. (Qaror daraxtlari esa scaling talab qilmaydi!).</p><ul><li><strong>Min-Max normallashtirish:</strong> qiymatlarni aniq $[0, 1]$ oralig'iga tushiradi (tasvir piksellari uchun ideal, lekin outlierga sezgir).</li><li><strong>Z-score standartlashtirish:</strong> o'rtachani $\\mu=0$, standart og'ishni $\\sigma=1$ ga keltiradi (SVM, PCA, LogReg uchun).</li><li><strong>RobustScaler:</strong> mediana va IQR ishlatadi — outlierlar ko'p bo'lganda eng xavfsiz.</li></ul>",
+          en: "<p>Distance-based models (<strong>k-NN, K-Means, SVM</strong>) require uniform scaling. <strong>Min-Max</strong> maps to $[0,1]$; <strong>Z-score</strong> yields $\\mu=0, \\sigma=1$; <strong>RobustScaler</strong> uses Median/IQR to resist outliers.</p>"
         },
-        latex: "P(C_k \\mid X) = \\frac{P(X \\mid C_k)\\,P(C_k)}{P(X)} \\propto P(C_k) \\prod_{i=1}^{n} P(x_i \\mid C_k)"
+        latex: "x'_{\\text{minmax}}=\\frac{x-x_{\\min}}{x_{\\max}-x_{\\min}}, \\qquad x'_z=\\frac{x-\\mu}{\\sigma}, \\qquad x'_{\\text{rob}}=\\frac{x-\\text{Med}}{IQR}",
+        widget: 'scaling-demo'
       },
       {
-        heading: { uz: "4.2. \"Naive\" taxmini, Zero-Frequency muammosi va Laplace Smoothing", en: "4.2. The Naive Assumption & Laplace Smoothing" },
+        heading: { uz: "4.2. Diskretizatsiya va Binarizatsiya (Tan, 2.3-bo'lim)", en: "4.2. Discretization & Binarization (Tan Ch. 2.3)" },
         bodyHtml: {
-          uz: "<p><strong>Nega \"Naive\" (Soddadil)?</strong> Chunki model sinf ichida barcha atributlarni o'zaro mustaqil deb faraz qiladi (masalan, spam xatda \"bepul\" va \"yutuq\" so'zlari bog'liqsiz deb olinadi). Amalda bu taxmin buzilsa ham, sinf reytingi ko'pincha to'g'ri saqlanadi!</p><p><strong>Nol ehtimol tuzog'i:</strong> Agar o'quv to'plamida Spam xatlarda biror yangi so'z (masalan, <code>\"kripto\"</code>) umuman uchramagan bo'lsa, $P(\\text{\"kripto\"}|\\text{Spam}) = 0$ bo'lib butun ko'paytmani 0 ga aylantiradi! Buni <strong>Laplace (Add-One) Smoothing</strong> tuzatadi:</p>",
-          en: "<p>If a test word never appeared in a training class, $P(x_i|C_k)=0$ wipes out the entire product! <strong>Laplace Smoothing</strong> adds $\\alpha=1$ pseudo-count to every word:</p>"
-        },
-        latex: "P(x_i \\mid C_k) = \\frac{\\text{count}(x_i, C_k) + \\alpha}{N_{C_k} + \\alpha \\cdot |V|}"
-      },
-      {
-        heading: { uz: "4.3. Naive Bayes ning uch asosiy turi", en: "4.3. Three Variants of Naive Bayes" },
-        table: {
-          headers: { uz: ["Tur", "Ma'lumot turi", "Amaliy qo'llanilishi"], en: ["Variant", "Feature Type", "Typical Use Case"] },
-          rows: {
-            uz: [
-              ["Gaussian NB", "Uzluksiz raqamli ($\\mu_k, \\sigma_k^2$)", "Tibbiy analizlar, sensor ko'rsatkichlari"],
-              ["Multinomial NB", "Butun sonli chastota / TF-IDF", "Spam filtri, yangiliklar tasniflash"],
-              ["Bernoulli NB", "Ikkilik (0/1 bor-yo'q)", "Qisqa SMS va kalit so'z bayroqlari"]
-            ],
-            en: [
-              ["Gaussian NB", "Continuous numeric ($\\mu_k, \\sigma_k^2$)", "Medical biomarkers, Iris/Wine"],
-              ["Multinomial NB", "Term frequencies / TF-IDF", "Spam filtering, document routing"],
-              ["Bernoulli NB", "Binary presence (0/1)", "Short texts, binary attribute flags"]
-            ]
-          }
+          uz: "<p>Ba'zi algoritmlar (masalan, ID3 yoki Assotsiativ qoidalar) uzluksiz sonlarni emas, diskret toifalarni talab qiladi. <strong>Diskretizatsiya</strong> uzluksiz ustunni intervallarga bo'ladi:</p><ul><li><strong>Equal-Width (Teng kenglik):</strong> $[\\min, \\max]$ ni $k$ ta teng oraliqqa bo'lish (<code>width = (max-min)/k</code>). Kamchiligi: outlierlar bo'sh savatlar hosil qiladi.</li><li><strong>Equal-Frequency / Quantile (Teng chastota):</strong> har bir savatga teng $N/k$ ta obyekt tushadigan qilib bo'lish — outlierlarga chidamliroq.</li><li><strong>One-Hot Encoding:</strong> nominal kategoriyalarni 0/1 ustunlarga aylantirish (tartibsiz ustunlarda Label Encoding xato!).</li></ul>",
+          en: "<p><strong>Discretization</strong> converts continuous features into intervals via <strong>Equal-Width</strong> (fixed interval size, outlier-sensitive) or <strong>Equal-Frequency / Quantile</strong> (equal count per bin). <strong>One-Hot Encoding</strong> converts nominal categories into binary indicators.</p>"
         }
       },
       {
-        heading: { uz: "4.4. k-NN (k-Eng Yaqin Qo'shni) va Masofa Metrikalari", en: "4.4. k-Nearest Neighbors & Distance Metrics" },
+        heading: { uz: "4.3. O'lcham La'nati va PCA (Principal Component Analysis)", en: "4.3. Curse of Dimensionality & PCA" },
         bodyHtml: {
-          uz: "<p><strong>k-NN</strong> — parametrsiz va <strong>Lazy Learner</strong> algoritm: o'qitish davrida hech qanday formula tuzmaydi, faqat ma'lumotni eslab qoladi. Yangi nuqta kelganda $k$ ta eng yaqin qo'shni topilib ko'pchilik ovozi (yoki masofaga teskari vaznli ovoz $w = 1/d$) bilan sinf belgilanadi.</p>",
-          en: "<p><strong>k-NN</strong> is a non-parametric lazy learner deferring all work to inference time. It finds the $k$ nearest training samples using Minkowski family distances (Euclidean $p=2$, Manhattan $p=1$, or Cosine for sparse text).</p>"
+          uz: "<p>Ustunlar soni $d$ juda oshib ketganda fazoning hajmi eksponensial kengayadi, nuqtalar bir-biridan deyarli bir xil uzoqlashadi va overfitting kuchayadi — bu <strong>Curse of Dimensionality (O'lcham la'nati)</strong> deyiladi.</p><p><strong>PCA</strong> (nazorat qilinmaydigan chiziqli usul) korrelyatsiyalashgan belgilarni o'zaro ortogonal <strong>Asosiy Komponentlarga (PC1, PC2, ...)</strong> aylantirib, maksimal dispersiyani (odatda $\\ge 95\\%$) saqlab o'lchamni kamaytiradi:</p><ol><li><strong>Z-score standartlashtirish</strong> (PCA dan oldin MAJBURIY!).</li><li>Kovariatsiya matritsasini hisoblash ($\\Sigma = \\frac{1}{n-1}X^T X$).</li><li>Eigenvalue $\\lambda_i$ va Eigenvector $v_i$ larni topib, kamayish tartibida saralash.</li><li>Kumulativ dispersiyaning 95% ini qoplaydigan $k$ ta komponentga proyeksiya qilish.</li></ol>",
+          en: "<p><strong>PCA</strong> combats the <em>Curse of Dimensionality</em> by projecting standardized data onto orthogonal components capturing maximum variance: (1) Z-score standardize (MANDATORY), (2) Covariance matrix, (3) Eigendecomposition, (4) Retain top $k$ explaining $\\ge 95\\%$ variance.</p>"
         },
-        latex: "d_{\\text{Euclidean}} = \\sqrt{\\sum_{i=1}^n (x_i - y_i)^2} \\qquad d_{\\text{Manhattan}} = \\sum_{i=1}^n |x_i - y_i|",
-        widget: 'knn-demo'
-      },
-      {
-        heading: { uz: "4.5. k qiymati, Bias-Variance muvozanati va Normallashtirish", en: "4.5. Choosing k, Bias-Variance & Scaling" },
-        bodyHtml: {
-          uz: "<ul><li><strong>Kichik k (k=1):</strong> murakkab egri chegara, past bias, ammo shovqinga o'ta sezgir (High Variance / Overfitting).</li><li><strong>Katta k (k=51):</strong> silliq chegara, shovqinga chidamli, lekin kichik klasterlarni yutib yuboradi (High Bias / Underfitting).</li><li><strong>Amaliy qoida:</strong> ikkilik sinflarda durang chiqmasligi uchun toq son tanlang ($k \\approx \\sqrt{n}$ atrofida CV bilan tekshiring) va ALBATTA <code>StandardScaler</code> qo'llang!</li></ul>",
-          en: "<ul><li><strong>Small k (k=1):</strong> Low bias, high variance (fits noise).</li><li><strong>Large k:</strong> Smooth boundaries, high bias (underfitting).</li><li><strong>Rule of thumb:</strong> Pick odd $k$ via Cross-Validation around $\\sqrt{n}$ and ALWAYS scale features first!</li></ul>"
-        }
+        latex: "\\text{Cumulative Variance}_k = \\frac{\\sum_{j=1}^k \\lambda_j}{\\sum_{i=1}^d \\lambda_i} \\ge 0.95"
       }
     ],
     slides: [
-      { title: { uz: "4-mavzu: Naive Bayes va k-NN", en: "Topic 4: Naive Bayes & k-NN" }, subtitle: { uz: "Ehtimollik va masofaga asoslangan tasniflash (80 daqiqa)", en: "Probabilistic & Instance-Based Classification (80 min)" }, points: { uz: ["Bayes teoremasi: Prior, Likelihood, Posterior", "Mustaqillik taxmini va Laplace Smoothing", "Gaussian, Multinomial va Bernoulli NB", "k-NN algoritmi va Evklid/Manhattan masofalari", "k tanlash, Curse of Dimensionality va Lab 4"], en: ["Bayes' Theorem & MAP decision rule", "Conditional independence & Laplace smoothing", "Gaussian, Multinomial & Bernoulli NB", "k-NN & Minkowski distance metrics", "Choosing k, scaling & Lab 4"] } },
-      { title: { uz: "Bayes Teoremasi", en: "Bayes' Theorem" }, latex: "P(C_k \\mid X) = \\frac{P(X \\mid C_k)\\,P(C_k)}{P(X)}", points: { uz: ["P(C_k): Prior — oldindan sinf ulushi (masalan, spam 30%)", "P(X|C_k): Likelihood — shu sinfda X belgilarining uchrash ehtimoli", "P(C_k|X): Posterior — xususiyatlarni ko'rgandan keyingi yakuniy ehtimol"], en: ["Prior P(C_k): baseline class probability", "Likelihood P(X|C_k): feature probability inside class C_k", "Posterior P(C_k|X): updated belief after seeing X"] } },
-      { title: { uz: "Nega \"Naive\" (Soddadil) deyiladi?", en: "Why 'Naive'?" }, latex: "P(x_1, x_2, \\dots, x_n \\mid C) = \\prod_{i=1}^n P(x_i \\mid C)", points: { uz: ["Barcha atributlar sinf berilganda o'zaro mustaqil deb olinadi", "Bu tufayli millionlab kombinatsiya o'rniga faqat n ta 1D ehtimol hisoblanadi", "Hisoblash murakkabligi O(n·d) — juda tez!"], en: ["Assumes features are conditionally independent given class C", "Reduces exponential joint table to n simple 1D probabilities", "Ultra-fast linear complexity O(n·d)"] } },
-      { title: { uz: "Qo'lda misol: Spam filtri", en: "Worked Example: Spam Filter" }, points: { uz: ["100 ta xat: 30 ta Spam (P=0.3), 70 ta Oddiy (P=0.7)", "\"bepul\" so'zi: Spamning 21/30=0.70 qismida, Oddiyning 7/70=0.10 qismida", "\"sovg'a\" so'zi: Spamda 15/30=0.50, Oddiyda 7/70=0.10", "Score(Spam) = 0.3 × 0.70 × 0.50 = 0.105", "Score(Oddiy) = 0.7 × 0.10 × 0.10 = 0.007 → SPAM!"], en: ["100 emails: 30 Spam (0.3), 70 Ham (0.7)", "P('free'|Spam)=0.70 vs P('free'|Ham)=0.10", "P('gift'|Spam)=0.50 vs P('gift'|Ham)=0.10", "Spam score: 0.3×0.7×0.5 = 0.105 >> Ham: 0.7×0.1×0.1 = 0.007"] } },
-      { title: { uz: "Zero-Frequency muammosi va Laplace Smoothing", en: "Zero-Frequency Problem & Laplace Smoothing" }, latex: "P(w \\mid C) = \\frac{\\text{count}(w, C) + \\alpha}{N_C + \\alpha |V|}, \\quad \\alpha = 1", points: { uz: ["Agar bitta so'z Spam da 0 marta uchrasa, butun ko'paytma 0 ga teng bo'ladi!", "Laplace smoothing (α=1) har bir so'zga +1 qo'shib 0 bo'lishini oldini oladi"], en: ["One unseen word multiplies the whole posterior to 0!", "Laplace add-1 smoothing prevents zero probabilities"] } },
-      { title: { uz: "Naive Bayes Turlari", en: "Naive Bayes Variants" }, table: { headers: { uz: ["Tur", "Belgi turi", "Misol"], en: ["Variant", "Input", "Use Case"] }, rows: { uz: [["GaussianNB", "Uzluksiz son", "Tibbiy ko'rsatkich"], ["MultinomialNB", "So'z soni / TF-IDF", "Matn / Spam"], ["BernoulliNB", "0 / 1 bayroq", "Qisqa matn"]], en: [["GaussianNB", "Continuous", "Biomarkers"], ["MultinomialNB", "Counts / TF-IDF", "Text / Spam"], ["BernoulliNB", "Binary 0/1", "Short SMS"]] } } },
-      { title: { uz: "k-NN (k-Eng Yaqin Qo'shni) G'oyasi", en: "k-Nearest Neighbors Intuition" }, points: { uz: ["\"Do'sting kimligini aytsang, sening kimligingni aytaman\"", "Lazy Learner: o'qitish vaqti ≈ 0, faqat datasetni xotirada saqlaydi", "Yangi nuqta kelganda eng yaqin k ta qo'shni ovoz beradi"], en: ["\"Tell me who your k neighbors are, and I'll predict your class\"", "Lazy Learner: zero training cost, stores dataset in RAM", "Classification by majority vote (or 1/d distance-weighted vote)"] } },
-      { title: { uz: "Masofa Metrikalari", en: "Distance Metrics in k-NN" }, latex: "d_2 = \\sqrt{\\sum (x_i-y_i)^2}, \\quad d_1 = \\sum |x_i-y_i|, \\quad \\cos(\\theta)=\\frac{x\\cdot y}{\\|x\\|\\|y\\|}", points: { uz: ["Evklid (L2): uzluksiz fazoda eng keng tarqalgan", "Manhattan (L1): shahar ko'chalari bo'ylab yoki yuqori o'lchamda chidamliroq", "Cosine similarity: matn vektorlari uchun ideal"], en: ["Euclidean (L2): standard geometric distance", "Manhattan (L1): grid distance, better in high dimensions", "Cosine similarity: ideal for TF-IDF text vectors"] } },
-      { title: { uz: "Interaktiv k-NN Lab: Grafikni bosing va k ni o'zgartiring!", en: "Interactive k-NN Demo: Click & Tune k" }, widget: 'knn-demo' },
-      { title: { uz: "k qiymatining Bias-Variance ga ta'siri", en: "Effect of k on Decision Boundary" }, points: { uz: ["k = 1: o'quv aniqlik 100%, lekin shovqinli nuqta chegarani buzadi (Overfitting)", "k = N: hamma nuqtani ko'pchilik sinfiga berib qo'yadi (Underfitting)", "Optimal k: 5-fold Cross-Validation grafigi orqali topiladi"], en: ["k = 1: jagged boundary memorizing noise (Overfitting)", "k = N: predicts majority class everywhere (Underfitting)", "Select optimal odd k via Cross-Validation"] } },
-      { title: { uz: "Talabalarga savol (k-NN Scaling)", en: "Class Discussion: Unscaled Features" }, discussion: { q: { uz: "Mijozlar jadvalida Yosh (20–60) va Kredit_summasi (1,000,000–50,000,000) bor. StandardScaler qo'llamasdan k-NN ishlatsak, natija nimaga bog'liq bo'lib qoladi?", en: "A dataset has Age (20–60) and LoanAmount (1,000–50,000). If we run k-NN without StandardScaler, what happens?" }, a: { uz: "Masofa deyarli 100% Kredit_summasiga bog'liq bo'lib qoladi; Yosh (farqi max 40) millionlar yonida nolga teng ta'sir ko'rsatadi!", en: "LoanAmount completely dominates Euclidean distance; Age differences (max 40) become numerically invisible!" } } },
-      { title: { uz: "k-NN Afzalliklari va Cheklovlari", en: "k-NN Pros & Cons" }, table: { headers: { uz: ["Afzallik", "Kamchilik"], en: ["Strengths", "Limitations"] }, rows: { uz: [["Sodda, nazariy taxminsiz", "Bashorat vaqti sekin O(n·d)"], ["Chiziqsiz chegaralar quradi", "Katta xotira talab qiladi"], ["Yangi ma'lumot qo'shish oson", "Curse of Dimensionality ga sezgir"]], en: [["Simple, non-parametric", "Slow inference O(n·d)"], ["Arbitrary boundaries", "High memory footprint"], ["Instant incremental updates", "Sensitive to irrelevant features"]] } } },
-      { title: { uz: "Naive Bayes vs k-NN: Qachon qaysi?", en: "Naive Bayes vs k-NN: When to Use Which?" }, points: { uz: ["Katta matn / real-time tezkor bazaviy model → Naive Bayes", "Kichik/o'rta toza raqamli jadval, chiziqsiz chegara → Scaled k-NN", "Katta ma'lumotda k-NN ni tezlashtirish: KD-Tree, Ball-Tree yoki FAISS (ANN)"], en: ["High-dim sparse text / ultra-fast baseline → Naive Bayes", "Low/medium-dim scaled numeric features → k-NN", "Speeding up k-NN: KD-Tree, Ball-Tree, or Approximate NN (FAISS)"] } }
+      { title: { uz: "M4: Normallashtirish, Diskretizatsiya va PCA", en: "M4: Normalization, Discretization & PCA" }, subtitle: { uz: "Tan Darsligi 2.3-bo'lim · MITQ2506 · 80 daqiqa", en: "Tan Textbook Ch. 2.3 · MITQ2506 · 80 min" }, points: { uz: ["Nega Scaling shart? (k-NN/SVM vs Decision Tree)", "Min-Max, Z-Score va RobustScaler formulalari", "Equal-Width vs Equal-Frequency Diskretizatsiya", "Label vs One-Hot Encoding", "Curse of Dimensionality, PCA 4 bosqichi va Lab 4"], en: ["Why scaling matters (distance models vs trees)", "Min-Max, Z-Score & RobustScaler", "Equal-Width vs Equal-Frequency discretization", "Label vs One-Hot Encoding", "Curse of Dimensionality, PCA & Lab 4"] } },
+      { title: { uz: "Normallashtirish Nima Uchun Kerak?", en: "Why Feature Scaling Matters" }, points: { uz: ["Yosh ∈ [18, 65], Maosh ∈ [2,000,000, 50,000,000]", "Evklid masofasida Maosh Yoshni 100% bosib ketadi!", "Majburiy: k-NN, K-Means, SVM, PCA, Neyron tarmoqlar", "Shart emas: Decision Tree, Random Forest, XGBoost"], en: ["Large-range features dominate Euclidean distances", "Mandatory for: k-NN, K-Means, SVM, PCA, Neural Nets", "Not needed for: Decision Trees, Random Forest"] } },
+      { title: { uz: "3 ta Asosiy Scaling Formulasi", en: "3 Scaling Formulas" }, latex: "x'_{mm}=\\frac{x-\\min}{\\max-\\min} \\in [0,1], \\qquad x'_z=\\frac{x-\\mu}{\\sigma}, \\qquad x'_{rob}=\\frac{x-\\text{Med}}{IQR}", points: { uz: ["Min-Max: aniq [0,1] chegara (tasvirlar), outlierga sezgir", "Z-Score: μ=0, σ=1 (SVM, PCA, LogReg)", "RobustScaler: outlierlar mavjud bo'lsa eng barqaror"], en: ["Min-Max: bounded [0,1], sensitive to outliers", "Z-Score: μ=0, σ=1, ideal for PCA & SVM", "RobustScaler: median & IQR resist outliers"] } },
+      { title: { uz: "Interaktiv Scaling Lab: Outlier Ta'siri", en: "Interactive Scaling Lab" }, widget: 'scaling-demo' },
+      { title: { uz: "Diskretizatsiya: Equal-Width vs Equal-Frequency", en: "Discretization Strategies (Tan 2.3)" }, points: { uz: ["Uzluksiz yoshni toifaga aylantirish (ID3, Apriori uchun)", "Equal-Width: teng oraliq kengligi (outlier bo'lsa bo'sh savatlar qoladi)", "Equal-Frequency (Quantile): har savatda teng N/k ta yozuv bo'ladi"], en: ["Bin continuous values into intervals", "Equal-Width: uniform step (skewed by outliers)", "Equal-Frequency: equal count per bin (pd.qcut)"] } },
+      { title: { uz: "Kodlash: Label vs One-Hot Encoding", en: "Categorical Encoding" }, points: { uz: ["Label Encoding: faqat tartibli (Ordinal: Past=0, O'rta=1, Yuqori=2) uchun!", "One-Hot Encoding: tartibsiz (Nominal: Shahar, Rang) uchun 0/1 ustunlar", "Eslatma: Scaling va Encoding ni FAQAT X_train da fit() qiling!"], en: ["Label Encoding: ONLY for Ordinal columns", "One-Hot Encoding: creates binary columns for Nominal features", "Never leak test statistics before splitting!"] } },
+      { title: { uz: "O'lcham La'nati (Curse of Dimensionality)", en: "The Curse of Dimensionality" }, points: { uz: ["O'lcham d oshgan sari hajm eksponensial ortadi va ma'lumot siyraklashadi", "Eng yaqin va eng uzoq qo'shni orasidagi masofa farqi yo'qoladi", "Yechim: O'lchamni qisqartirish (PCA) yoki Belgi tanlash"], en: ["Volume grows exponentially; points grow sparse & equidistant", "Mitigate with Dimensionality Reduction (PCA) or Feature Selection"] } },
+      { title: { uz: "PCA — Asosiy Komponentlar Tahlili", en: "PCA: Principal Component Analysis" }, latex: "\\text{VarRatio}_j = \\frac{\\lambda_j}{\\sum \\lambda_i}, \\qquad \\sum_{j=1}^k \\text{VarRatio}_j \\ge 95\\%", points: { uz: ["Maqsad: maksimal dispersiyani saqlab kam o'lchamga proyeksiya qilish", "1. Z-score standartlashtirish (MAJBURIY!)", "2. Kovariatsiya matritsasi → 3. Eigenvalue/Eigenvector → 4. ≥95% komponent tanlash"], en: ["Projects standardized data onto orthogonal axes of max variance", "Step 1: Standardize (MANDATORY!) → Step 2: Covariance → Step 3: Eigen → Step 4: ≥95%"] } },
+      { title: { uz: "Talabalarga savol (PCA & Scaling)", en: "Class Discussion: PCA Preprocessing" }, discussion: { q: { uz: "Talaba 4 ustunli datasetda StandardScaler qilmasdan to'g'ridan-to'g'ri PCA(n_components=2) qo'lladi va PC1 dispersiyaning 99.8% ini oldi. Bu yaxshi natijami?", en: "A student runs PCA(2) without StandardScaler and sees PC1 explain 99.8% variance. Is that a great result?" }, a: { uz: "<strong>YO'Q!</strong> Agar bir ustun so'mda (millionlar), boshqasi yoshda (o'nliklar) bo'lsa, PCA shunchaki so'm ustunini PC1 qilib oladi va qolgan ustunlarni yo'qotadi. PCA dan oldin Z-score shart!", en: "<strong>NO!</strong> One large-unit feature (e.g. Salary in millions) monopolizes PC1 variance. Always Z-score standardize before PCA!" } } }
     ],
     lab: {
-      title: { uz: "L4: Wine va Iris datasetlarida Naive Bayes vs Scaled k-NN", en: "L4: Naive Bayes vs Scaled k-NN Pipeline" },
-      objective: { uz: "GaussianNB va k-NN modellarini solishtirish, normallashtirish ta'sirini o'lchash va Cross-Validation bilan optimal k topish.", en: "Compare GaussianNB and k-NN, quantify scaling impact, and tune k via CV." },
+      title: { uz: "L4: Ma'lumotlarni normallashtirish, diskretizatsiya va PCA", en: "L4: Normalization, Discretization & PCA" },
+      objective: { uz: "MinMax/Standard/RobustScaler, pd.cut/pd.qcut diskretizatsiya, OneHotEncoder va PCA(0.95) ni amalga oshirish.", en: "Apply MinMax/Standard/Robust scaling, Equal-Width/Frequency binning, One-Hot encoding, and PCA." },
       steps: [
         {
-          title: { uz: "Normallashtirishsiz vs Normallashtirishli k-NN", en: "Impact of Feature Scaling on k-NN" },
-          desc: { uz: "Wine datasetida scaling dan oldin va keyingi aniqlik farqini ko'ring.", en: "Compare unscaled vs StandardScaler k-NN on Wine." },
+          title: { uz: "Min-Max, Z-Score va RobustScaler Taqqoslash", en: "Compare MinMax, Standard & Robust Scalers" },
+          desc: { uz: "Outlierli ma'lumotda 3 ta scaler natijasini ko'ring.", en: "Test 3 scalers on features containing an outlier." },
+          code: `import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
+
+df = pd.DataFrame({'Yosh':[20,25,30,35,40,95], 'Daromad':[3,4,5,6,7,150]})
+for name, sc in [('MinMax', MinMaxScaler()), ('Z-Score', StandardScaler()), ('Robust', RobustScaler())]:
+    res = sc.fit_transform(df)
+    print(f"=== {name} ===\\n", res.round(2))`
+        },
+        {
+          title: { uz: "Diskretizatsiya (Equal-Width vs Equal-Frequency)", en: "Equal-Width vs Quantile Discretization" },
+          desc: { uz: "pd.cut (kenglik) va pd.qcut (chastota) bilan savat sonlarini tekshiring.", en: "Compare pd.cut vs pd.qcut bin counts." },
+          code: `import numpy as np
+np.random.seed(42)
+ages = np.random.randint(18, 70, 50)
+print("Equal-Width counts:\\n", pd.cut(ages, bins=4).value_counts())
+print("Equal-Freq counts:\\n", pd.qcut(ages, q=4).value_counts())`
+        },
+        {
+          title: { uz: "Wine Datasetida Z-Score + PCA (95% Dispersiya)", en: "Standardized PCA (95% Variance) on Wine" },
+          desc: { uz: "13 o'lchamli Wine datasetini PCA bilan siqib nechta komponent qolishini ko'ring.", en: "Reduce 13D Wine dataset preserving 95% variance." },
           code: `from sklearn.datasets import load_wine
-from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
-wine = load_wine()
-X_tr, X_te, y_tr, y_te = train_test_split(wine.data, wine.target, test_size=0.3, random_state=42)
-raw_acc = KNeighborsClassifier(5).fit(X_tr, y_tr).score(X_te, y_te)
-sc = StandardScaler()
-scaled_acc = KNeighborsClassifier(5).fit(sc.fit_transform(X_tr), y_tr).score(sc.transform(X_te), y_te)
-print(f"Unscaled k-NN: {raw_acc:.3f} | Scaled k-NN: {scaled_acc:.3f}")`
-        },
-        {
-          title: { uz: "GaussianNB vs Optimal k-NN (Pipeline + CV)", en: "GaussianNB & Optimal k Tuning via Pipeline" },
-          desc: { uz: "Data leakage siz Pipeline bilan k=1..21 ni tekshiring.", en: "Sweep k=1..21 inside a leak-free Pipeline." },
-          code: `from sklearn.naive_bayes import GaussianNB
-from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import cross_val_score
-import numpy as np
-
-nb_cv = cross_val_score(GaussianNB(), X_tr, y_tr, cv=5).mean()
-cv_k = [cross_val_score(make_pipeline(StandardScaler(), KNeighborsClassifier(k)), X_tr, y_tr, cv=5).mean() for k in range(1, 22, 2)]
-best_k = list(range(1, 22, 2))[int(np.argmax(cv_k))]
-print(f"GaussianNB CV={nb_cv:.3f} | Best k={best_k} CV={max(cv_k):.3f}")`
-        },
-        {
-          title: { uz: "Masofa metrikasi: Euclidean vs Manhattan", en: "Comparing Euclidean vs Manhattan & Weights" },
-          desc: { uz: "p=1, p=2 va weights='distance' parametrlarini sinang.", en: "Test p=1 vs p=2 and distance weighting." },
-          code: `for p, name in [(1, 'Manhattan'), (2, 'Euclidean')]:
-    pipe = make_pipeline(StandardScaler(), KNeighborsClassifier(n_neighbors=best_k, p=p, weights='distance'))
-    pipe.fit(X_tr, y_tr)
-    print(f"{name:10s} Test Accuracy: {pipe.score(X_te, y_te):.3f}")`
+X, y = load_wine(return_X_y=True)
+X_z = StandardScaler().fit_transform(X)
+pca = PCA(n_components=0.95).fit(X_z)
+print(f"Original dims: {X.shape[1]} -> Kept dims (95% var): {pca.n_components_}")
+print("Per-component ratio:", pca.explained_variance_ratio_.round(3))`
         }
       ],
       variants: {
         uz: [
-          "1-variant: Breast Cancer datasetida k=1..31 egri chizig'ini chizib optimal k ni toping.",
-          "2-variant: weights='uniform' vs weights='distance' natijalarini solishtiring.",
-          "3-variant: 20newsgroups yoki kichik matn to'plamida MultinomialNB(alpha=0.1, 1.0, 5.0) sinab ko'ring."
+          "1-variant: Breast Cancer datasetida (30 ustun) PCA(n_components=0.95) nechta komponent qoldirishini aniqlang.",
+          "2-variant: Scree plot chizib (k=1..13 uchun kumulativ dispersiya) tirsak nuqtasini ko'rsating.",
+          "3-variant: OneHotEncoder(drop='first') bilan kategorik jadvalni vektorlang."
         ],
         en: [
-          "Variant 1: Plot k=1..31 validation curve on Breast Cancer to locate optimal k.",
-          "Variant 2: Compare weights='uniform' vs weights='distance'.",
-          "Variant 3: Sweep Laplace alpha=[0.1, 1.0, 5.0] on MultinomialNB."
+          "Variant 1: Find how many PCA components preserve 95% variance on Breast Cancer (30 features).",
+          "Variant 2: Plot the cumulative explained variance Scree curve.",
+          "Variant 3: Vectorize a mixed DataFrame with ColumnTransformer + OneHotEncoder."
         ]
       }
     },
     glossary: [
-      { uz: "Prior / Posterior", en: "Prior / Posterior", defUz: "Kuzatuvdan oldingi va keyingi sinf ehtimollari", defEn: "Class probability before and after observing features" },
-      { uz: "Laplace Smoothing", en: "Laplace Smoothing", defUz: "Nol ehtimol muammosini +α qo'shib bartaraf etish", defEn: "Adding α pseudo-counts to avoid zero probabilities" },
-      { uz: "Lazy Learner", en: "Lazy Learner", defUz: "O'qitish bosqichisiz bashorat paytida hisoblovchi model", defEn: "Instance-based model deferring work to query time" },
-      { uz: "Manhattan masofasi", en: "Manhattan Distance", defUz: "Koordinata farqlari modullari yig'indisi (L1)", defEn: "Sum of absolute coordinate differences (L1 norm)" }
+      { uz: "Min-Max normallashtirish", en: "Min-Max Scaling", defUz: "Qiymatlarni [0, 1] oralig'iga chiziqli keltirish", defEn: "Linear rescaling into [0, 1]" },
+      { uz: "Z-score standartlashtirish", en: "Z-score Standardization", defUz: "O'rtacha 0 va standart og'ish 1 bo'ladigan shkalalash", defEn: "Rescaling to mean=0 and std=1" },
+      { uz: "Diskretizatsiya", en: "Discretization", defUz: "Uzluksiz ustunni diskret intervallarga bo'lish", defEn: "Converting continuous values into categorical bins" },
+      { uz: "PCA", en: "PCA", defUz: "Dispersiyani saqlab o'lchamni qisqartiruvchi ortogonal transformatsiya", defEn: "Orthogonal projection preserving maximum variance" }
     ],
     quiz: [
-      { q: { uz: "Naive Bayesda \"naive\" so'zi nimani anglatadi?", en: "Why is Naive Bayes called 'naive'?" }, options: [{ label: 'A', uz: "Sodda kod", en: "Simple code" }, { label: 'B', uz: "Atributlar sinf berilganda o'zaro mustaqil deb taxmin qilinadi", en: "Assumes conditional independence between features" }, { label: 'C', uz: "Faqat ikkilik", en: "Binary only" }, { label: 'D', uz: "O'qitish yo'q", en: "No training" }], answer: 'B', explanation: { uz: "Shartli mustaqillik taxmini hisoblashni keskin tezlashtiradi.", en: "Conditional independence simplifies joint likelihood into a product." } },
-      { q: { uz: "Laplace Smoothing nima muammoni hal qiladi?", en: "What problem does Laplace Smoothing solve?" }, options: [{ label: 'A', uz: "Overfitting", en: "Overfitting" }, { label: 'B', uz: "O'quvda uchramagan so'z butun ehtimolni 0 ga tushirib qo'yishini", en: "Zero-frequency unseen words collapsing the probability to 0" }, { label: 'C', uz: "Scaling", en: "Scaling" }, { label: 'D', uz: "Outlierlarni", en: "Outliers" }], answer: 'B', explanation: { uz: "+α qo'shish nol ko'paytmadan saqlaydi.", en: "Adding α prevents zero probabilities for unseen attributes." } },
-      { q: { uz: "k-NN da k=1 bo'lsa qanday xavf yuzaga keladi?", en: "What risk increases when k=1 in k-NN?" }, options: [{ label: 'A', uz: "Underfitting", en: "Underfitting" }, { label: 'B', uz: "Overfitting va shovqinga sezgirlik", en: "Overfitting & sensitivity to noise" }, { label: 'C', uz: "Sekin o'qitish", en: "Slow training" }, { label: 'D', uz: "Hech narsa", en: "None" }], answer: 'B', explanation: { uz: "k=1 bitta shovqin nuqtasiga qarab qaror chiqaradi.", en: "A single noisy training sample dictates the prediction." } },
-      { q: { uz: "k-NN da normallashtirish nima uchun majburiy?", en: "Why is scaling mandatory for k-NN?" }, options: [{ label: 'A', uz: "Katta diapazonli ustunlar Evklid masofasini bosib ketmasligi uchun", en: "So large-scale features don't dominate Euclidean distance" }, { label: 'B', uz: "Prior topish uchun", en: "For priors" }, { label: 'C', uz: "Daraxtni kesish uchun", en: "For pruning" }, { label: 'D', uz: "Kodlash uchun", en: "For encoding" }], answer: 'A', explanation: { uz: "Masofa hisoblash barcha ustunlar bir shkalada bo'lishini talab qiladi.", en: "Unscaled large-magnitude attributes overwhelm distance calculations." } },
-      { q: { uz: "k-NN ning katta datasetlardagi asosiy kamchiligi?", en: "Main bottleneck of k-NN on massive datasets?" }, options: [{ label: 'A', uz: "O'qitish sekin", en: "Slow training" }, { label: 'B', uz: "Bashorat payti sekin O(n·d) va ko'p RAM", en: "Slow inference O(n·d) and high RAM storage" }, { label: 'C', uz: "Ko'p sinf ishlamaydi", en: "No multi-class" }, { label: 'D', uz: "Chiziqsiz emas", en: "Linear only" }], answer: 'B', explanation: { uz: "Har yangi so'rov uchun barcha nuqtalarga masofa hisoblanadi.", en: "Lazy evaluation computes distances against stored samples at query time." } }
+      { q: { uz: "Z-score standartlashtirish natijasida qanday statistika hosil bo'ladi?", en: "What are the mean and std after Z-score standardization?" }, options: [{ label: 'A', uz: "[0, 1] da", en: "In [0, 1]" }, { label: 'B', uz: "O'rtacha = 0, standart og'ish = 1", en: "Mean = 0, Std = 1" }, { label: 'C', uz: "[-1, 1] da", en: "In [-1, 1]" }, { label: 'D', uz: "Logarifmik", en: "Log scale" }], answer: 'B', explanation: { uz: "x' = (x-μ)/σ o'rtachani 0, std ni 1 qiladi.", en: "Subtracting μ and dividing by σ yields μ=0, σ=1." } },
+      { q: { uz: "PCA dan oldin qaysi amal MAJBURIY bajariladi?", en: "Which preprocessing step is MANDATORY before PCA?" }, options: [{ label: 'A', uz: "Z-score standartlashtirish", en: "Z-score standardization" }, { label: 'B', uz: "Label encoding", en: "Label encoding" }, { label: 'C', uz: "Binning", en: "Binning" }, { label: 'D', uz: "Apriori", en: "Apriori" }], answer: 'A', explanation: { uz: "Masshtab farqi kovariatsiya va PC1 ni buzmasligi uchun standartlashtirish shart.", en: "Prevents large-scale units from dominating principal components." } },
+      { q: { uz: "Outlierlar mavjud bo'lganda qaysi scaler eng chidamli?", en: "Which scaler is most resistant to extreme outliers?" }, options: [{ label: 'A', uz: "MinMaxScaler", en: "MinMaxScaler" }, { label: 'B', uz: "RobustScaler (Mediana va IQR asosida)", en: "RobustScaler (Median & IQR)" }, { label: 'C', uz: "Decimal scaling", en: "Decimal scaling" }, { label: 'D', uz: "Hech biri", en: "None" }], answer: 'B', explanation: { uz: "RobustScaler mediana va IQR ishlatgani uchun outlierga berilmaydi.", en: "Median and IQR ignore extreme tail outliers." } },
+      { q: { uz: "Tartibsiz (Nominal) shahar nomlari ustuni uchun qaysi kodlash to'g'ri?", en: "Which encoding is proper for unordered city names?" }, options: [{ label: 'A', uz: "Label Encoding", en: "Label Encoding" }, { label: 'B', uz: "One-Hot Encoding", en: "One-Hot Encoding" }, { label: 'C', uz: "PCA", en: "PCA" }, { label: 'D', uz: "Z-score", en: "Z-score" }], answer: 'B', explanation: { uz: "One-Hot soxta tartib (Toshkent > Buxoro) kiritmaydi.", en: "One-Hot avoids imposing false numerical ordering." } },
+      { q: { uz: "Har bir savatda teng N/k ta element bo'ladigan diskretizatsiya turi qaysi?", en: "Which discretization puts equal numbers of items in each bin?" }, options: [{ label: 'A', uz: "Equal-Width", en: "Equal-Width" }, { label: 'B', uz: "Equal-Frequency (Quantile)", en: "Equal-Frequency (Quantile)" }, { label: 'C', uz: "Min-Max", en: "Min-Max" }, { label: 'D', uz: "One-Hot", en: "One-Hot" }], answer: 'B', explanation: { uz: "Equal-Frequency (Quantile) har intervalga teng miqdorda namuna joylaydi.", en: "Equal-Frequency divides sorted samples into equal-count quantiles." } }
+    ],
+    matching: [
+      { left: { uz: "Min-Max Scaling", en: "Min-Max Scaling" }, right: { uz: "Qiymatlarni aniq [0, 1] oralig'iga keltiradi", en: "Maps values strictly to [0, 1]" } },
+      { left: { uz: "Z-Score", en: "Z-Score" }, right: { uz: "μ=0 va σ=1 standartlashtirish (PCA uchun shart)", en: "μ=0, σ=1 standardization (needed for PCA)" } },
+      { left: { uz: "One-Hot Encoding", en: "One-Hot Encoding" }, right: { uz: "Nominal toifalarni 0/1 ustunlarga bo'ladi", en: "Converts nominal values to 0/1 flags" } },
+      { left: { uz: "Equal-Frequency", en: "Equal-Frequency" }, right: { uz: "Har savatda teng sonli obyekt (Quantile)", en: "Equal item counts per bin" } }
+    ],
+    fillGap: [
+      { text: { uz: "PCA da odatda kumulativ dispersiyaning kamida ___ foizini saqlovchi komponentlar olinadi.", en: "In PCA, we usually retain components covering at least ___ percent cumulative variance." }, answer: "95" },
+      { text: { uz: "Yuqori o'lchamda barcha nuqtalar bir-biridan uzoqlashishi ___ la'nati deyiladi.", en: "Sparsity and distance collapse in high dimensions is called the ___ of Dimensionality." }, answer: ["O'lcham", "Curse"] },
+      { text: { uz: "Qaror daraxti va Random Forest algoritmlari normallashtirishni talab ___.", en: "Decision Trees and Random Forests do ___ require feature scaling." }, answer: ["qilmaydi", "not"] }
     ]
   },
 
-  // ==================== TOPIC 5 ====================
+  // ==================== M5 / L5 ====================
   {
     id: 5,
-    slug: '05-evaluation',
+    code: 'M5',
+    labCode: 'L5',
+    slug: '05-decision-trees',
     hours: 2,
     labs: 1,
-    keywords: ['Confusion Matrix', 'Precision', 'Recall', 'F1-score', 'ROC', 'AUC', 'PR Curve', 'Cross-Validation'],
+    keywords: ['Classification', 'Decision Tree', 'Hunt Algorithm', 'ID3', 'C4.5', 'CART', 'Overfitting', 'Pruning', 'Tan Ch.3'],
     title: {
-      uz: "Tasniflash modellarini baholash",
-      en: "Model Evaluation Metrics & Validation"
+      uz: "Tasniflash tushunchasi va qaror daraxtlari algoritmi",
+      en: "Classification Concepts & Decision Tree Algorithms"
     },
     description: {
-      uz: "Accuracy paradoksi, Confusion Matrix, Precision/Recall/F1/F-beta, ROC-AUC vs PR-AUC, Threshold tuning va Stratified K-Fold CV.",
-      en: "Accuracy paradox, Confusion Matrix, Precision/Recall/F1/F-beta, ROC-AUC vs PR-AUC, threshold tuning, and Stratified CV."
+      uz: "Tasniflashning umumiy sxemasi (Tan 3-bob), Hunt algoritmi, ID3, C4.5 va CART tuzilishi, rekursiv daraxt qurish hamda Overfitting va Pruning (MDL).",
+      en: "Supervised classification framework (Tan Ch. 3), Hunt's algorithm, ID3/C4.5/CART architecture, and overfitting/pruning."
     },
     sections: [
       {
-        heading: { uz: "5.1. Accuracy Paradoksi va Sinf Disbalansi", en: "5.1. The Accuracy Paradox & Class Imbalance" },
+        heading: { uz: "5.1. Tasniflashning Umumiy Sxemasi (Tan, 3.1-bo'lim)", en: "5.1. General Classification Framework (Tan Ch. 3.1)" },
         bodyHtml: {
-          uz: "<p>Bankda 10,000 ta tranzaksiyadan 9,900 tasi normal, 100 tasi firibgar (1%) bo'lsin. Agar model hech narsa o'rganmasdan hammasini \"Normal\" desa, uning aniqligi <strong>99% Accuracy</strong> chiqadi — lekin birorta firibgarni ushlay olmaydi! Shu sababli noteng sinflarda Accuracy chalg'itadi.</p>",
-          en: "<p>With 99% legitimate and 1% fraudulent transactions, a trivial \"always legitimate\" predictor scores <strong>99% Accuracy</strong> while catching zero fraud! Imbalanced datasets demand deeper metrics.</p>"
+          uz: "<p><strong>Tasniflash (Classification)</strong> — $X$ kirish atributlari to'plamini oldindan ma'lum diskret $y$ sinf yorlig'iga xaritalovchi $y = f(X)$ modelni o'rganishdir. Jarayon ikki fazadan iborat: (1) <strong>O'qitish (Induction / Training)</strong> — Train to'plamidan model qurish; (2) <strong>Bashorat (Deduction / Testing)</strong> — yangi ko'rilmagan obyektlarga sinf berish (Generalization).</p>",
+          en: "<p><strong>Classification</strong> learns a target function $y = f(X)$ mapping attributes $X$ to a discrete label $y$ across two phases: <strong>Induction</strong> (training) and <strong>Deduction</strong> (testing generalization).</p>"
         }
       },
       {
-        heading: { uz: "5.2. Confusion Matrix va 1-tur / 2-tur Xatolar", en: "5.2. Confusion Matrix & Type I / Type II Errors" },
+        heading: { uz: "5.2. Qaror Daraxti Tuzilishi va Hunt Algoritmi (Tan, 3.2-bo'lim)", en: "5.2. Tree Anatomy & Hunt's Algorithm (Tan Ch. 3.2)" },
+        bodyHtml: {
+          uz: "<p>Daraxt to'rt qismdan tashkil topadi: <strong>Ildiz tugun (Root)</strong>, <strong>Ichki tugunlar (Internal Nodes)</strong>, <strong>Shoxlar (Branches)</strong> va <strong>Barglar (Leaf Nodes — yakuniy sinf)</strong>.</p><p>Barcha klassik daraxt algoritmlari (ID3, C4.5, CART) <strong>Hunt's Algorithm</strong> rekursiv shabloniga tayanadi:</p><ol><li>Agar $D_t$ tugundagi barcha yozuvlar bir xil $y_t$ sinfiga tegishli bo'lsa — u <strong>Barg</strong> bo'ladi.</li><li>Agar atributlar tugagan yoki barcha yozuvlar bir xil $X$ qiymatga ega bo'lsa — ko'pchilik ovozi bilan Barg qo'yiladi.</li><li>Aks holda, eng yaxshi bo'luvchi atributni tanlab, $D_t$ ni quyi tugunlarga bo'ling va har biriga rekursiv davom eting.</li></ol>",
+          en: "<p>Trees consist of Root, Internal Nodes, Branches, and <strong>Leaf Nodes</strong> (final class). All greedy tree builders follow <strong>Hunt's Recursive Algorithm</strong>: stop if pure (all same class) or empty/identical features; otherwise split on best attribute and recurse.</p>"
+        }
+      },
+      {
+        heading: { uz: "5.3. ID3, C4.5 va CART Algoritmlarini Taqqoslash", en: "5.3. Comparing ID3, C4.5 & CART" },
         table: {
-          headers: { uz: ["", "Bashorat: Musbat (1)", "Bashorat: Manfiy (0)"], en: ["", "Predicted Positive (1)", "Predicted Negative (0)"] },
+          headers: { uz: ["Algoritm", "Muallif / Yil", "Bo'lish mezoni", "O'ziga xos xususiyat"], en: ["Algorithm", "Year", "Split Metric", "Distinctive Properties"] },
           rows: {
             uz: [
-              ["Haqiqiy: Musbat (1)", "<strong>TP</strong> (To'g'ri topildi ✓)", "<strong>FN</strong> (2-tur xato: kasalni sog'lom dedik ✗)"],
-              ["Haqiqiy: Manfiy (0)", "<strong>FP</strong> (1-tur xato: yolg'on signal ✗)", "<strong>TN</strong> (To'g'ri rad etildi ✓)"]
+              ["<strong>ID3</strong>", "Quinlan (1986)", "Information Gain", "Faqat kategorik atributlar; ko'p shoxli; pruning yo'q"],
+              ["<strong>C4.5</strong>", "Quinlan (1993)", "Gain Ratio", "Uzluksiz atributlar va NaN ni qo'llab-quvvatlaydi; post-pruning bor"],
+              ["<strong>CART</strong>", "Breiman (1984)", "Gini / MSE", "Doimo <strong>ikkilik (binary)</strong> daraxt; tasniflash va regressiya"]
             ],
             en: [
-              ["Actual Positive (1)", "<strong>TP</strong> (True Positive ✓)", "<strong>FN</strong> (Type II Error: missed positive ✗)"],
-              ["Actual Negative (0)", "<strong>FP</strong> (Type I Error: false alarm ✗)", "<strong>TN</strong> (True Negative ✓)"]
+              ["<strong>ID3</strong>", "1986", "Information Gain", "Categorical only; multi-way splits; no pruning"],
+              ["<strong>C4.5</strong>", "1993", "Gain Ratio", "Handles continuous thresholds, missing values, post-pruning"],
+              ["<strong>CART</strong>", "1984", "Gini / MSE", "Strictly <strong>binary</strong> splits; classification & regression"]
             ]
           }
         }
       },
       {
-        heading: { uz: "5.3. Precision, Recall, F1 va F-beta Score", en: "5.3. Precision, Recall, F1 & F-beta" },
+        heading: { uz: "5.4. Ortiqcha O'rganish (Overfitting) va Budash (Pruning)", en: "5.4. Overfitting, Pre-Pruning & Post-Pruning" },
         bodyHtml: {
-          uz: "<p><strong>Precision</strong> yolg'on signallar narxini (FP), <strong>Recall</strong> esa o'tkazib yuborish narxini (FN) nazorat qiladi. Agar Recall Precision dan $\\beta$ marta muhimroq bo'lsa (masalan, saraton skriningida $\\beta=2$), <strong>$F_\\beta$-score</strong> qo'llaniladi.</p>",
-          en: "<p><strong>Precision</strong> guards against False Positives; <strong>Recall</strong> guards against False Negatives. When Recall is $\\beta$ times more vital than Precision, use $F_\\beta$ (e.g., $F_2$).</p>"
-        },
-        latex: "P = \\frac{TP}{TP+FP}, \\quad R = \\frac{TP}{TP+FN}, \\quad F_1 = \\frac{2PR}{P+R}, \\quad F_\\beta = (1+\\beta^2)\\frac{P\\cdot R}{\\beta^2 P + R}",
-        widget: 'roc-cm'
-      },
-      {
-        heading: { uz: "5.4. ROC-AUC vs PR-AUC va Threshold Tuning", en: "5.4. ROC-AUC vs PR-AUC & Threshold Tuning" },
-        bodyHtml: {
-          uz: "<p>Ko'p modellar 0.5 chegarasi o'rniga ehtimollik qaytaradi. <strong>ROC egri chizig'i</strong> barcha thresholdlar uchun $TPR = Recall$ va $FPR = \\frac{FP}{FP+TN}$ bog'liqligini chizadi. Lekin 1:1000 kabi kuchli disbalansda TN juda katta bo'lgani uchun ROC haddan tashqari optimistik ko'rinishi mumkin — bunday holda <strong>Precision-Recall (PR-AUC)</strong> ishlatiladi!</p>",
-          en: "<p><strong>ROC</strong> plots $TPR$ vs $FPR$ across thresholds (AUC=1.0 ideal, 0.5 random). Under extreme imbalance (1:1000), huge TN suppresses FPR making ROC overly optimistic—prefer <strong>PR-AUC</strong> there.</p>"
-        }
-      },
-      {
-        heading: { uz: "5.5. Stratified K-Fold Cross-Validation", en: "5.5. Stratified K-Fold Cross-Validation" },
-        bodyHtml: {
-          uz: "<p>Bitta tasodifiy Train/Test bo'linish omadli yoki omadsiz chiqishi mumkin. <strong>Stratified K-Fold CV</strong> (odatda $k=5$ yoki $10$) har bir qatlamda sinflar nisbatini bir xil saqlab, modelning o'rtacha natijasi va standart og'ishini ($\\mu \\pm \\sigma$) beradi.</p>",
-          en: "<p><strong>Stratified K-Fold CV</strong> preserves class proportions inside every fold and reports mean $\\pm$ std across $k=5$ or $10$ runs.</p>"
+          uz: "<p>Daraxt juda chuqurlashsa, o'quv ma'lumotidagi tasodifiy shovqinni yodlab oladi: masalan, <strong>Train aniqlik = 99%, Test aniqlik = 65%</strong>. Tan darsligi ikkita asosiy sababni ko'rsatadi: shovqin (noise) va kam namuna (lack of representative samples).</p><ul><li><strong>Pre-pruning:</strong> daraxt o'sayotganda <code>max_depth</code>, <code>min_samples_split</code>, <code>min_samples_leaf</code> bilan to'xtatish.</li><li><strong>Post-pruning:</strong> avval to'liq daraxt qurib, so'ngra validatsiya yoki <strong>MDL (Minimum Description Length)</strong> / <code>ccp_alpha</code> asosida kuchsiz shoxlarni qirqib tashlash.</li></ul>",
+          en: "<p>Deep trees memorize noise (e.g., 99% train vs 65% test = <strong>Overfitting</strong>). Prevent via <strong>Pre-pruning</strong> (<code>max_depth</code>, <code>min_samples_leaf</code>) or <strong>Post-pruning</strong> (cost-complexity <code>ccp_alpha</code> / MDL).</p>"
         }
       }
     ],
     slides: [
-      { title: { uz: "5-mavzu: Modellarni baholash", en: "Topic 5: Model Evaluation Metrics" }, subtitle: { uz: "Confusion Matrix · Precision/Recall · ROC-AUC · CV (80 daqiqa)", en: "Metrics, Curves & Validation Strategies (80 min)" }, points: { uz: ["Accuracy paradoksi va Disbalans muammosi", "Confusion Matrix: TP, FP, FN, TN", "Precision, Recall, F1 va F-beta formulalari", "Threshold Tuning, ROC-AUC vs PR-AUC", "Stratified K-Fold CV va Laboratoriya"], en: ["Accuracy Paradox on imbalanced classes", "Confusion Matrix & Type I/II errors", "Precision, Recall, F1 & F-beta math", "Threshold Tuning, ROC-AUC vs PR-AUC", "Stratified K-Fold CV & Lab 5"] } },
-      { title: { uz: "Accuracy Tuzog'i (99% = 0% Foydali!)", en: "The Accuracy Paradox" }, points: { uz: ["10,000 tranzaksiya: 9,900 Normal, 100 Firibgar", "Dummy model: hammaga 'Normal' deydi", "Accuracy = 99.0% — ajoyib ko'rinadi!", "Biroq firibgarlarni topish (Recall) = 0%!"], en: ["10,000 transactions: 9,900 Legit, 100 Fraud", "Dummy model always predicts 'Legit'", "Accuracy = 99.0%, yet Fraud Recall = 0%!"] } },
-      { title: { uz: "Confusion Matrix (Chalkash Matrisa)", en: "Confusion Matrix Breakdown" }, table: { headers: { uz: ["", "Bashorat: 1", "Bashorat: 0"], en: ["", "Pred: 1", "Pred: 0"] }, rows: { uz: [["Haqiqiy: 1", "TP ✓", "FN (2-tur xato)"], ["Haqiqiy: 0", "FP (1-tur xato)", "TN ✓"]], en: [["Actual: 1", "TP ✓", "FN (Type II)"], ["Actual: 0", "FP (Type I)", "TN ✓"]] } } },
-      { title: { uz: "Precision va Recall Ma'nosi", en: "Precision vs Recall Intuition" }, latex: "\\text{Precision} = \\frac{TP}{TP + FP}, \\qquad \\text{Recall} = \\frac{TP}{TP + FN}", points: { uz: ["Precision: 'Musbat deganlarimning nechta foizi rostdan musbat?'", "Recall: 'Haqiqiy musbatlarning nechta foizini tuta oldim?'", "Precision vs Recall o'zaro qarama-qarshi (Trade-off)!"], en: ["Precision: 'Of predicted positives, how many are truly positive?'", "Recall: 'Of actual positives, how many did we catch?'", "Raising threshold ↑ Precision, ↓ Recall (trade-off)"] } },
-      { title: { uz: "Qaysi sohada qaysi ko'rsatkich muhim?", en: "Choosing the Right Metric by Domain" }, table: { headers: { uz: ["Vaziyat", "Xavfli xato", "Muhim metrika"], en: ["Scenario", "Costly Error", "Priority Metric"] }, rows: { uz: [["Spam filtri", "FP (muhim xat yo'qoladi)", "Precision"], ["Saraton skriningi", "FN (kasal o'tib ketadi)", "Recall / F2"], ["YouTube bolalar filtri", "FP (yomon video o'tadi)", "Precision"], ["Muvozanatli baho", "Ikkalasi ham", "F1-Score"]], en: [["Spam Filter", "FP (blocking vital email)", "Precision"], ["Cancer Screening", "FN (missing patient)", "Recall / F2"], ["Kids Video Filter", "FP (unsafe video shown)", "Precision"], ["Balanced Trade-off", "Both FP & FN", "F1-Score"]] } } },
-      { title: { uz: "F1 va F-beta Score", en: "Harmonic Mean: F1 & F-beta" }, latex: "F_1 = \\frac{2\\cdot P\\cdot R}{P+R}, \\qquad F_\\beta = (1+\\beta^2)\\frac{P\\cdot R}{\\beta^2 P + R}", points: { uz: ["Oddiy o'rtacha (P+R)/2 aldaydi: P=1.0, R=0.02 → o'rtacha 0.51, lekin F1 = 0.039!", "Garmonik o'rtacha ikkalasi ham yuqori bo'lishini talab qiladi", "F2 (β=2): Recall ga 2x ko'proq vazn; F0.5 (β=0.5): Precision ga ko'proq vazn"], en: ["Arithmetic mean misleads (1.0 & 0.02 → 0.51, F1=0.039!)", "Harmonic mean demands both Precision and Recall be high", "F2 weights Recall higher; F0.5 weights Precision higher"] } },
-      { title: { uz: "Interaktiv Lab: Threshold siljiting va TP/FP/FN/TN ni kuzating!", en: "Interactive Threshold & Confusion Matrix Explorer" }, widget: 'roc-cm' },
-      { title: { uz: "Qo'lda hisoblash mashqi", en: "Class Exercise: Compute Metrics" }, discussion: { q: { uz: "Model natijasi: TP=40, FP=10, FN=20, TN=930. Precision, Recall va F1 ni hisoblang!", en: "Given TP=40, FP=10, FN=20, TN=930, calculate Precision, Recall, and F1!" }, a: { uz: "Precision = 40/(40+10) = <strong>0.80 (80%)</strong>; Recall = 40/(40+20) = <strong>0.667 (66.7%)</strong>; F1 = 2×0.8×0.667 / 1.467 ≈ <strong>0.727 (72.7%)</strong>.", en: "Precision = 40/50 = <strong>80%</strong>; Recall = 40/60 = <strong>66.7%</strong>; F1 ≈ <strong>72.7%</strong>." } } },
-      { title: { uz: "ROC Egri Chizig'i va AUC", en: "ROC Curve & Area Under Curve (AUC)" }, latex: "TPR = \\frac{TP}{TP+FN} = \\text{Recall}, \\qquad FPR = \\frac{FP}{FP+TN}", points: { uz: ["ROC barcha threshold [0..1] lar uchun TPR (y) va FPR (x) ni chizadi", "AUC = 1.0: sinflarni 100% ideal ajratadi", "AUC = 0.5: tasodifiy tanga tashlash", "AUC < 0.5: model teskari ishlayapti"], en: ["Plots TPR vs FPR across every classification threshold", "AUC = 1.0: perfect ranking separation", "AUC = 0.5: random coin flip baseline", "AUC < 0.5: inverted predictions"] } },
-      { title: { uz: "Kuchli disbalansda: ROC-AUC vs PR-AUC", en: "Extreme Imbalance: ROC-AUC vs PR-AUC" }, points: { uz: ["1,000,000 ta normal va 100 ta firibgar bo'lsa, TN ulkan bo'ladi", "FP=1000 bo'lsa ham FPR = 1000/1000000 = 0.001 (juda kichik ko'rinadi!)", "PR-AUC (Precision-Recall) esa Precision = 100/1100 = 9% ekanini darhol fosh qiladi"], en: ["When negatives vastly outnumber positives, huge TN keeps FPR tiny", "ROC looks artificially high even with many False Positives", "PR-AUC ignores TN and exposes poor Precision immediately"] } },
-      { title: { uz: "Ko'p sinfli (Multi-class) o'rtachalash", en: "Multi-Class Averaging: Macro vs Weighted" }, points: { uz: ["Macro Average: har bir sinf F1 ini teng vaznda o'rtachalaydi (kam sinflar muhim)", "Weighted Average: sinflar soniga mutanosib vazn beradi", "Micro Average: umumiy TP/FP/FN yig'indisidan hisoblaydi"], en: ["Macro Avg: unweighted mean across classes (treats rare classes equally)", "Weighted Avg: weighted by class support", "Micro Avg: pools global TP, FP, FN counts"] } },
-      { title: { uz: "K-Katlamli Cross-Validation (Stratified)", en: "Stratified K-Fold Cross-Validation" }, points: { uz: ["Dataset k ta teng qismga bo'linadi (odatda k=5 yoki k=10)", "Stratified: har qatlamda musbat/manfiy foizi asl dataset bilan bir xil", "k ta urinishning o'rtachasi ± standart og'ishi (masalan, 0.942 ± 0.015) hisobot qilinadi"], en: ["Splits data into k folds preserving class ratios (Stratified)", "Each fold acts once as validation while k-1 folds train", "Report mean ± std (e.g., 0.942 ± 0.015)"] } }
+      { title: { uz: "M5: Tasniflash va Qaror Daraxtlari", en: "M5: Classification & Decision Trees" }, subtitle: { uz: "Tan Darsligi 3-bob · MITQ2506 · 80 daqiqa", en: "Tan Textbook Ch. 3 · MITQ2506 · 80 min" }, points: { uz: ["Tasniflash jarayoni: Induction vs Deduction", "Daraxt tuzilishi va IF-THEN qoidalar", "Hunt algoritmi (rekursiv qurish)", "ID3, C4.5 va CART farqlari", "Overfitting, Pre/Post-Pruning va Lab 5"], en: ["Induction vs Deduction framework", "Tree anatomy & IF-THEN rules", "Hunt's recursive algorithm", "ID3 vs C4.5 vs CART", "Overfitting, Pruning & Lab 5"] } },
+      { title: { uz: "Tasniflash Sxemasi (Tan 3.1)", en: "General Classification Framework" }, points: { uz: ["Kirish: atributlar vektori X | Chiqish: diskret sinf y", "1. O'qitish (Induction): Train setdan model qurish", "2. Baholash (Deduction): Test setda umumlashtirishni tekshirish"], en: ["Input X → Discrete label y", "Induction builds model from labeled training set", "Deduction evaluates generalization on unseen test set"] } },
+      { title: { uz: "Qaror Daraxti Tuzilishi", en: "Anatomy of a Decision Tree" }, points: { uz: ["Ildiz tugun (Root node) — eng birinchi bo'linish", "Ichki tugun (Internal node) — bitta atribut bo'yicha test", "Shox (Branch) — test natijasi yo'li", "Barg tugun (Leaf node) — yakuniy sinf bashorati"], en: ["Root node, Internal test nodes, Branches, and Leaf nodes (class predictions)"] } },
+      { title: { uz: "Hunt Algoritmi (Tan 3.2)", en: "Hunt's Recursive Algorithm" }, points: { uz: ["1-qadam: Tugundagi barcha namunalar bir xil y sinfda bo'lsa → Barg!", "2-qadam: Bo'sh yoki barcha X lar bir xil bo'lsa → Ko'pchilik sinfi bilan Barg!", "3-qadam: Aks holda eng yaxshi atributdan bo'lib, bolalariga rekursiv o'tish", "Greedy (ochko'z) qidiruv: har qadamda mahalliy eng yaxshi bo'linishni oladi"], en: ["Base case 1: pure node → Leaf", "Base case 2: identical features → majority Leaf", "Recursive case: split by best attribute test", "Greedy top-down heuristic"] } },
+      { title: { uz: "Interaktiv Ajralish Nuqtasi (Daraxt Chegarasi)", en: "Interactive Split Boundary Demo" }, widget: 'dt-split' },
+      { title: { uz: "Uzluksiz Atributlarni Bo'lish (C4.5 & CART)", en: "Splitting Continuous Attributes" }, points: { uz: ["Qiymatlar saralanadi va qo'shni nuqtalar o'rtasi nomzod threshold t bo'ladi", "Test sharti: x ≤ t (chap shox) va x > t (o'ng shox)", "Kategorik atributda: Binary split (CART) vs Multi-way split (ID3/C4.5)"], en: ["Sort values and check midpoint thresholds x ≤ t", "CART forces strictly binary splits; ID3/C4.5 allow multi-way splits"] } },
+      { title: { uz: "ID3 vs C4.5 vs CART Taqqoslash", en: "Comparing ID3, C4.5 & CART" }, table: { headers: { uz: ["Algoritm", "Mezon", "Daraxt"], en: ["Algorithm", "Metric", "Structure"] }, rows: { uz: [["ID3", "Info Gain", "Ko'p shoxli, kategorik"], ["C4.5", "Gain Ratio", "Ko'p shoxli + uzluksiz + NaN"], ["CART", "Gini / MSE", "Faqat Ikkilik (Binary)"]], en: [["ID3", "Info Gain", "Multi-way, categorical only"], ["C4.5", "Gain Ratio", "Multi-way + continuous + NaN"], ["CART", "Gini / MSE", "Strictly Binary"]] } } },
+      { title: { uz: "Overfitting (Ortiqcha O'rganish) Sabablari", en: "Causes of Overfitting (Tan 3.5)" }, points: { uz: ["Belgisi: Train aniqlik 99%, Test aniqlik 65%!", "1-sabab: Shovqinli nuqtalarni (yoki noto'g'ri yorliqlarni) yodlab olish", "2-sabab: Barglarda namuna soni juda kamayib ketishi (1–2 ta yozuv)"], en: ["Symptom: 99% train accuracy vs 65% test accuracy", "Cause 1: Fitting noisy/mislabeled training examples", "Cause 2: Too few samples in deep leaves"] } },
+      { title: { uz: "Talabalarga savol (Underfitting vs Overfitting)", en: "Class Discussion: Depth Selection" }, discussion: { q: { uz: "max_depth=1 da Train=68%, Test=66%. max_depth=20 da Train=100%, Test=74%. max_depth=4 da Train=95%, Test=93%. Qaysi biri Overfitting?", en: "Depth=1 gives 68%/66%, Depth=20 gives 100%/74%, Depth=4 gives 95%/93%. Which depth is Overfitting?" }, a: { uz: "<strong>max_depth=20 Overfitting!</strong> (Train 100%, Test 74% — 26% uzilish). Depth=1 esa Underfitting; Depth=4 optimal.", en: "<strong>max_depth=20 is Overfitting!</strong> Depth=1 is Underfitting; Depth=4 is optimal." } } },
+      { title: { uz: "Budash (Pre-Pruning vs Post-Pruning) va MDL", en: "Pre-Pruning, Post-Pruning & MDL" }, points: { uz: ["Pre-pruning: max_depth, min_samples_leaf bilan daraxtni oldindan to'xtatish", "Post-pruning: to'liq daraxt qurib ccp_alpha orqali ortiqcha shoxlarni qirqish", "MDL (Minimum Description Length): ham sodda daraxt, ham kam xatoni muvozanatlaydi"], en: ["Pre-pruning halts growth early (max_depth, min_samples_leaf)", "Post-pruning grows full tree then prunes via ccp_alpha or MDL"] } },
+      { title: { uz: "Qaror Daraxti Afzalliklari va Cheklovlari", en: "Pros & Cons of Decision Trees" }, points: { uz: ["Afzallik: White-box IF-THEN qoidalar, scaling shart emas, juda tez bashorat", "Kamchilik: Ma'lumotdagi kichik o'zgarishga beqaror (High Variance), o'qlarga parallel (oblique emas) chegaralar"], en: ["Pros: Interpretable rules, scale-invariant, fast inference", "Cons: High variance (solved by Random Forest in M14!), axis-aligned splits"] } }
     ],
     lab: {
-      title: { uz: "L5: Breast Cancer datasetida Confusion Matrix, ROC/PR va Stratified CV", en: "L5: Evaluation Metrics, ROC/PR & Stratified CV" },
-      objective: { uz: "Threshold o'zgartirish, ROC-AUC va PR-AUC ni chizish hamda StratifiedKFold bilan model barqarorligini baholash.", en: "Tune probability thresholds, plot ROC & PR curves, and run StratifiedKFold." },
+      title: { uz: "L5: Qaror daraxti yordamida ma'lumotlarni tasniflash (Iris & Wine)", en: "L5: Classification with Decision Trees" },
+      objective: { uz: "Scikit-Learn da DecisionTreeClassifier qurish, qoidalarni matnda chiqarish, max_depth ta'sirini o'rganish va post-pruning bajarish.", en: "Train DecisionTreeClassifier, export IF-THEN rules, diagnose overfitting across depths, and apply ccp_alpha pruning." },
       steps: [
         {
-          title: { uz: "Confusion Matrix va Classification Report", en: "Confusion Matrix & Classification Report" },
-          desc: { uz: "Test to'plamida matritsa va barcha metrikalarni chiqaring.", en: "Inspect confusion_matrix and classification_report." },
-          code: `from sklearn.datasets import load_breast_cancer
+          title: { uz: "Iris datasetida Qaror daraxti va Qoidalar", en: "Train Decision Tree & Export Text Rules" },
+          desc: { uz: "max_depth=3 daraxt qurib export_text bilan qoidalarni o'qing.", en: "Build depth=3 tree and print interpretable rules." },
+          code: `from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix, classification_report
 
-data = load_breast_cancer()
-X_tr, X_te, y_tr, y_te = train_test_split(data.data, data.target, test_size=0.3, stratify=data.target, random_state=42)
-clf = DecisionTreeClassifier(max_depth=4, random_state=42).fit(X_tr, y_tr)
-y_pred = clf.predict(X_te)
-print(confusion_matrix(y_te, y_pred))
-print(classification_report(y_te, y_pred, target_names=data.target_names))`
+iris = load_iris()
+X_tr, X_te, y_tr, y_te = train_test_split(iris.data, iris.target, test_size=0.3, stratify=iris.target, random_state=42)
+dt = DecisionTreeClassifier(max_depth=3, random_state=42).fit(X_tr, y_tr)
+print("Test Accuracy:", round(dt.score(X_te, y_te), 3))
+print(export_text(dt, feature_names=list(iris.feature_names)))`
         },
         {
-          title: { uz: "Threshold Tuning (0.3 vs 0.5 vs 0.7)", en: "Probability Threshold Tuning" },
-          desc: { uz: "Ehtimollik chegarasini o'zgartirib Precision/Recall siljishini kuzating.", en: "Compare Precision & Recall at thresholds 0.3, 0.5, 0.7." },
-          code: `from sklearn.metrics import precision_score, recall_score, f1_score
-probs = clf.predict_proba(X_te)[:, 1]
-for thr in [0.3, 0.5, 0.7]:
-    preds = (probs >= thr).astype(int)
-    print(f"thr={thr} | P={precision_score(y_te, preds):.3f} | R={recall_score(y_te, preds):.3f} | F1={f1_score(y_te, preds):.3f}")`
+          title: { uz: "Chuqurlik (max_depth) va Overfitting Tajribasi", en: "Depth Sweep: Diagnosing Overfitting" },
+          desc: { uz: "Wine datasetida max_depth=1..10 uchun Train va Test farqini kuzating.", en: "Observe train vs test gap on Wine across max_depth." },
+          code: `from sklearn.datasets import load_wine
+wine = load_wine()
+Xw_tr, Xw_te, yw_tr, yw_te = train_test_split(wine.data, wine.target, test_size=0.3, stratify=wine.target, random_state=42)
+for d in [1, 2, 3, 5, None]:
+    m = DecisionTreeClassifier(max_depth=d, random_state=42).fit(Xw_tr, yw_tr)
+    print(f"depth={str(d):4s} | train={m.score(Xw_tr, yw_tr):.3f} | test={m.score(Xw_te, yw_te):.3f}")`
         },
         {
-          title: { uz: "ROC-AUC va 5-Fold Stratified CV", en: "ROC-AUC & 5-Fold Stratified CV" },
-          desc: { uz: "AUC va cross-validation natijalarini hisoblang.", en: "Compute ROC-AUC and StratifiedKFold CV mean ± std." },
-          code: `from sklearn.metrics import roc_auc_score, average_precision_score
-from sklearn.model_selection import StratifiedKFold, cross_val_score
-
-print("ROC-AUC:", round(roc_auc_score(y_te, probs), 3))
-print("PR-AUC: ", round(average_precision_score(y_te, probs), 3))
-skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-cv = cross_val_score(clf, data.data, data.target, cv=skf, scoring='f1')
-print(f"5-Fold Stratified F1: {cv.mean():.3f} ± {cv.std():.3f}")`
+          title: { uz: "Cost-Complexity Post-Pruning (ccp_alpha)", en: "Post-Pruning via ccp_alpha" },
+          desc: { uz: "Turli ccp_alpha qiymatlarida tugunlar soni va test aniqligini tekshiring.", en: "Inspect node counts and test scores along pruning path." },
+          code: `path = DecisionTreeClassifier(random_state=42).cost_complexity_pruning_path(Xw_tr, yw_tr)
+for a in path.ccp_alphas[::2]:
+    m = DecisionTreeClassifier(random_state=42, ccp_alpha=a).fit(Xw_tr, yw_tr)
+    print(f"alpha={a:.4f} | nodes={m.tree_.node_count:2d} | test={m.score(Xw_te, yw_te):.3f}")`
         }
       ],
       variants: {
         uz: [
-          "1-variant: LogisticRegression va DecisionTree ROC egri chiziqlarini bitta grafikda chizing.",
-          "2-variant: 95% Recall ga erishish uchun qaysi eng katta probability threshold kerakligini toping.",
-          "3-variant: fbeta_score(y_te, y_pred, beta=2) ni hisoblang."
+          "1-variant: Breast Cancer datasetida max_depth=1..12 uchun Train/Test grafigini chizing.",
+          "2-variant: min_samples_leaf=[1, 3, 5, 10, 20] ta'sirini tekshiring.",
+          "3-variant: plot_tree(..., filled=True) bilan daraxt vizualizatsiyasini PNG ga saqlang."
         ],
         en: [
-          "Variant 1: Overlay ROC curves of DecisionTree and LogisticRegression on one plot.",
-          "Variant 2: Find the highest threshold guaranteeing ≥95% Recall.",
-          "Variant 3: Compute F2-score using sklearn.metrics.fbeta_score."
+          "Variant 1: Plot Train vs Test accuracy across depth 1..12 on Breast Cancer.",
+          "Variant 2: Evaluate min_samples_leaf=[1, 3, 5, 10, 20].",
+          "Variant 3: Save a filled tree diagram using plot_tree()."
         ]
       }
     },
     glossary: [
-      { uz: "Precision", en: "Precision", defUz: "Musbat bashoratlar ichidagi haqiqiy musbatlar ulushi", defEn: "TP / (TP + FP)" },
-      { uz: "Recall (Sensitivity)", en: "Recall", defUz: "Barcha haqiqiy musbatlarning model topgan ulushi", defEn: "TP / (TP + FN)" },
-      { uz: "F1-Score", en: "F1-Score", defUz: "Precision va Recall garmonik o'rtachasi", defEn: "Harmonic mean of Precision and Recall" },
-      { uz: "ROC-AUC", en: "ROC-AUC", defUz: "Thresholdlardan mustaqil sinf ajratish maydoni", defEn: "Area under TPR vs FPR curve" }
+      { uz: "Hunt algoritmi", en: "Hunt's Algorithm", defUz: "Daraxtlarni top-down rekursiv qurishning umumiy sxemasi", defEn: "General recursive top-down decision tree template" },
+      { uz: "Barg (Leaf Node)", en: "Leaf Node", defUz: "Yakuniy sinf bashoratini beruvchi terminal tugun", defEn: "Terminal tree node holding final class label" },
+      { uz: "CART", en: "CART", defUz: "Gini indeksi asosida ikkilik (binary) daraxt quruvchi algoritm", defEn: "Algorithm building strictly binary trees using Gini" },
+      { uz: "Pruning (Budash)", en: "Pruning", defUz: "Overfittingni kamaytirish uchun daraxt shoxlarini cheklash/qirqish", defEn: "Limiting or trimming branches to prevent overfitting" }
     ],
     quiz: [
-      { q: { uz: "Tibbiy diagnostikada (kasallikni o'tkazib yubormaslik) qaysi ko'rsatkich ustun?", en: "Which metric is prioritized in disease screening to avoid missing patients?" }, options: [{ label: 'A', uz: "Precision", en: "Precision" }, { label: 'B', uz: "Recall", en: "Recall" }, { label: 'C', uz: "Accuracy", en: "Accuracy" }, { label: 'D', uz: "Support", en: "Support" }], answer: 'B', explanation: { uz: "False Negative (kasalni sog'lom deyish) xavfli bo'lgani uchun Recall muhim.", en: "Minimizing False Negatives requires maximizing Recall." } },
-      { q: { uz: "AUC = 0.5 nimani anglatadi?", en: "What does AUC = 0.5 indicate?" }, options: [{ label: 'A', uz: "Mukammal model", en: "Perfect model" }, { label: 'B', uz: "Tasodifiy taxmin bilan teng", en: "No better than random guessing" }, { label: 'C', uz: "50% overfitting", en: "50% overfitting" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "ROC diagonal chizig'i tasodifiy modelni bildiradi.", en: "AUC=0.5 corresponds to the random diagonal." } },
-      { q: { uz: "Spam filtri uchun (muhim xatni bloklamaslik) qaysi metrika muhimroq?", en: "For spam filtering (not blocking real emails), which metric matters more?" }, options: [{ label: 'A', uz: "Recall", en: "Recall" }, { label: 'B', uz: "Precision", en: "Precision" }, { label: 'C', uz: "WCSS", en: "WCSS" }, { label: 'D', uz: "Lift", en: "Lift" }], answer: 'B', explanation: { uz: "False Positive ni kamaytirish uchun Precision yuqori bo'lishi kerak.", en: "High Precision minimizes False Positives." } },
-      { q: { uz: "Kuchli sinf disbalansida (1:1000) ROC-AUC o'rniga qaysi egri chiziq afzal?", en: "Under extreme 1:1000 class imbalance, which curve is more informative than ROC?" }, options: [{ label: 'A', uz: "Precision-Recall (PR) egri chizig'i", en: "Precision-Recall (PR) Curve" }, { label: 'B', uz: "Elbow", en: "Elbow" }, { label: 'C', uz: "Dendrogramma", en: "Dendrogram" }, { label: 'D', uz: "Scree plot", en: "Scree plot" }], answer: 'A', explanation: { uz: "PR egri chizig'i ulkan TN sonini hisobga olmaydi va FP ni yashirmaydi.", en: "PR-AUC ignores TN and reveals False Positives directly." } },
-      { q: { uz: "5-katlamli CV da har bir qatlam necha marta test bo'ladi?", en: "In 5-fold CV, how many times does each fold serve as validation?" }, options: [{ label: 'A', uz: "1 marta (5 iteratsiya davomida)", en: "Once across 5 iterations" }, { label: 'B', uz: "5 marta", en: "5 times" }, { label: 'C', uz: "10 marta", en: "10 times" }, { label: 'D', uz: "0 marta", en: "0 times" }], answer: 'A', explanation: { uz: "Har bir qism aylanib chiqib 1 martadan validatsiya rolini bajaradi.", en: "Each of the 5 folds acts once as the validation split." } }
+      { q: { uz: "Qaror daraxtida \"barg\" (leaf node) nimani bildiradi?", en: "What does a leaf node represent in a Decision Tree?" }, options: [{ label: 'A', uz: "Ildiz tugun", en: "Root split" }, { label: 'B', uz: "Yakuniy sinf bashorati", en: "Final predicted class label" }, { label: 'C', uz: "Shox", en: "Branch" }, { label: 'D', uz: "Shovqin", en: "Noise" }], answer: 'B', explanation: { uz: "Barg tugunlar terminal nuqta bo'lib sinf yorlig'ini qaytaradi.", en: "Leaf nodes output the final class label." } },
+      { q: { uz: "ID3, C4.5 va CART qaysi rekursiv shablonga asoslangan?", en: "Which recursive template underlies ID3, C4.5, and CART?" }, options: [{ label: 'A', uz: "Hunt algoritmi", en: "Hunt's Algorithm" }, { label: 'B', uz: "Apriori", en: "Apriori" }, { label: 'C', uz: "Lloyd", en: "Lloyd's" }, { label: 'D', uz: "PageRank", en: "PageRank" }], answer: 'A', explanation: { uz: "Barchasi Hunt's recursive induction algoritmiga tayanadi.", en: "All greedy tree builders follow Hunt's algorithm." } },
+      { q: { uz: "CART algoritmining daraxt tuzilishi qanday?", en: "What split structure does CART produce?" }, options: [{ label: 'A', uz: "Ko'p shoxli", en: "Multi-way" }, { label: 'B', uz: "Doimo ikkilik (Binary)", en: "Strictly Binary" }, { label: 'C', uz: "Chiziqli", en: "Linear" }, { label: 'D', uz: "Graf", en: "Graph" }], answer: 'B', explanation: { uz: "CART har tugunni aniq 2 ta shoxga ajratadi.", en: "CART always creates 2-way binary splits." } },
+      { q: { uz: "Overfitting (ortiqcha o'rganish) belgilari qaysi?", en: "Which accuracies indicate overfitting?" }, options: [{ label: 'A', uz: "Train 65%, Test 95%", en: "Train 65%, Test 95%" }, { label: 'B', uz: "Train 99%, Test 65%", en: "Train 99%, Test 65%" }, { label: 'C', uz: "Ikkalasi 60%", en: "Both 60%" }, { label: 'D', uz: "Ikkalasi 95%", en: "Both 95%" }], answer: 'B', explanation: { uz: "O'quv ma'lumotini yodlab olgan model testda yomonlashadi.", en: "High train accuracy paired with much lower test accuracy." } },
+      { q: { uz: "max_depth va min_samples_leaf yordamida daraxtni o'sayotganda to'xtatish nima deyiladi?", en: "Stopping tree growth early via max_depth / min_samples_leaf is called?" }, options: [{ label: 'A', uz: "Pre-pruning", en: "Pre-pruning" }, { label: 'B', uz: "Post-pruning", en: "Post-pruning" }, { label: 'C', uz: "Bagging", en: "Bagging" }, { label: 'D', uz: "Binning", en: "Binning" }], answer: 'A', explanation: { uz: "Daraxtni qurish paytida cheklash Pre-pruning deyiladi.", en: "Halting growth before full expansion is Pre-pruning." } }
+    ],
+    matching: [
+      { left: { uz: "ID3", en: "ID3" }, right: { uz: "Information Gain, faqat kategorik", en: "Information Gain, categorical only" } },
+      { left: { uz: "C4.5", en: "C4.5" }, right: { uz: "Gain Ratio, uzluksiz va NaN qo'llaydi", en: "Gain Ratio, continuous & NaNs" } },
+      { left: { uz: "CART", en: "CART" }, right: { uz: "Gini indeksi, doimo ikkilik daraxt", en: "Gini Index, strictly binary tree" } },
+      { left: { uz: "Post-pruning", en: "Post-pruning" }, right: { uz: "To'liq daraxtdan kuchsiz shoxlarni qirqish", en: "Trimming weak branches from full tree" } }
+    ],
+    fillGap: [
+      { text: { uz: "Qaror daraxtining eng yuqori birinchi tuguni ___ tugun (Root) deyiladi.", en: "The topmost node of a decision tree is the ___ node." }, answer: ["Ildiz", "Root"] },
+      { text: { uz: "Train aniqligi 99%, Test aniqligi 65% bo'lishi ___ holatini bildiradi.", en: "Achieving 99% train accuracy vs 65% test accuracy signals ___." }, answer: "Overfitting" },
+      { text: { uz: "C4.5 dan keyin to'liq daraxtni qisqartirish uchun ccp_alpha ___ usuli qo'llaniladi.", en: "Trimming an already grown tree via ccp_alpha is called ___." }, answer: ["Post-pruning", "Pruning", "Budash"] }
     ]
   },
 
-  // ==================== TOPIC 6 ====================
+  // ==================== M6 / L6 ====================
   {
     id: 6,
-    slug: '06-association-rules',
-    hours: 4,
-    labs: 2,
-    keywords: ['Association Rules', 'Market Basket', 'Support', 'Confidence', 'Lift', 'Conviction', 'Apriori', 'FP-Growth'],
+    code: 'M6',
+    labCode: 'L6',
+    slug: '06-entropy-feature-selection',
+    hours: 2,
+    labs: 1,
+    keywords: ['Entropy', 'Information Gain', 'Gain Ratio', 'Gini', 'Feature Selection', 'Filter', 'Wrapper', 'RFE', 'Embedded'],
     title: {
-      uz: "Assotsiativ qoidalar va savat tahlili",
-      en: "Association Rules & Market Basket Analysis"
+      uz: "Ma'lumotlardagi noaniqlikni o'lchash va eng muhim belgilarni tanlash",
+      en: "Uncertainty Measures & Feature Selection"
     },
     description: {
-      uz: "Savat tahlili, Support/Confidence/Lift/Conviction, Apriori algoritmi bosqichma-bosqich, FP-Growth daraxti va soxta qoidalar tuzog'i.",
-      en: "Market Basket Analysis, Support/Confidence/Lift/Conviction, step-by-step Apriori trace, FP-Tree construction, and Lift pitfalls."
+      uz: "Entropiya, Gini va Misclassification Error egri chiziqlari; Information Gain va Gain Ratio (SplitInfo) hisoblash; Filter, Wrapper (RFE) va Embedded belgi tanlash.",
+      en: "Entropy, Gini & Error impurity curves; Information Gain & Gain Ratio math; and Filter, Wrapper (RFE), and Embedded feature selection."
     },
     sections: [
       {
-        heading: { uz: "6.1. Savat tahlili va Qoida shakli", en: "6.1. Market Basket Analysis & Rule Structure" },
+        heading: { uz: "6.1. Tugundagi Noaniqlikni O'lchash (Tan, 3.3-bo'lim)", en: "6.1. Node Impurity Measures (Tan Ch. 3.3)" },
         bodyHtml: {
-          uz: "<p><strong>Assotsiativ qoidalar</strong> (Agrawal et al., 1993) supermarket cheklaridan, veb-savatlardan yoki tibbiy yozuvlardan <code>{Antecedent (A)} → {Consequent (B)}</code> ko'rinishidagi birga uchrash qonuniyatlarini topadi. Bu implikatsiya mantiqiy sababiyat emas, balki statistik hamrohlikdir!</p>",
-          en: "<p><strong>Association Rules</strong> mine co-occurrence patterns <code>{A} → {B}</code> in retail baskets, web clickstreams, or EHR records. Note: it measures statistical co-occurrence, not causal necessity.</p>"
-        }
-      },
-      {
-        heading: { uz: "6.2. Support, Confidence, Lift va Conviction", en: "6.2. Support, Confidence, Lift & Conviction" },
-        bodyHtml: {
-          uz: "<p><strong>Confidence tuzog'i!</strong> Agar do'konda xaridorlarning 90% i <em>Non</em> sotib olsa, unda <code>{Kofe} → {Non}</code> qoidasining Confidence qiymati ~90% chiqaveradi, garchi Kofe bilan Non bog'liq bo'lmasa ham! Buni <strong>Lift</strong> aniqlaydi: Lift = 1 bo'lsa bog'liqlik nol (tasodifiy).</p>",
-          en: "<p><strong>The Confidence Trap!</strong> If 90% of all shoppers buy <em>Bread</em>, then <code>{Coffee} → {Bread}</code> gets ~90% Confidence even if they are completely independent! <strong>Lift</strong> fixes this by dividing Confidence by baseline Support(B).</p>"
+          uz: "<p>Hunt algoritmida \"eng yaxshi atribut\" ni tanlash uchun tugundagi sinflar aralashganligi (<strong>Impurity</strong>) 3 ta formula bilan o'lchanadi (ikkilik sinfda $p=0.5$ da maksimum, $p=0$ yoki $p=1$ da $0$):</p>",
+          en: "<p>To pick the best split in Hunt's algorithm, we measure node impurity using <strong>Entropy</strong>, <strong>Gini</strong>, or <strong>Classification Error</strong> (all 0 when pure, maximum at uniform 50/50 split):</p>"
         },
-        latex: "\\text{Sup}(A\\cup B)=\\frac{\\text{count}(A\\cup B)}{N}, \\quad \\text{Conf}(A\\to B)=\\frac{\\text{Sup}(A\\cup B)}{\\text{Sup}(A)}, \\quad \\text{Lift}(A\\to B)=\\frac{\\text{Conf}(A\\to B)}{\\text{Sup}(B)}",
-        widget: 'apriori-lattice'
+        latex: "\\text{Entropy}(t) = -\\sum p_i\\log_2 p_i, \\quad \\text{Gini}(t)=1-\\sum p_i^2, \\quad \\text{Error}(t)=1-\\max_i(p_i)",
+        widget: 'feature-sel-sim'
       },
       {
-        heading: { uz: "6.3. Apriori algoritmi va Anti-monotonlik prinsipi", en: "6.3. Apriori Algorithm & Downward Closure" },
+        heading: { uz: "6.2. Information Gain, SplitInfo va Gain Ratio", en: "6.2. Information Gain vs Gain Ratio (SplitInfo)" },
         bodyHtml: {
-          uz: "<p>Agar $d$ ta mahsulot bo'lsa, mumkin bo'lgan to'plamlar soni $2^d - 1$ (masalan, 1000 mahsulot uchun $2^{1000}$!). Barcha kombinatsiyalarni tekshirish imkonsiz. <strong>Apriori prinsipi</strong> qutqaradi:</p><p><em>\"Agar to'plam frequent bo'lmasa, uni o'z ichiga olgan hech qanday kattaroq to'plam (superset) ham frequent bo'la olmaydi.\"</em></p><p>Bosqichlar: $C_1 \\to L_1 \\to C_2 \\to L_2 \\to C_3 \\to L_3 \\dots$ (Join va Prune qadamlari).</p>",
-          en: "<p>With $d$ items, $2^d-1$ subsets exist! <strong>Apriori's downward closure property</strong> prunes the search: <em>if an itemset is infrequent, all of its supersets are guaranteed infrequent</em>. Iteratively alternates candidate generation ($C_k$) and pruning ($L_k$).</p>"
+          uz: "<p><strong>Information Gain (IG)</strong> bo'linishdan oldingi va keyingi o'rtacha entropiya farqidir. Ammo IG ning jiddiy nuqsoni bor: u <strong>ko'p noyob qiymatli atributlarni</strong> (masalan, <code>Talaba_ID</code>) afzal ko'radi, chunki har bir ID ga 1 tadan sof barg tushib $H=0$ chiqadi!</p><p><strong>Yechim — Gain Ratio (C4.5):</strong> Information Gain ni atributning o'z bo'linish entropiyasi (<strong>SplitInfo</strong>) ga bo'lib jazolaydi:</p>",
+          en: "<p><strong>Information Gain</strong> biases toward high-cardinality IDs (each ID gives $H=0$). C4.5 fixes this by normalizing IG with <strong>SplitInfo</strong>:</p>"
+        },
+        latex: "IG(S, A) = H(S) - \\sum_v \\frac{|S_v|}{|S|}H(S_v), \\qquad \\text{SplitInfo}(S, A) = -\\sum_v \\frac{|S_v|}{|S|}\\log_2\\frac{|S_v|}{|S|}, \\qquad \\text{GainRatio} = \\frac{IG}{\\text{SplitInfo}}"
+      },
+      {
+        heading: { uz: "6.3. Qo'lda Hisoblash Misoli (Entropiya & Gini)", en: "6.3. Worked Calculation: Entropy & Gini" },
+        bodyHtml: {
+          uz: "<p>Tugunda 10 ta obyekt: <strong>6 Ha, 4 Yo'q</strong> ($p_1=0.6, p_0=0.4$):</p><ul><li>$\\text{Entropy} = -(0.6\\log_2 0.6 + 0.4\\log_2 0.4) = 0.971$ bit.</li><li>$\\text{Gini} = 1 - (0.6^2 + 0.4^2) = 1 - (0.36 + 0.16) = 0.48$.</li><li>$\\text{Classification Error} = 1 - \\max(0.6, 0.4) = 0.40$.</li></ul>",
+          en: "<p>For a node with 6 Yes, 4 No ($p_1=0.6, p_0=0.4$): Entropy = $0.971$, Gini = $1-(0.36+0.16)=0.48$, Classification Error = $1-0.6=0.40$.</p>"
         }
       },
       {
-        heading: { uz: "6.4. FP-Growth (Frequent Pattern Tree)", en: "6.4. FP-Growth: Mining Without Candidates" },
+        heading: { uz: "6.4. Eng Muhim Belgilarni Tanlash (Feature Selection, Tan 2.3)", en: "6.4. Feature Selection: Filter, Wrapper & Embedded" },
         bodyHtml: {
-          uz: "<p><strong>FP-Growth</strong> Apriori ning ikki og'ir muammosini (ko'p marta disk o'qish va kandidatlar portlashi) hal qiladi:</p><ol><li><strong>1-o'tish:</strong> 1-elementlarni sanash, min_support dan kichiklarini olib tashlash va qolganlarni chastota bo'yicha kamayish tartibida saralash.</li><li><strong>2-o'tish:</strong> Har bir tranzaksiyani saralangan tartibda <strong>FP-Tree</strong> (prefix daraxt) ga kiritish (umumiy prefikslar birlashadi!).</li><li>Daraxtdan rekursiv ravishda Conditional Pattern Base orqali frequent itemsetlar chiqariladi.</li></ol>",
-          en: "<p><strong>FP-Growth</strong> eliminates candidate generation using just 2 dataset scans: (1) count & sort frequent 1-items descending, (2) insert sorted transactions into a compressed prefix tree (<strong>FP-Tree</strong>), then mine conditional sub-trees recursively.</p>"
+          uz: "<p>Ortiqcha va shovqinli atributlarni olib tashlash modelni tezlashtiradi va overfittingni kamaytiradi. Uch asosiy yondashuv:</p>",
+          en: "<p>Removing redundant/irrelevant features speeds training and cuts overfitting via three paradigms:</p>"
+        },
+        table: {
+          headers: { uz: ["Usul turi", "Qanday ishlaydi?", "Misollar", "Tezlik / Aniqlik"], en: ["Category", "How It Works", "Examples", "Speed / Accuracy"] },
+          rows: {
+            uz: [
+              ["<strong>Filter</strong>", "Modeldan mustaqil statistik test bilan saralaydi", "VarianceThreshold, $\\chi^2$, ANOVA F, Mutual Information", "Juda tez; belgilararo bog'liqlikni kamroq ko'radi"],
+              ["<strong>Wrapper</strong>", "Modelni qayta-qayta o'qitib eng yaxshi to'plamni qidiradi", "<strong>RFE</strong> (Recursive Feature Elimination), Forward/Backward", "Eng aniq, lekin hisoblash jihatdan sekin"],
+              ["<strong>Embedded</strong>", "Modelni o'qitish jarayonining o'zida belgilarni tanlaydi", "<strong>Lasso (L1)</strong>, Decision Tree / Random Forest importance", "Tez va aniqlik jihatidan muvozanatli"]
+            ],
+            en: [
+              ["<strong>Filter</strong>", "Ranks features via model-free statistics", "VarianceThreshold, $\\chi^2$, ANOVA F, Mutual Info", "Fastest; ignores feature interactions"],
+              ["<strong>Wrapper</strong>", "Evaluates subsets by retraining a model", "<strong>RFE</strong>, Forward/Backward Selection", "High accuracy; computationally expensive"],
+              ["<strong>Embedded</strong>", "Selects features during model training itself", "<strong>L1 Lasso</strong>, Tree/RF Feature Importance", "Balanced speed and accuracy"]
+            ]
+          }
         }
       }
     ],
     slides: [
-      { title: { uz: "6-mavzu: Assotsiativ qoidalar", en: "Topic 6: Association Rules" }, subtitle: { uz: "Market Basket Analysis · Apriori · FP-Growth (80 daqiqa)", en: "Support, Confidence, Lift, Apriori & FP-Growth (80 min)" }, points: { uz: ["Savat tahlili va biznes qo'llanilishi", "Support, Confidence, Lift va Conviction", "Confidence tuzog'i (Nega Lift shart?)", "Apriori algoritmi (Join & Prune) qo'lda trace", "FP-Growth daraxti va Lab 6–7"], en: ["Market Basket applications", "Support, Confidence, Lift & Conviction", "The Confidence Trap", "Apriori Join & Prune step-by-step", "FP-Tree compression & Lab 6–7"] } },
-      { title: { uz: "Savat tahlili qo'llanilishi", en: "Real-World Applications" }, points: { uz: ["Supermarket: mahsulotlarni yonma-yon (yoki aksincha uzoqroq) joylashtirish", "E-commerce: 'Bu mahsulot bilan birga olinadi' tavsiyasi", "Tibbiyot: birga uchraydigan dorilarning nojo'ya ta'siri", "Veb-navigatsiya: foydalanuvchi qadamlar zanjiri"], en: ["Retail shelf layout & promotional bundles", "E-commerce 'Frequently Bought Together'", "Healthcare: drug interaction & symptom co-occurrence", "Web clickstream next-page prediction"] } },
-      { title: { uz: "Support, Confidence va Lift", en: "Three Core Metrics" }, latex: "\\text{Sup}(A\\cup B)=\\frac{c(A\\cup B)}{N}, \\quad \\text{Conf}(A\\to B)=\\frac{\\text{Sup}(A\\cup B)}{\\text{Sup}(A)}, \\quad \\text{Lift}=\\frac{\\text{Conf}(A\\to B)}{\\text{Sup}(B)}", points: { uz: ["Support: tranzaksiyalarning necha foizida uchraydi (kam uchraydigan shovqinni elaydi)", "Confidence: shartli ehtimol P(B|A)", "Lift: >1 ijobiy bog'liqlik, =1 mustaqil, <1 o'rinbosar mahsulotlar"], en: ["Support: overall frequency across all baskets", "Confidence: conditional probability P(B|A)", "Lift: >1 positive synergy, =1 independent, <1 substitutes"] } },
-      { title: { uz: "Confidence Tuzog'i (Chalg'ituvchi Qoida!)", en: "The Confidence Trap" }, discussion: { q: { uz: "1000 ta mijozdan 900 tasi Sut oladi, 200 tasi Choy oladi, 180 tasi Choy+Sut oladi. {Choy}→{Sut} uchun Confidence = 90%! Bu yaxshi qoidami?", en: "Out of 1000 baskets, 900 buy Milk, 200 buy Tea, 180 buy both. Confidence(Tea→Milk) = 90%! Is Tea driving Milk sales?" }, a: { uz: "YO'Q! <code>Lift = 0.90 / 0.90 = 1.00</code>! Choy olganlar ham, olmaganlar ham baribir 90% holatda Sut olmoqda — ular mutlaqo mustaqil!", en: "NO! <code>Lift = 0.90 / 0.90 = 1.00</code>. Tea buyers buy Milk at the exact same 90% baseline rate—zero real association!" } } },
-      { title: { uz: "Interaktiv Lab: Support/Confidence slayderini sinang!", en: "Interactive Rule Filtering Lab" }, widget: 'apriori-lattice' },
-      { title: { uz: "Apriori Prinsipi (Anti-Monotonlik)", en: "The Apriori Principle (Downward Closure)" }, points: { uz: ["100 ta mahsulot uchun 2¹⁰⁰ ≈ 10³⁰ ta to'plam — brute force imkonsiz!", "Anti-monotonlik: Support(X ∪ Y) ≤ Support(X)", "Agar {Kaviar} nodir (< min_sup) bo'lsa, {Non, Kaviar} ham albatta nodir!", "Shu bois nodir shoxlar darhol kesib tashlanadi (Prune)"], en: ["Brute force over d items requires 2^d scans—impossible!", "Anti-monotone property: superset support ≤ subset support", "Prune any candidate containing an infrequent subset immediately"] } },
-      { title: { uz: "Apriori Qo'lda Misol (5 ta chek, min_sup = 60%)", en: "Apriori Trace (N=5, min_sup = 3)" }, points: { uz: ["T1:{N,S,T}, T2:{N,S}, T3:{N,T}, T4:{S,T}, T5:{N,S,T}", "L1 (≥3): {N}:4, {S}:4, {T}:4", "C2→L2 (≥3): {N,S}:3, {N,T}:3, {S,T}:3", "C3: {N,S,T}:2 < 3 → Prune! Yakuniy maksimal to'plamlar: L2"], en: ["T1:{B,M,E}, T2:{B,M}, T3:{B,E}, T4:{M,E}, T5:{B,M,E}", "L1 (≥3): {B}:4, {M}:4, {E}:4", "L2 (≥3): {B,M}:3, {B,E}:3, {M,E}:3", "C3: {B,M,E}:2 < 3 → Pruned!"] } },
-      { title: { uz: "FP-Growth: Kandidatlarsiz Tez Algoritm", en: "FP-Growth: Prefix Tree Mining" }, points: { uz: ["Apriori kamchiligi: katta bazadan 5–10 marta diskda o'tadi va millionlab C_k quradi", "FP-Growth: atigi 2 marta ma'lumotdan o'tadi!", "1-o'tish: elementlarni chastota bo'yicha saralash", "2-o'tish: har chekni siqilgan FP-Tree ga joylash"], en: ["Apriori suffers from many disk scans & huge candidate C_k sets", "FP-Growth scans the database only twice!", "Pass 1: sort frequent 1-items descending", "Pass 2: compress baskets into a shared prefix FP-Tree"] } },
-      { title: { uz: "Apriori vs FP-Growth Taqqoslash", en: "Apriori vs FP-Growth" }, table: { headers: { uz: ["Mezon", "Apriori", "FP-Growth"], en: ["Criteria", "Apriori", "FP-Growth"] }, rows: { uz: [["O'tishlar soni", "k+1 marta", "2 marta"], ["Kandidatlar", "Generatsiya qiladi", "Yo'q"], ["Tezlik", "Sekin", "10x–100x tez"]], en: [["Scans", "k+1 passes", "2 passes"], ["Candidates", "Generates C_k", "None"], ["Speed", "Slower", "10x–100x faster"]] } } },
-      { title: { uz: "Soxta va Tautologik Qoidalarni Filtrlash", en: "Filtering Actionable Rules" }, points: { uz: ["Lift > 1.2 va Support yetarli bo'lgan qoidalarni saqlang", "Conviction = (1 - Sup(B)) / (1 - Conf(A→B)): yo'nalishli bog'liqlikni tekshiradi", "Trivial qoidalarni (masalan, 'Printer → Qog'oz') biznes jamoasi bilan saralang"], en: ["Filter by Lift > 1.2 and meaningful minimum Support", "Conviction checks directed implication strength", "Separate trivial rules ('Printer → Ink') from surprising insights"] } }
+      { title: { uz: "M6: Noaniqlik va Muhim Belgilarni Tanlash", en: "M6: Impurity Measures & Feature Selection" }, subtitle: { uz: "Tan Darsligi 3.3 va 2.3 · MITQ2506 · 80 daqiqa", en: "Tan Ch. 3.3 & Ch. 2.3 · MITQ2506 · 80 min" }, points: { uz: ["3 ta nopoklik o'lchovi: Entropy, Gini, Classification Error", "Information Gain va ID3 tuzog'i (Noyob ID)", "Gain Ratio va SplitInfo formulasi", "Feature Selection: Filter, Wrapper (RFE), Embedded (L1/Tree)", "L6 Python tajribalari"], en: ["Entropy, Gini & Classification Error compared", "Information Gain & ID bias", "SplitInfo & Gain Ratio (C4.5)", "Filter, Wrapper (RFE) & Embedded Feature Selection", "L6 Python Feature Selection Lab"] } },
+      { title: { uz: "Tugun Nopokligi (Impurity) O'lchovlari", en: "Three Impurity Measures (Tan 3.3)" }, latex: "H=-\\sum p_i\\log_2 p_i, \\quad \\text{Gini}=1-\\sum p_i^2, \\quad \\text{Err}=1-\\max(p_i)", points: { uz: ["Barcha 3 mezon sof tugunda (p=0 yoki p=1) 0 ga teng", "Barcha 3 mezon p=0.5 (50/50 teng aralash) da maksimal qiymat oladi", "Maksimumlar: Entropy = 1.0 | Gini = 0.5 | Error = 0.5"], en: ["All reach 0 at pure nodes (p=0 or p=1)", "All peak at 50/50 split: Entropy=1.0, Gini=0.5, Error=0.5"] } },
+      { title: { uz: "Interaktiv Egri Chiziq: Entropy vs Gini vs Error", en: "Interactive Impurity Explorer" }, widget: 'feature-sel-sim' },
+      { title: { uz: "Qo'lda Hisoblash: (6 Ha, 4 Yo'q)", en: "Hand Calculation: (6 Yes, 4 No)" }, points: { uz: ["p₁ = 0.6, p₀ = 0.4", "Entropy = -(0.6 log₂ 0.6 + 0.4 log₂ 0.4) = 0.971 bit", "Gini = 1 - (0.36 + 0.16) = 0.48", "Classification Error = 1 - max(0.6, 0.4) = 0.40"], en: ["p₁=0.6, p₀=0.4", "Entropy = 0.971 | Gini = 0.48 | Error = 0.40"] } },
+      { title: { uz: "Information Gain va ID3 Tuzog'i", en: "Information Gain & High-Cardinality Bias" }, points: { uz: ["IG(S, A) = H(S) - Σ (|S_v|/|S|)·H(S_v)", "Muammo: Agar atribut har qatorda noyob bo'lsa (Passport_ID), har bargda 1 ta nuqta qolib H=0 chiqadi!", "Natijada IG maksimal bo'ladi, lekin model hech narsa o'rganmaydi!"], en: ["Unique IDs create 1-sample pure leaves → H=0 → maximum IG!", "Completely fails to generalize to unseen data"] } },
+      { title: { uz: "C4.5 Yechimi: SplitInfo va Gain Ratio", en: "C4.5 Fix: SplitInfo & Gain Ratio" }, latex: "\\text{SplitInfo}(S,A) = -\\sum_v \\frac{|S_v|}{|S|}\\log_2\\frac{|S_v|}{|S|}, \\qquad \\text{GainRatio}=\\frac{IG}{\\text{SplitInfo}}", points: { uz: ["Ko'p shoxga bo'luvchi ustunning SplitInfo qiymati juda katta bo'ladi (masalan log₂(N))", "IG ni SplitInfo ga bo'lish noyob ID larni keskin jazolaydi!"], en: ["Many-way splits yield huge SplitInfo", "Dividing IG by SplitInfo penalizes ID-like columns"] } },
+      { title: { uz: "Talabalarga savol (Classification Error vs Gini)", en: "Class Discussion: Why Not Classification Error?" }, discussion: { q: { uz: "Nima uchun daraxtlar odatda Classification Error (1 - max p) o'rniga Gini yoki Entropiyadan foydalanadi?", en: "Why do decision trees prefer Gini or Entropy over Classification Error when evaluating splits?" }, a: { uz: "Classification Error chiziqli bo'lgani uchun ba'zi foydali bo'linishlarda Gain = 0 berib qo'yadi (masalan, (7,3) → (4,0)+(3,3) da xato ikki holda ham 3/10)! Gini va Entropiya qavariq (strictly concave) bo'lgani uchun sof bolalarni doim rag'batlantiradi.", en: "Classification Error is piecewise linear and can give Gain = 0 even when one child becomes 100% pure! Strictly concave Gini and Entropy always reward purer splits." } } },
+      { title: { uz: "Feature Selection (Eng Muhim Belgilarni Tanlash)", en: "Why Feature Selection Matters" }, points: { uz: ["PCA yangi sun'iy o'qlar (PC1, PC2) yasaydi — asl ustun nomlari yo'qoladi", "Feature Selection esa eng foydali asl ustunlarni tanlab qoladi (talqin saqlanadi!)"], en: ["Unlike PCA which creates abstract combinations, Feature Selection keeps original interpretable columns"] } },
+      { title: { uz: "Filter Usullari (Modeldan Mustaqil)", en: "1. Filter Methods" }, points: { uz: ["VarianceThreshold: doimiy (0 variatsiyali) ustunlarni o'chirish", "Chi-Square (χ²) va ANOVA F-test (SelectKBest)", "Mutual Information (mutual_info_classif): chiziqsiz bog'liqlikni ham ushlaydi!"], en: ["VarianceThreshold drops zero-variance constants", "SelectKBest with χ², ANOVA F-test, or Mutual Information"] } },
+      { title: { uz: "Wrapper Usullari (RFE)", en: "2. Wrapper Methods (RFE)" }, points: { uz: ["RFE (Recursive Feature Elimination): modelni o'qitadi, eng kuchsiz 1–2 ustunni tashlaydi, jarayonni takrorlaydi", "RFECV: Cross-Validation bilan optimal ustunlar sonini avtomatik topadi", "Afzallik: belgilar kombinatsiyasini hisobga oladi; Kamchilik: sekin"], en: ["RFE iteratively fits model and prunes weakest features", "RFECV finds optimal count automatically via CV"] } },
+      { title: { uz: "Embedded Usullari (Lasso L1 & Tree Importance)", en: "3. Embedded Methods" }, points: { uz: ["Lasso (L1 regularizatsiya): keraksiz ustun koeffitsientlarini aniq 0 ga tushiradi", "Random Forest / Gradient Boosting: har splitda Gini pasayishini yig'adi (SelectFromModel)"], en: ["L1 Lasso shrinks useless weights to exact zero", "Tree-based SelectFromModel accumulates impurity reductions"] } }
     ],
     lab: {
-      title: { uz: "L6–L7: Apriori vs FP-Growth va Savat Tahlili", en: "L6–L7: Apriori vs FP-Growth Market Basket Lab" },
-      objective: { uz: "TransactionEncoder yordamida cheklarni matritsaga o'tkazish, Apriori va FP-Growth tezligini solishtirish va Lift bo'yicha top qoidalarni tahlil qilish.", en: "Encode transactions, benchmark apriori vs fpgrowth, and rank rules by Lift." },
+      title: { uz: "L6: Entropiya/IG/Gini hisoblash va Filter/Wrapper/Embedded belgi tanlash", en: "L6: Impurity Calculations & Filter/Wrapper/Embedded Selection" },
+      objective: { uz: "Python da Entropiya, Information Gain, Gini funksiyalarini yozish hamda SelectKBest, RFE va SelectFromModel bilan top belgilarni ajratish.", en: "Code Entropy/IG/Gini from scratch and compare SelectKBest, RFE, and Random Forest selection on Breast Cancer." },
       steps: [
         {
-          title: { uz: "Tranzaksiyalarni One-Hot Matritsaga o'tkazish", en: "Transaction Encoding" },
-          desc: { uz: "mlxtend TransactionEncoder bilan boolean DataFrame tuzing.", en: "Transform transaction lists into a boolean DataFrame." },
-          code: `import pandas as pd
-from mlxtend.preprocessing import TransactionEncoder
+          title: { uz: "Entropiya, Gini va Information Gain Funksiyalari", en: "Compute Entropy, Gini & Information Gain in NumPy" },
+          desc: { uz: "Qo'lda hisoblangan (6 Ha, 4 Yo'q) misolni Python funksiyasi bilan tekshiring.", en: "Verify the (6 Yes, 4 No) lecture calculation in NumPy." },
+          code: `import numpy as np
+def entropy(counts):
+    p = np.array(counts) / sum(counts)
+    p = p[p > 0]
+    return -np.sum(p * np.log2(p))
 
-transactions = [
-    ['Non', 'Sut', 'Tuxum'], ['Non', 'Sut'], ['Non', 'Tuxum'],
-    ['Sut', 'Tuxum'], ['Non', 'Sut', 'Tuxum'], ['Non', 'Sut', 'Meva'],
-    ['Tuxum', 'Meva'], ['Non', 'Meva'], ['Sut', 'Meva', 'Tuxum'],
-    ['Non', 'Sut', 'Meva', 'Tuxum'], ['Kofe', 'Shakar'], ['Kofe', 'Shakar', 'Sut']
-]
-te = TransactionEncoder()
-df = pd.DataFrame(te.fit_transform(transactions), columns=te.columns_)
-print(df.astype(int).head())`
+def gini(counts):
+    p = np.array(counts) / sum(counts)
+    return 1 - np.sum(p ** 2)
+
+H_root = entropy([6, 4])
+IG = H_root - (0.4 * entropy([4, 0]) + 0.6 * entropy([2, 4]))
+print(f"H(root)={H_root:.3f} | Gini(root)={gini([6,4]):.3f} | IG={IG:.3f}")`
         },
         {
-          title: { uz: "Apriori va FP-Growth bilan Frequent Itemsetlar", en: "Frequent Itemsets: Apriori vs FP-Growth" },
-          desc: { uz: "min_support=0.25 bilan ikkala algoritm natijasi bir xilligini tekshiring.", en: "Verify Apriori and FP-Growth produce identical frequent itemsets." },
-          code: `from mlxtend.frequent_patterns import apriori, fpgrowth
+          title: { uz: "Filter (Mutual Info) vs Wrapper (RFE) vs Embedded", en: "Compare SelectKBest, RFE & Tree Importance" },
+          desc: { uz: "Breast Cancer (30 ustun) dan eng muhim 5 ta belgini 3 usulda ajrating.", en: "Select top 5 features on Breast Cancer using 3 paradigms." },
+          code: `from sklearn.datasets import load_breast_cancer
+from sklearn.feature_selection import SelectKBest, mutual_info_classif, RFE
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 
-freq_ap = apriori(df, min_support=0.25, use_colnames=True)
-freq_fp = fpgrowth(df, min_support=0.25, use_colnames=True)
-print("Apriori count:", len(freq_ap), "| FP-Growth count:", len(freq_fp))
-print(freq_fp.sort_values('support', ascending=False).head(8))`
+data = load_breast_cancer()
+X_s = StandardScaler().fit_transform(data.data)
+f_idx = SelectKBest(mutual_info_classif, k=5).fit(X_s, data.target).get_support(indices=True)
+w_idx = RFE(LogisticRegression(max_iter=1000), n_features_to_select=5).fit(X_s, data.target).get_support(indices=True)
+rf = RandomForestClassifier(100, random_state=42).fit(data.data, data.target)
+e_idx = np.argsort(rf.feature_importances_)[-5:][::-1]
+print("Filter:", data.feature_names[f_idx].tolist())
+print("Wrapper:", data.feature_names[w_idx].tolist())
+print("Embedded:", data.feature_names[e_idx].tolist())`
         },
         {
-          title: { uz: "Assotsiativ qoidalar va Lift tahlili", en: "Generate & Filter Rules by Lift" },
-          desc: { uz: "Confidence ≥ 0.6 va Lift > 1.05 qoidalarini chiqaring.", en: "Extract rules with confidence ≥ 0.6 and Lift > 1.05." },
-          code: `from mlxtend.frequent_patterns import association_rules
-
-rules = association_rules(freq_fp, metric="confidence", min_threshold=0.6)
-strong = rules[rules['lift'] > 1.05].sort_values('lift', ascending=False)
-print(strong[['antecedents', 'consequents', 'support', 'confidence', 'lift']].round(3))`
+          title: { uz: "Tanlangan 5 ta belgi bilan model aniqligini tekshirish", en: "Benchmark Accuracy: 30 Features vs Top 5" },
+          desc: { uz: "Atigi 5 ta ustun qolganda CV aniqligi qanchalik saqlanishini ko'ring.", en: "Measure 5-fold CV accuracy using only the selected 5 features." },
+          code: `from sklearn.model_selection import cross_val_score
+cv_all = cross_val_score(RandomForestClassifier(100, random_state=42), data.data, data.target, cv=5).mean()
+cv_top5 = cross_val_score(RandomForestClassifier(100, random_state=42), data.data[:, e_idx], data.target, cv=5).mean()
+print(f"All 30 features CV: {cv_all:.3f} | Top 5 features CV: {cv_top5:.3f}")`
         }
       ],
       variants: {
         uz: [
-          "1-variant: min_support ni 0.15, 0.30, 0.50 ga o'zgartirib qoidalar soni o'zgarishini jadval qiling.",
-          "2-variant: conviction va leverage ustunlarini ham chiqarib eng yuqori leverage li qoidani toping.",
-          "3-variant: Faqat 2 ta mahsulotdan iborat antecedentga ega qoidalarni filtrlang."
+          "1-variant: Wine datasetida f_classif (ANOVA) va mutual_info_classif top-4 belgilarini solishtiring.",
+          "2-variant: RFECV yordamida avtomatik optimal ustunlar sonini toping.",
+          "3-variant: SplitInfo va Gain Ratio funksiyalarini Python da yozib sinang."
         ],
         en: [
-          "Variant 1: Sweep min_support across [0.15, 0.30, 0.50] and record itemset counts.",
-          "Variant 2: Inspect leverage and conviction metrics alongside Lift.",
-          "Variant 3: Filter rules where antecedent length == 2."
+          "Variant 1: Compare f_classif vs mutual_info_classif top 4 features on Wine.",
+          "Variant 2: Run RFECV to discover optimal feature count automatically.",
+          "Variant 3: Implement SplitInfo and Gain Ratio in Python."
         ]
       }
     },
     glossary: [
-      { uz: "Support", en: "Support", defUz: "Element to'plamining barcha tranzaksiyalardagi ulushi", defEn: "Fraction of transactions containing itemset" },
-      { uz: "Confidence", en: "Confidence", defUz: "A mavjud bo'lganda B ham uchrash ehtimoli P(B|A)", defEn: "Conditional probability P(B|A)" },
-      { uz: "Lift", en: "Lift", defUz: "Confidence ning bazaviy Support(B) ga nisbati (>1 ijobiy)", defEn: "Ratio of observed confidence to expected baseline (>1 positive)" },
-      { uz: "FP-Tree", en: "FP-Tree", defUz: "Umumiy prefikslarni birlashtiruvchi siqilgan daraxt tuzilmasi", defEn: "Compact prefix tree storing frequent transactions" }
+      { uz: "Entropiya", en: "Entropy", defUz: "Tugundagi sinflar tartibsizligini o'lchovchi mezon (0..1 bit)", defEn: "Information-theoretic impurity metric" },
+      { uz: "Gain Ratio", en: "Gain Ratio", defUz: "IG ni SplitInfo ga bo'lib ko'p shoxli ustunlarni jazolovchi mezon", defEn: "Normalized IG penalizing high-cardinality splits" },
+      { uz: "Filter / Wrapper / Embedded", en: "Filter / Wrapper / Embedded", defUz: "Belgilarni tanlashning statistik, model-o'qituvchi va ichki usullari", defEn: "Three feature selection families" },
+      { uz: "RFE", en: "RFE", defUz: "Eng kuchsiz belgilarni bosqichma-bosqich olib tashlovchi Wrapper usuli", defEn: "Recursive Feature Elimination wrapper" }
     ],
     quiz: [
-      { q: { uz: "Confidence(A → B) = 0.8 nimani anglatadi?", en: "What does Confidence(A → B) = 0.8 mean?" }, options: [{ label: 'A', uz: "B ning 80% da A bor", en: "80% of B contain A" }, { label: 'B', uz: "A mavjud cheklarning 80% da B ham bor", en: "80% of transactions with A also contain B" }, { label: 'C', uz: "Jami 80%", en: "80% overall" }, { label: 'D', uz: "Lift = 0.8", en: "Lift = 0.8" }], answer: 'B', explanation: { uz: "Confidence = P(B|A) shartli ehtimoldir.", en: "Confidence is the conditional probability P(B|A)." } },
-      { q: { uz: "Lift(A → B) = 1 bo'lsa?", en: "What does Lift = 1 mean?" }, options: [{ label: 'A', uz: "Kuchli bog'liqlik", en: "Strong rule" }, { label: 'B', uz: "A va B statistik mustaqil", en: "A and B are statistically independent" }, { label: 'C', uz: "Salbiy bog'liqlik", en: "Negative rule" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "Lift=1 tasodifiy mustaqillikni ko'rsatadi.", en: "Lift=1 implies P(A∩B) = P(A)P(B)." } },
-      { q: { uz: "Apriori prinsipi nimani kafolatlaydi?", en: "What does the Apriori principle state?" }, options: [{ label: 'A', uz: "Barcha to'plam frequent", en: "All sets frequent" }, { label: 'B', uz: "Frequent bo'lmagan to'plamning kattaroq to'plamlari ham frequent emas", en: "Every superset of an infrequent set is also infrequent" }, { label: 'C', uz: "Lift doim > 1", en: "Lift > 1" }, { label: 'D', uz: "1 ta o'tish yetarli", en: "1 pass" }], answer: 'B', explanation: { uz: "Anti-monotonlik qidiruv fazosini keskin qisqartiradi.", en: "Downward closure prunes infrequent supersets early." } },
-      { q: { uz: "FP-Growth Apriori dan qanday farq qiladi?", en: "How does FP-Growth differ from Apriori?" }, options: [{ label: 'A', uz: "FP-Tree tuzib faqat 2 marta ma'lumotdan o'tadi va kandidat qurmaydi", en: "Uses an FP-Tree in 2 scans with zero candidate generation" }, { label: 'B', uz: "Support ishlatmaydi", en: "No min_support" }, { label: 'C', uz: "Faqat 2 ta tovar", en: "2 items only" }, { label: 'D', uz: "Sekinroq", en: "Slower" }], answer: 'A', explanation: { uz: "Prefix daraxt kandidatlar portlashini yo'qotadi.", en: "FP-Growth avoids C_k candidate generation completely." } },
-      { q: { uz: "Agar {Kofe}→{Non} uchun Confidence=90%, Support(Non)=90% bo'lsa, Lift qancha?", en: "If Conf(Coffee→Bread)=90% and Support(Bread)=90%, what is Lift?" }, options: [{ label: 'A', uz: "1.0 (mustaqil, foydasiz qoida)", en: "1.0 (independent, spurious rule)" }, { label: 'B', uz: "1.8", en: "1.8" }, { label: 'C', uz: "0.81", en: "0.81" }, { label: 'D', uz: "9.0", en: "9.0" }], answer: 'A', explanation: { uz: "Lift = 0.90 / 0.90 = 1.0 — Kofe Non sotilishiga ta'sir qilmaydi.", en: "Lift = 0.90 / 0.90 = 1.0 indicates statistical independence." } }
+      { q: { uz: "Ikkilik sinfda Entropiya H=1.0 bo'lishi nimani bildiradi?", en: "In binary classification, what does Entropy H = 1.0 mean?" }, options: [{ label: 'A', uz: "Sof tugun", en: "Pure node" }, { label: 'B', uz: "Ikki sinf teng 50% / 50% aralashgan (maksimal noaniqlik)", en: "50/50 split (maximum uncertainty)" }, { label: 'C', uz: "Bo'sh tugun", en: "Empty" }, { label: 'D', uz: "Xato", en: "Error" }], answer: 'B', explanation: { uz: "p=0.5 da entropiya maksimal 1.0 bitga yetadi.", en: "Entropy peaks at 1.0 for uniform 50/50 classes." } },
+      { q: { uz: "C4.5 algoritmi noyob ID ustuni muammosini qanday hal qiladi?", en: "How does C4.5 fix high-cardinality ID bias?" }, options: [{ label: 'A', uz: "IG ni SplitInfo ga bo'luvchi Gain Ratio orqali", en: "Via Gain Ratio = IG / SplitInfo" }, { label: 'B', uz: "Z-score bilan", en: "With Z-score" }, { label: 'C', uz: "K-Means bilan", en: "K-Means" }, { label: 'D', uz: "Error bilan", en: "Classification Error" }], answer: 'A', explanation: { uz: "SplitInfo ko'p shoxli atributlarni jazolaydi.", en: "Dividing by SplitInfo penalizes many-valued splits." } },
+      { q: { uz: "RFE (Recursive Feature Elimination) qaysi belgi tanlash turiga kiradi?", en: "Which feature selection category does RFE belong to?" }, options: [{ label: 'A', uz: "Filter", en: "Filter" }, { label: 'B', uz: "Wrapper", en: "Wrapper" }, { label: 'C', uz: "Embedded", en: "Embedded" }, { label: 'D', uz: "Clustering", en: "Clustering" }], answer: 'B', explanation: { uz: "RFE modelni qayta o'qitish orqali eng yaxshi to'plamni qidiruvchi Wrapper usulidir.", en: "RFE retrains a model repeatedly as a Wrapper." } },
+      { q: { uz: "Modeldan mustaqil ravishda χ² yoki Mutual Information bilan belgi saralash qaysi tur?", en: "Model-independent statistical feature ranking (χ², Mutual Info) is called?" }, options: [{ label: 'A', uz: "Filter", en: "Filter" }, { label: 'B', uz: "Wrapper", en: "Wrapper" }, { label: 'C', uz: "Embedded", en: "Embedded" }, { label: 'D', uz: "Bagging", en: "Bagging" }], answer: 'A', explanation: { uz: "Filter usullari model o'qitmasdan tezkor statistik baholaydi.", en: "Filter methods rank features purely statistically." } },
+      { q: { uz: "(6 Ha, 4 Yo'q) tugun uchun Gini indeksi nechaga teng?", en: "What is Gini(t) for a node with (6 Yes, 4 No)?" }, options: [{ label: 'A', uz: "0.48", en: "0.48" }, { label: 'B', uz: "0.971", en: "0.971" }, { label: 'C', uz: "0.40", en: "0.40" }, { label: 'D', uz: "0.00", en: "0.00" }], answer: 'A', explanation: { uz: "1 - (0.6² + 0.4²) = 1 - (0.36 + 0.16) = 0.48.", en: "1 - (0.36 + 0.16) = 0.48." } }
+    ],
+    matching: [
+      { left: { uz: "Entropy(p=0.5)", en: "Entropy(p=0.5)" }, right: { uz: "1.0 bit (maksimal noaniqlik)", en: "1.0 bit (maximum impurity)" } },
+      { left: { uz: "Gain Ratio", en: "Gain Ratio" }, right: { uz: "IG / SplitInfo (ko'p shoxlarni jazolaydi)", en: "IG / SplitInfo (penalizes many-way splits)" } },
+      { left: { uz: "Filter (χ², Mutual Info)", en: "Filter (χ², Mutual Info)" }, right: { uz: "Modeldan mustaqil tezkor statistik tanlash", en: "Fast model-independent ranking" } },
+      { left: { uz: "Embedded (Lasso L1, Tree)", en: "Embedded (L1, Tree)" }, right: { uz: "Modelni o'qitish jarayonining o'zida tanlaydi", en: "Selects features during training itself" } }
+    ],
+    fillGap: [
+      { text: { uz: "Ikkilik sinfda Gini indeksining maksimal qiymati ___ ga teng.", en: "The maximum Gini impurity for binary classification equals ___." }, answer: "0.5" },
+      { text: { uz: "C4.5 da Information Gain ni ___ ko'rsatkichiga bo'lish Gain Ratio ni beradi.", en: "Dividing Information Gain by ___ yields C4.5's Gain Ratio." }, answer: "SplitInfo" },
+      { text: { uz: "Lasso (___ regularizatsiya) keraksiz belgi koeffitsientlarini 0 ga tushiradi.", en: "Lasso (___ regularization) shrinks irrelevant feature weights to zero." }, answer: "L1" }
     ]
   }
 );

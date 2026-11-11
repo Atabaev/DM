@@ -962,3 +962,109 @@ table.data-table th {
   overflow-y: hidden;
   padding: 0.25rem 0;
 }
+
+/* Matching & Fill-in-the-Gap Interactive Exercises */
+.exercise-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.match-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .match-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.match-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.match-btn {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.match-btn.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.match-btn.matched {
+  border-color: var(--emerald);
+  background: var(--emerald-soft);
+  color: var(--emerald);
+  cursor: default;
+}
+
+.match-btn.wrong-flash {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+
+.gap-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 11px;
+  padding: 0.95rem 1.1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.92rem;
+}
+
+.gap-input {
+  display: inline-block;
+  width: 155px;
+  padding: 0.25rem 0.55rem;
+  margin: 0 0.25rem;
+  border-radius: 7px;
+  border: 1px solid var(--border-accent);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.gap-input.ok {
+  border-color: var(--emerald);
+  background: var(--emerald-soft);
+}
+
+.gap-input.bad {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+
+.badge-bonus {
+  background: rgba(168, 85, 247, 0.16);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+.sidebar-divider {
+  margin: 0.85rem 0 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #c084fc;
+  font-weight: 700;
+}
