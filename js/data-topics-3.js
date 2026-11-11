@@ -29,6 +29,10 @@ window.DM_TOPICS.push(
       },
       {
         heading: { uz: "7.2. Naive Bayes Turlari", en: "7.2. Three Variants of Naive Bayes" },
+        bodyHtml: {
+          uz: "<p>Kirish belgilari taqsimoti va ma'lumot turiga qarab <strong>Naive Bayes</strong> klassifikatorining uchta asosiy varianti qo'llaniladi:</p>",
+          en: "<p>Depending on attribute distribution and feature encoding, three specialized variants of <strong>Naive Bayes</strong> are used in practice:</p>"
+        },
         table: {
           headers: { uz: ["Tur", "Ma'lumot turi", "Qo'llanilishi"], en: ["Variant", "Data Type", "Application"] },
           rows: {

@@ -335,6 +335,10 @@ plt.title("K-Means (K=5)"); plt.savefig("l11_kmeans.png", dpi=150)`
       },
       {
         heading: { uz: "12.3. Klasterlash Algoritmini Tanlash Mezonlari", en: "12.3. Criteria for Choosing a Clustering Algorithm" },
+        bodyHtml: {
+          uz: "<p>Vazifa talablari — klaster shakli, shovqinga chidamlilik va katta hajmli ma'lumotlarda tezlik bo'yicha <strong>K-Means</strong>, <strong>Hierarchical (Ward)</strong> va <strong>DBSCAN</strong> o'zaro quyidagicha taqqoslanadi:</p>",
+          en: "<p>Choosing among <strong>K-Means</strong>, <strong>Hierarchical (Ward)</strong>, and <strong>DBSCAN</strong> depends on cluster geometry, noise tolerance, and scalability:</p>"
+        },
         table: {
           headers: { uz: ["Mezon", "K-Means", "Hierarchical (Ward)", "DBSCAN"], en: ["Criteria", "K-Means", "Hierarchical", "DBSCAN"] },
           rows: {

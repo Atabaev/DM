@@ -165,6 +165,10 @@ print("Per-component ratio:", pca.explained_variance_ratio_.round(3))`
       },
       {
         heading: { uz: "5.3. ID3, C4.5 va CART Algoritmlarini Taqqoslash", en: "5.3. Comparing ID3, C4.5 & CART" },
+        bodyHtml: {
+          uz: "<p>Amaliyotda qaror daraxtlarini quruvchi uchta klassik algoritm — <strong>ID3</strong>, <strong>C4.5</strong> va <strong>CART</strong> (Scikit-learn asosida) bo'lish mezoni, daraxt shoxlari tuzilishi va yetishmayotgan qiymatlarni boshqarishi bilan farqlanadi:</p>",
+          en: "<p>The three classic decision-tree algorithms — <strong>ID3</strong>, <strong>C4.5</strong>, and <strong>CART</strong> (used by Scikit-learn) — differ in splitting metric, branching structure, and handling of missing or continuous data:</p>"
+        },
         table: {
           headers: { uz: ["Algoritm", "Muallif / Yil", "Bo'lish mezoni", "O'ziga xos xususiyat"], en: ["Algorithm", "Year", "Split Metric", "Distinctive Properties"] },
           rows: {

@@ -353,6 +353,10 @@ print(f"SMC = {smc:.2f} (0-0 chalg'itadi!) | Jaccard = {jaccard:.2f}")`
       },
       {
         heading: { uz: "3.3. Yetishmayotgan Qiymatlarni To'ldirish (Imputation) Usullari", en: "3.3. Missing Value Imputation Strategies" },
+        bodyHtml: {
+          uz: "<p>Yetishmayotgan qiymatlarni tiklash (<strong>Imputation</strong>) usuli ma'lumotning mexanizmiga (MCAR/MAR/MNAR), atribut turiga (raqamli/kategorik) va taqsimot qiyshiqligiga qarab tanlanadi:</p>",
+          en: "<p>Choosing an <strong>imputation strategy</strong> depends on the missingness mechanism (MCAR/MAR/MNAR), attribute type, and distribution skewness:</p>"
+        },
         widget: 'cleaning-sim',
         table: {
           headers: { uz: ["Usul", "Qachon ishlatiladi", "Afzalligi va Kamchiligi"], en: ["Method", "When to Use", "Pros & Cons"] },

@@ -1,15 +1,24 @@
 (function () {
   function escapeHtml(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function pickText(item, lang) {
+    if (item == null) return '';
+    if (typeof item === 'string' || typeof item === 'number') return String(item);
+    return item?.[lang] ?? item?.uz ?? item?.en ?? item?.titleUz ?? item?.text ?? '';
   }
 
   function renderTable(table, lang) {
     if (!table) return '';
+    const headers = table?.headers?.[lang] ?? table?.headers?.uz ?? table?.headers?.en ?? [];
+    const rows = table?.rows?.[lang] ?? table?.rows?.uz ?? table?.rows?.en ?? [];
+    if (!headers.length && !rows.length) return '';
     return `
       <div class="data-table-wrap">
         <table class="data-table">
-          <thead><tr>${table.headers[lang].map((h) => `<th>${h}</th>`).join('')}</tr></thead>
-          <tbody>${table.rows[lang].map((row) => `<tr>${row.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+          <thead><tr>${headers.map((h) => `<th>${h ?? ''}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map((row) => `<tr>${(Array.isArray(row) ? row : []).map((c) => `<td>${c ?? ''}</td>`).join('')}</tr>`).join('')}</tbody>
         </table>
       </div>
     `;
@@ -200,9 +209,9 @@
       cell_type: 'markdown',
       metadata: {},
       source: toIpynbLines(
-        `# ${lab.title[lang]}\n\n` +
+        `# ${pickText(lab?.title, lang)}\n\n` +
         `**MITQ2506 · Data Mining (${codeTag})**\n\n` +
-        (lab.objective ? `**${lang === 'uz' ? 'Maqsad' : 'Objective'}:** ${lab.objective[lang]}\n` : '')
+        (lab?.objective ? `**${lang === 'uz' ? 'Maqsad' : 'Objective'}:** ${pickText(lab.objective, lang)}\n` : '')
       )
     });
 
@@ -210,24 +219,25 @@
       cells.push({
         cell_type: 'markdown',
         metadata: {},
-        source: toIpynbLines(`## ${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${st.title[lang]}\n\n${st.desc[lang] || ''}`)
+        source: toIpynbLines(`## ${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${pickText(st?.title, lang)}\n\n${pickText(st?.desc, lang)}`)
       });
       cells.push({
         cell_type: 'code',
         execution_count: null,
         metadata: {},
         outputs: [],
-        source: toIpynbLines(st.code || '')
+        source: toIpynbLines(st?.code || '')
       });
     });
 
-    if (lab.variants && lab.variants[lang]) {
+    const labVars = lab?.variants?.[lang] ?? lab?.variants?.uz ?? [];
+    if (labVars.length) {
       cells.push({
         cell_type: 'markdown',
         metadata: {},
         source: toIpynbLines(
           `## ${lang === 'uz' ? 'Mustaqil topshiriq variantlari' : 'Student Variant Assignments'}\n\n` +
-          lab.variants[lang].map((v) => `- ${v}`).join('\n')
+          labVars.map((v) => `- ${v}`).join('\n')
         )
       });
     }
@@ -276,7 +286,7 @@
     const itemLink = (tp) => {
       const code = mode === 'labs' ? `L${tp.id}` : (tp.code || (tp.isBonus ? `B${tp.id - 15}` : `M${tp.id}`));
       const href = mode === 'labs' ? `labs.html?id=${tp.id}` : `topic.html?id=${tp.id}`;
-      const title = mode === 'labs' && tp.lab ? tp.lab.title[lang] : tp.title[lang];
+      const title = mode === 'labs' && tp?.lab ? pickText(tp.lab?.title, lang) : pickText(tp?.title, lang);
       return `
         <a href="${href}" class="sidebar-item ${tp.id === activeId ? 'active' : ''}">
           <span style="font-weight:700; min-width:30px;">${completed.includes(tp.id) ? '✓' : code}</span>
@@ -334,7 +344,7 @@
       const next = topics.find((tp) => tp.id === topic.id + 1);
       const tag = topic.code || (topic.isBonus ? `B${topic.id - 15}` : `M${topic.id}`);
 
-      document.title = `${tag}. ${topic.title[lang]} — ${t('brandTitle')}`;
+      document.title = `${tag}. ${pickText(topic?.title, lang)} — ${t('brandTitle')}`;
 
       root.innerHTML = `
         <div class="topic-layout">
@@ -348,9 +358,9 @@
                   ${!topic.isBonus ? `<span class="tag">⏱ 2 ${t('hoursUnit')}</span><span class="tag">🧪 L${topic.id}</span>` : `<span class="badge badge-bonus">Bonus</span>`}
                 </div>
               </div>
-              <h1 style="font-size:1.85rem; margin-bottom:0.35rem;">${topic.title[lang]}</h1>
-              <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">${topic.title[lang === 'uz' ? 'en' : 'uz']}</div>
-              <p style="margin:0 0 1.2rem; color:var(--text-secondary);">${topic.description[lang]}</p>
+              <h1 style="font-size:1.85rem; margin-bottom:0.35rem;">${pickText(topic?.title, lang)}</h1>
+              <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">${pickText(topic?.title, lang === 'uz' ? 'en' : 'uz')}</div>
+              <p style="margin:0 0 1.2rem; color:var(--text-secondary);">${pickText(topic?.description, lang)}</p>
 
               <div style="display:flex; flex-wrap:wrap; gap:0.65rem;">
                 <a href="slides.html?topic=${topic.id}" class="btn btn-primary btn-sm">${t('openSlidesFull')}</a>
@@ -362,37 +372,43 @@
             </div>
 
             <article class="lecture-card" id="lecture-article">
-              ${topic.sections.map((sec) => `
+              ${(topic?.sections || []).map((sec) => {
+                const heading = pickText(sec?.heading || sec?.title, lang);
+                const body = pickText(sec?.bodyHtml || sec?.body || sec?.content, lang);
+                const calloutHtml = sec?.callout ? pickText(sec.callout, lang) : '';
+                const discQ = sec?.discussion ? pickText(sec.discussion?.q, lang) : '';
+                const discA = sec?.discussion ? pickText(sec.discussion?.a, lang) : '';
+                return `
                 <section class="lecture-section">
-                  <h2>${sec.heading[lang]}</h2>
-                  <div>${sec.bodyHtml[lang]}</div>
-                  ${sec.latex ? `<div class="formula-box">$$${sec.latex}$$</div>` : (sec.formula ? `<div class="formula-box">${sec.formula}</div>` : '')}
-                  ${renderTable(sec.table, lang)}
-                  ${sec.widget ? `<div class="widget-wrap" data-widget="${sec.widget}"></div>` : ''}
-                  ${sec.callout ? `<div class="callout ${sec.callout.type === 'warn' ? 'warn' : ''}">${sec.callout[lang]}</div>` : ''}
-                  ${sec.discussion ? `
+                  ${heading ? `<h2>${heading}</h2>` : ''}
+                  ${body ? `<div>${body}</div>` : ''}
+                  ${sec?.latex ? `<div class="formula-box">$$${sec.latex}$$</div>` : (sec?.formula ? `<div class="formula-box">${sec.formula}</div>` : '')}
+                  ${renderTable(sec?.table, lang)}
+                  ${sec?.widget ? `<div class="widget-wrap" data-widget="${sec.widget}"></div>` : ''}
+                  ${calloutHtml ? `<div class="callout ${sec?.callout?.type === 'warn' ? 'warn' : ''}">${calloutHtml}</div>` : ''}
+                  ${discQ ? `
                     <div class="discussion-box">
-                      <div><strong>💬 ${lang === 'uz' ? 'Tekshirish savoli:' : 'Self-Check Question:'}</strong> ${sec.discussion.q[lang]}</div>
+                      <div><strong>💬 ${lang === 'uz' ? 'Tekshirish savoli:' : 'Self-Check Question:'}</strong> ${discQ}</div>
                       <button type="button" class="btn btn-primary btn-sm reveal-topic-ans" style="margin-top:0.55rem;">${lang === 'uz' ? 'Javobni ko\'rsatish' : 'Reveal Answer'}</button>
-                      <div class="collapsible-body" style="margin-top:0.6rem;">${sec.discussion.a[lang]}</div>
+                      <div class="collapsible-body" style="margin-top:0.6rem;">${discA}</div>
                     </div>` : ''}
-                </section>
-              `).join('')}
+                </section>`;
+              }).join('')}
 
-              ${topic.glossary && topic.glossary.length ? `
+              ${topic?.glossary && topic.glossary.length ? `
                 <section class="lecture-section">
                   <h2>${t('glossaryTitle')}</h2>
                   <div class="data-table-wrap">
                     <table class="data-table">
                       <thead><tr><th>O'zbekcha</th><th>English</th><th>${t('defCol')}</th></tr></thead>
                       <tbody>
-                        ${topic.glossary.map((g) => `<tr><td><strong>${g.uz}</strong></td><td>${g.en}</td><td>${lang === 'uz' ? g.defUz : g.defEn}</td></tr>`).join('')}
+                        ${topic.glossary.map((g) => `<tr><td><strong>${g?.uz || g?.en || ''}</strong></td><td>${g?.en || g?.uz || ''}</td><td>${lang === 'uz' ? (g?.defUz || g?.defEn || '') : (g?.defEn || g?.defUz || '')}</td></tr>`).join('')}
                       </tbody>
                     </table>
                   </div>
                 </section>` : ''}
 
-              ${topic.lab ? `
+              ${topic?.lab ? `
                 <section class="lecture-section">
                   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
                     <h2 style="margin:0;">${t('labTitle')}</h2>
@@ -401,23 +417,23 @@
                       <button type="button" class="btn btn-secondary btn-sm" id="topic-print-pdf">📄 ${lang === 'uz' ? 'PDF / Chop etish' : 'Print / PDF'}</button>
                     </div>
                   </div>
-                  <h3 style="margin-top:0.5rem;">${topic.lab.title[lang]}</h3>
-                  ${topic.lab.objective ? `<div class="callout"><strong>🎯 ${lang === 'uz' ? 'Maqsad:' : 'Objective:'}</strong> ${topic.lab.objective[lang]}</div>` : ''}
-                  ${topic.lab.steps ? topic.lab.steps.map((st, idx) => `
+                  <h3 style="margin-top:0.5rem;">${pickText(topic.lab?.title, lang)}</h3>
+                  ${topic.lab?.objective ? `<div class="callout"><strong>🎯 ${lang === 'uz' ? 'Maqsad:' : 'Objective:'}</strong> ${pickText(topic.lab.objective, lang)}</div>` : ''}
+                  ${(topic.lab?.steps || []).map((st, idx) => `
                     <div class="lab-step">
-                      <div class="lab-step-title">${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${st.title[lang]}</div>
-                      <p style="margin:0.25rem 0 0.65rem; font-size:0.9rem; color:var(--text-secondary);">${st.desc[lang]}</p>
+                      <div class="lab-step-title">${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${pickText(st?.title, lang)}</div>
+                      <p style="margin:0.25rem 0 0.65rem; font-size:0.9rem; color:var(--text-secondary);">${pickText(st?.desc, lang)}</p>
                       <div class="code-wrap" style="margin:0;">
                         <div class="code-header">
                           <span>python · lab_${topic.id}_step${idx + 1}.py</span>
                           <button type="button" class="btn btn-secondary btn-sm copy-step-btn" data-step-idx="${idx}">${t('copyCode')}</button>
                         </div>
-                        <pre><code>${escapeHtml(st.code)}</code></pre>
+                        <pre><code>${escapeHtml(st?.code || '')}</code></pre>
                       </div>
-                    </div>`).join('') : ''}
-                  ${topic.lab.variants ? `
+                    </div>`).join('')}
+                  ${(topic.lab?.variants?.[lang] || topic.lab?.variants?.uz) ? `
                     <h3>${lang === 'uz' ? '📝 Mustaqil topshiriq variantlari' : '📝 Student Variant Assignments'}</h3>
-                    <ul>${topic.lab.variants[lang].map((v) => `<li>${v}</li>`).join('')}</ul>` : ''}
+                    <ul>${(topic.lab?.variants?.[lang] || topic.lab?.variants?.uz || []).map((v) => `<li>${v}</li>`).join('')}</ul>` : ''}
                 </section>` : ''}
             </article>
 
@@ -502,7 +518,7 @@
       const next = mandatory.find((tp) => tp.id === topic.id + 1);
       const lab = topic.lab;
 
-      document.title = `L${topic.id}. ${lab ? lab.title[lang] : topic.title[lang]} — ${t('brandTitle')}`;
+      document.title = `L${topic.id}. ${pickText(lab?.title || topic?.title, lang)} — ${t('brandTitle')}`;
 
       root.innerHTML = `
         <div class="topic-layout">
@@ -516,8 +532,8 @@
                   <a href="slides.html?topic=${topic.id}" class="btn btn-primary btn-sm">🎬 M${topic.id} Slaydlar</a>
                 </div>
               </div>
-              <h1 style="font-size:1.8rem; margin-bottom:0.4rem;">${lab ? lab.title[lang] : topic.title[lang]}</h1>
-              ${lab && lab.objective ? `<p style="margin:0 0 1rem; color:var(--text-secondary);">${lab.objective[lang]}</p>` : ''}
+              <h1 style="font-size:1.8rem; margin-bottom:0.4rem;">${pickText(lab?.title || topic?.title, lang)}</h1>
+              ${lab?.objective ? `<p style="margin:0 0 1rem; color:var(--text-secondary);">${pickText(lab.objective, lang)}</p>` : ''}
               <div class="export-actions no-print" style="display:flex; gap:0.65rem; flex-wrap:wrap; margin-top:0.75rem;">
                 <button type="button" class="btn btn-primary btn-sm" id="lab-download-ipynb">📓 ${lang === 'uz' ? 'Jupyter Notebook (.ipynb) yuklab olish' : 'Download Jupyter Notebook (.ipynb)'}</button>
                 <button type="button" class="btn btn-secondary btn-sm" id="lab-download-pdf">📄 ${lang === 'uz' ? 'Lab qo\'llanmasini yuklab olish (PDF / Print)' : 'Download Lab Guide (PDF / Print)'}</button>
@@ -525,25 +541,25 @@
             </div>
 
             <div class="lecture-card">
-              ${lab && lab.steps ? lab.steps.map((st, idx) => `
+              ${(lab?.steps || []).map((st, idx) => `
                 <div class="lab-step">
-                  <div class="lab-step-title">${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${st.title[lang]}</div>
-                  <p style="margin:0.25rem 0 0.65rem; font-size:0.9rem; color:var(--text-secondary);">${st.desc[lang]}</p>
+                  <div class="lab-step-title">${lang === 'uz' ? `${idx + 1}-bosqich` : `Step ${idx + 1}`}: ${pickText(st?.title, lang)}</div>
+                  <p style="margin:0.25rem 0 0.65rem; font-size:0.9rem; color:var(--text-secondary);">${pickText(st?.desc, lang)}</p>
                   <div class="code-wrap" style="margin:0;">
                     <div class="code-header">
                       <span>python · L${topic.id}_step${idx + 1}.py</span>
                       <button type="button" class="btn btn-secondary btn-sm copy-lab-step" data-idx="${idx}">${t('copyCode')}</button>
                     </div>
-                    <pre><code>${escapeHtml(st.code)}</code></pre>
+                    <pre><code>${escapeHtml(st?.code || '')}</code></pre>
                   </div>
                 </div>
-              `).join('') : ''}
+              `).join('')}
 
-              ${lab && lab.variants ? `
+              ${(lab?.variants?.[lang] || lab?.variants?.uz) ? `
                 <div class="panel" style="margin-top:1.25rem;">
                   <h3>${lang === 'uz' ? '📝 Mustaqil topshiriq variantlari (Talabalar uchun)' : '📝 Student Variant Assignments'}</h3>
                   <ul style="margin:0; padding-left:1.2rem;">
-                    ${lab.variants[lang].map((v) => `<li style="margin-bottom:0.4rem;">${v}</li>`).join('')}
+                    ${(lab?.variants?.[lang] || lab?.variants?.uz || []).map((v) => `<li style="margin-bottom:0.4rem;">${v}</li>`).join('')}
                   </ul>
                 </div>` : ''}
             </div>
